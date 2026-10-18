@@ -1,0 +1,58 @@
+{
+  "$comment": "持ち主 W4（レベルと内容）。肩書（SPEC 2.5）。章のボスをクリアすると上がり、下がらない。段 0 で SPEC 2.5 から写した。",
+  "titles": [
+    {
+      "after_chapter": 0,
+      "name": "見学者"
+    },
+    {
+      "after_chapter": 1,
+      "name": "新入部員"
+    },
+    {
+      "after_chapter": 2,
+      "name": "走行係"
+    },
+    {
+      "after_chapter": 3,
+      "name": "ルート係"
+    },
+    {
+      "after_chapter": 4,
+      "name": "センサ係"
+    },
+    {
+      "after_chapter": 5,
+      "name": "ソフト係"
+    },
+    {
+      "after_chapter": 6,
+      "name": "制御係"
+    },
+    {
+      "after_chapter": 7,
+      "name": "航法係"
+    },
+    {
+      "after_chapter": 8,
+      "name": "画像係"
+    },
+    {
+      "after_chapter": 9,
+      "name": "搭載ソフト担当"
+    },
+    {
+      "after_chapter": 10,
+      "name": "種コン代表"
+    }
+  ],
+  "ace": {
+    "stars": 150,
+    "name": "部のエース",
+    "note": "本編の★を全部取る"
+  },
+  "c_badge": {
+    "name": "マイコンもいける",
+    "note": "おまけ C を全部クリアすると肩書の横に付く札"
+  }
+}

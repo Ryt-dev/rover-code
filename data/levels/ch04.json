@@ -1,0 +1,1728 @@
+{
+ "chapter": 4,
+ "levels": [
+  {
+   "id": "4-1",
+   "order": 17,
+   "chapter": 4,
+   "title": "LiDAR で測ってから走る",
+   "type": "make",
+   "lang": "python",
+   "minutes": 6,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "LiDAR は、光を当てて前にある物までの距離を測るセンサ。コーンまでの距離は世界ごとにちがう。最初に 1 回測って、走る時間を計算しよう。",
+   "learn": {
+    "python": [
+     "命令が値を返す（戻り値）: d = lidar() で測った数が d に入る",
+     "前に何も無いときは、数ではなく None（なにもない）が返る。くわしくは次の面で"
+    ],
+    "robot": [
+     "LiDAR は、光を当てて前にある物までの距離（m）を測るセンサ。測るたびに ±2 cm ほどばらつく",
+     "LiDAR は機体の前の面から測る。コーンまでのすき間より 4 cm ほど長く出る",
+     "本物の機体には distance_to_cone() は無い。この章からは使えない"
+    ]
+   },
+   "new": [
+    "lidar",
+    "None"
+   ],
+   "new_split": {
+    "command": [
+     "lidar"
+    ],
+    "syntax": [
+     "None"
+    ]
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "lidar"
+   ],
+   "worlds": [
+    {
+     "name": "2.0 m",
+     "world": {
+      "venue": "船橋キャンパス 建物の裏の通路",
+      "venue_key": "ura",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 0,
+        "y": 2.31,
+        "r": 0.19
+       },
+       {
+        "id": "r1",
+        "type": "rock",
+        "x": 1.2,
+        "y": 1.0,
+        "r": 0.25,
+        "h": 0.4
+       }
+      ],
+      "time_limit": 30,
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {},
+     "judge": {}
+    },
+    {
+     "name": "3.5 m",
+     "world": {
+      "venue": "船橋キャンパス 建物の裏の通路",
+      "venue_key": "ura",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 0,
+        "y": 3.81,
+        "r": 0.19
+       },
+       {
+        "id": "r1",
+        "type": "rock",
+        "x": 1.2,
+        "y": 1.75,
+        "r": 0.25,
+        "h": 0.4
+       }
+      ],
+      "time_limit": 30,
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {},
+     "judge": {}
+    },
+    {
+     "name": "6.0 m",
+     "world": {
+      "venue": "船橋キャンパス 建物の裏の通路",
+      "venue_key": "ura",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 0,
+        "y": 6.31,
+        "r": 0.19
+       },
+       {
+        "id": "r1",
+        "type": "rock",
+        "x": 1.2,
+        "y": 3.0,
+        "r": 0.25,
+        "h": 0.4
+       }
+      ],
+      "time_limit": 30,
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {},
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "stopped and gap('cone') <= 0.5 and not touched('cone')",
+     "label": "すべての世界で、コーンの 50 cm 以内で止まる",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "gap('cone') <= 0.2 and not touched('cone')",
+     "label": "すべての世界で 20 cm 以内",
+     "need": "all",
+     "tip": "ぶつからないように、どれだけ手前を狙うか見直そう",
+     "measure": "gap('cone')",
+     "better": "low",
+     "unit": "cm"
+    },
+    {
+     "expr": "lines <= 5",
+     "label": "5 行以内",
+     "need": "all",
+     "tip": "print の行は無くてもクリアできるよ",
+     "measure": "lines",
+     "better": "low",
+     "unit": "行"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "gap('cone')",
+    "text": "コーンの {cm} cm 手前で止まった",
+    "world": "first_failed"
+   },
+   "starter": "d = lidar()      # 前にある物までの距離（m）\nprint(\"前の物まで\", d, \"m\")\nSPEED = 0.6\n# d を使って、走る時間を計算しよう\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "2 章と同じ: 時間 ＝ 距離 ÷ 速さ。距離は d。",
+    "ぶつからないよう 10 cm 手前を狙う: (d - 0.1)。0.6 の速さは 1 秒に 0.66 m。",
+    "motor(0.6, 0.6) → wait((d - 0.1) / 0.66) → stop()"
+   ],
+   "solution": "d = lidar()\nprint(\"前の物まで\", d, \"m\")\nmotor(0.6, 0.6)\nwait((d - 0.1) / 0.66)\nstop()\n",
+   "solution_labels": [],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "3 m と決めつけた",
+     "code": "motor(0.6, 0.6)\nwait(4.4)\nstop()\n",
+     "say": "距離は世界ごとにちがうよ。決めつけないで、lidar() で測った d を使おう。",
+     "expect": "fail",
+     "rule": null,
+     "when": "moved > 0.1 and not has('lidar()')"
+    },
+    {
+     "name": "手前を狙わない",
+     "code": "d = lidar()\nmotor(0.6, 0.6)\nwait(d / 0.66)\nstop()\n",
+     "say": "LiDAR の値ぴったり走ると、ぶつかっちゃう。止まるまでに少しすべるし、測りちがいもある。",
+     "expect": "fail",
+     "rule": "B_OVERSHOOT",
+     "when": "hit and re('wait\\(\\s*d\\s*/')"
+    },
+    {
+     "name": "魔法の巻尺を使った",
+     "code": "d = distance_to_cone()\nmotor(0.6, 0.6)\nwait((d - 0.1) / 0.66)\nstop()\n",
+     "say": "4 章からは distance_to_cone() は使えない。本物の機体と同じく lidar() で測ろう。",
+     "expect": "fail",
+     "rule": "API_TURNED_OFF",
+     "when": "card('API_TURNED_OFF')"
+    }
+   ],
+   "senpai_clear": "「測ってから動く」。これでもう、距離が変わっても大丈夫。",
+   "explain": {
+    "goal": "stop_at_cone",
+    "goalRadius": 0.5,
+    "expectTurn": null,
+    "target": "cone"
+   },
+   "hud": [
+    "time",
+    "gap",
+    "speed",
+    "lidar"
+   ],
+   "graphs": [
+    "speed",
+    "lidar"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow",
+    "lidar"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 3.34,
+      "x": 0,
+      "y": 1.92,
+      "heading": 0,
+      "lines": 5,
+      "gap": 0.08
+     },
+     {
+      "t_stop": 5.62,
+      "x": 0,
+      "y": 3.42,
+      "heading": 0,
+      "lines": 5,
+      "gap": 0.08
+     },
+     {
+      "t_stop": 9.46,
+      "x": 0,
+      "y": 5.95,
+      "heading": 0,
+      "lines": 5,
+      "gap": 0.05
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "4-2",
+   "order": 18,
+   "chapter": 4,
+   "title": "if で分かれ道",
+   "type": "parsons",
+   "lang": "python",
+   "minutes": 6,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "通路が 2 本ある。左の通路に、日によって荷物（岩）が置いてある。前に何かあれば右の通路へ、無ければそのまま北へ 5 m 以上進もう。行を並べて完成させて。",
+   "learn": {
+    "python": [
+     "if 条件: の下は、条件が合うときだけ実行",
+     "else: の下は、合わないときに実行",
+     "比べる: < > <= >= ==（同じ）!=（ちがう）",
+     "d is None で「何も無い（値が無い）」かを調べる。or は「どちらか」"
+    ],
+    "robot": [
+     "LiDAR は 12 m より先や、何も無いときは None を返す",
+     "センサの値で動きを変える（判断する）"
+    ]
+   },
+   "new": [
+    "if",
+    "else"
+   ],
+   "new_split": {
+    "command": [],
+    "syntax": [
+     "if",
+     "else"
+    ]
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "lidar"
+   ],
+   "worlds": [
+    {
+     "name": "荷物 2.5 m",
+     "world": {
+      "venue": "船橋キャンパス 建物の裏の通路",
+      "venue_key": "ura",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "wW",
+        "type": "wall",
+        "x1": -0.5,
+        "y1": -0.5,
+        "x2": -0.5,
+        "y2": 7.0,
+        "kind": "生け垣"
+       },
+       {
+        "id": "wH",
+        "type": "wall",
+        "x1": 0.6,
+        "y1": 0.6,
+        "x2": 0.6,
+        "y2": 7.0,
+        "kind": "生け垣"
+       },
+       {
+        "id": "wE",
+        "type": "wall",
+        "x1": 1.7,
+        "y1": -0.5,
+        "x2": 1.7,
+        "y2": 7.0,
+        "kind": "生け垣"
+       },
+       {
+        "id": "wS",
+        "type": "wall",
+        "x1": -0.5,
+        "y1": -0.5,
+        "x2": 1.7,
+        "y2": -0.5,
+        "kind": "生け垣"
+       },
+       {
+        "id": "box",
+        "type": "rock",
+        "x": 0,
+        "y": 2.5,
+        "r": 0.3,
+        "h": 0.5
+       }
+      ],
+      "time_limit": 30,
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {},
+     "judge": {}
+    },
+    {
+     "name": "荷物なし",
+     "world": {
+      "venue": "船橋キャンパス 建物の裏の通路",
+      "venue_key": "ura",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "wW",
+        "type": "wall",
+        "x1": -0.5,
+        "y1": -0.5,
+        "x2": -0.5,
+        "y2": 7.0,
+        "kind": "生け垣"
+       },
+       {
+        "id": "wH",
+        "type": "wall",
+        "x1": 0.6,
+        "y1": 0.6,
+        "x2": 0.6,
+        "y2": 7.0,
+        "kind": "生け垣"
+       },
+       {
+        "id": "wE",
+        "type": "wall",
+        "x1": 1.7,
+        "y1": -0.5,
+        "x2": 1.7,
+        "y2": 7.0,
+        "kind": "生け垣"
+       },
+       {
+        "id": "wS",
+        "type": "wall",
+        "x1": -0.5,
+        "y1": -0.5,
+        "x2": 1.7,
+        "y2": -0.5,
+        "kind": "生け垣"
+       }
+      ],
+      "time_limit": 30,
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {},
+     "judge": {}
+    },
+    {
+     "name": "荷物 4 m",
+     "world": {
+      "venue": "船橋キャンパス 建物の裏の通路",
+      "venue_key": "ura",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "wW",
+        "type": "wall",
+        "x1": -0.5,
+        "y1": -0.5,
+        "x2": -0.5,
+        "y2": 7.0,
+        "kind": "生け垣"
+       },
+       {
+        "id": "wH",
+        "type": "wall",
+        "x1": 0.6,
+        "y1": 0.6,
+        "x2": 0.6,
+        "y2": 7.0,
+        "kind": "生け垣"
+       },
+       {
+        "id": "wE",
+        "type": "wall",
+        "x1": 1.7,
+        "y1": -0.5,
+        "x2": 1.7,
+        "y2": 7.0,
+        "kind": "生け垣"
+       },
+       {
+        "id": "wS",
+        "type": "wall",
+        "x1": -0.5,
+        "y1": -0.5,
+        "x2": 1.7,
+        "y2": -0.5,
+        "kind": "生け垣"
+       },
+       {
+        "id": "box",
+        "type": "rock",
+        "x": 0,
+        "y": 4.0,
+        "r": 0.3,
+        "h": 0.5
+       }
+      ],
+      "time_limit": 30,
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {},
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "y_end >= 5.0 and bumps == 0 and stopped",
+     "label": "すべての世界で、ぶつからずに北の線（5 m）を越えて止まる",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "attempt == 1",
+     "label": "1 回目の実行でクリア",
+     "need": "all",
+     "tip": "ほかの面を 1 つクリアしてから戻ると、もう一度ねらえるよ",
+     "no_measure": "1 回目の実行でクリアしたかどうかで決まる（数では測れない）"
+    },
+    {
+     "expr": "t_stop <= 9.5 and y_end >= 5.0 and bumps == 0",
+     "label": "すべての世界で 9.5 秒以内に止まる（数を変えて速く）",
+     "need": "all",
+     "tip": "走る行の速さを上げたら、待つ時間も計算し直そう",
+     "measure": "t_stop",
+     "better": "low",
+     "unit": "秒"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "y_end",
+    "text": "北へ {m} m 進んだ",
+    "world": "first_failed"
+   },
+   "starter": "d = lidar()\nmotor(0.8, 0.8)\nwait(6.8)\nmotor(-0.25, 0.25)\nif d is None or d > 6:\nwait(0.463)\nelse:\nmotor(0.25, -0.25)\nwait(1.82)\nwait(0.463)\nmotor(0.8, 0.8)\nmotor(0.6, 0.6)\nwait(6.8)\nstop()\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": {
+    "fixed_lines": 0,
+    "answer": "d = lidar()\nif d is None or d > 6:\n    motor(0.8, 0.8)\n    wait(6.8)\nelse:\n    motor(0.25, -0.25)\n    wait(0.463)\n    motor(0.6, 0.6)\n    wait(1.82)\n    motor(-0.25, 0.25)\n    wait(0.463)\n    motor(0.8, 0.8)\n    wait(6.8)\nstop()\n",
+    "distractors": []
+   },
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "まず d = lidar()。そのあと if で「前があいている」ときと「ふさがっている」ときに分ける。",
+    "あいている: そのまま北へ。ふさがっている: 右へ 90° → 東へ 1.2 m → 左へ 90° → 北へ。stop() は if の外（最後）。",
+    "速くするなら、東へ行く行を motor(0.8, 0.8) と wait(1.36) に、北へ行く wait を 6.0 に。"
+   ],
+   "solution": "# 1. 前を測る\nd = lidar()\n# 2. あいていれば北へ\nif d is None or d > 6:\n    motor(0.8, 0.8)\n    wait(6.0)\n# 3. ふさがっていれば右の通路を回る\nelse:\n    motor(0.25, -0.25)\n    wait(0.463)\n    motor(0.8, 0.8)\n    wait(1.36)\n    motor(-0.25, 0.25)\n    wait(0.463)\n    motor(0.8, 0.8)\n    wait(6.0)\nstop()\n",
+   "solution_labels": [
+    "前を測る",
+    "あいていれば北へ",
+    "ふさがっていれば右の通路を回る"
+   ],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "None を調べない",
+     "code": "d = lidar()\nif d > 6:\n    motor(0.8, 0.8)\n    wait(6.8)\nelse:\n    motor(0.25, -0.25)\n    wait(0.463)\n    motor(0.6, 0.6)\n    wait(1.82)\n    motor(-0.25, 0.25)\n    wait(0.463)\n    motor(0.8, 0.8)\n    wait(6.8)\nstop()\n",
+     "say": "前に何も無いと lidar() は None。None と 6 は比べられない。d is None or を付けよう。",
+     "expect": "fail",
+     "rule": "NONE_LIDAR",
+     "when": "card('NONE_LIDAR')",
+     "fix": "比べる前に None かどうか確かめよう。この面は「何も無い（None）か 6 m より遠い」ならまっすぐ: if d is None or d > 6:",
+     "example": {
+      "bad": "d = lidar()\nif d > 6:\n    motor(0.8, 0.8)",
+      "good": "d = lidar()\nif d is None or d > 6:\n    motor(0.8, 0.8)"
+     }
+    }
+   ],
+   "senpai_clear": "if で「見て決める」ができた。ロボットらしくなってきたね。",
+   "explain": {
+    "goal": "free",
+    "goalRadius": 1.0,
+    "expectTurn": null,
+    "target": null
+   },
+   "hud": [
+    "time",
+    "speed",
+    "lidar"
+   ],
+   "graphs": [
+    "speed",
+    "lidar"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "lidar"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 8.76,
+      "x": 1.174,
+      "y": 5.321,
+      "heading": 359.6,
+      "lines": 14
+     },
+     {
+      "t_stop": 6.48,
+      "x": 0,
+      "y": 5.28,
+      "heading": 0,
+      "lines": 14
+     },
+     {
+      "t_stop": 8.76,
+      "x": 1.174,
+      "y": 5.321,
+      "heading": 359.6,
+      "lines": 14
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "4-3",
+   "order": 19,
+   "chapter": 4,
+   "title": "while で近づく",
+   "type": "make",
+   "lang": "python",
+   "minutes": 7,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "今度は 1 回測るだけじゃなく、走りながら何度も測ろう。「遠いあいだは走り続ける、近づいたら止まる」。コーンまでの距離は世界ごとにちがう。",
+   "learn": {
+    "python": [
+     "while 条件: の下は、条件が合っているあいだ何度もくり返す",
+     "くり返すたびに lidar() を読み直す"
+    ],
+    "robot": [
+     "測る → 動く → 測る… のくり返し（フィードバック）",
+     "止まれと言ってからも少しすべる。速いほど手前で止める必要がある",
+     "lidar() は 1 回 0.01 秒かかる。読むあいだも走り続ける"
+    ]
+   },
+   "new": [
+    "while"
+   ],
+   "new_split": {
+    "command": [],
+    "syntax": [
+     "while"
+    ]
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "lidar"
+   ],
+   "worlds": [
+    {
+     "name": "3 m",
+     "world": {
+      "venue": "船橋キャンパス 建物の裏の通路",
+      "venue_key": "ura",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 0,
+        "y": 3.31,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 40,
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {},
+     "judge": {}
+    },
+    {
+     "name": "6 m",
+     "world": {
+      "venue": "船橋キャンパス 建物の裏の通路",
+      "venue_key": "ura",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 0,
+        "y": 6.31,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 40,
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {},
+     "judge": {}
+    },
+    {
+     "name": "9 m",
+     "world": {
+      "venue": "船橋キャンパス 建物の裏の通路",
+      "venue_key": "ura",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 0,
+        "y": 9.31,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 40,
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {},
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "stopped and gap('cone') <= 0.5 and not touched('cone')",
+     "label": "すべての世界で、コーンの 50 cm 以内で止まる",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "gap('cone') <= 0.15 and not touched('cone')",
+     "label": "すべての世界で 15 cm 以内",
+     "need": "all",
+     "tip": "止め始める距離を少し変えて、すべる分を見こもう",
+     "measure": "gap('cone')",
+     "better": "low",
+     "unit": "cm"
+    },
+    {
+     "expr": "t_stop <= 15",
+     "label": "すべての世界で 15 秒以内に止まる",
+     "need": "all",
+     "tip": "速さを上げると早く着く。そのぶん早めに止め始めよう",
+     "measure": "t_stop",
+     "better": "low",
+     "unit": "秒"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "gap('cone')",
+    "text": "コーンの {cm} cm 手前で止まった",
+    "world": "first_failed"
+   },
+   "starter": "SPEED = 0.5\nmotor(SPEED, SPEED)\n# ここに while を書いて、コーンの手前で止まろう\nstop()\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "while lidar() > 0.25: と書くと「0.25 m より遠いあいだ」くり返す。中身は wait(0.02) でいい。",
+    "速さ 0.7 なら 9 m を 12 秒ほどで行ける。速いと止まるまでに 9 cm すべるから、0.25 m で止め始めよう。",
+    "motor(0.7, 0.7) → while lidar() > 0.25: wait(0.02) → stop()"
+   ],
+   "solution": "SPEED = 0.7\nmotor(SPEED, SPEED)\nwhile lidar() > 0.25:\n    wait(0.02)\nstop()\n",
+   "solution_labels": [],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "不等号が逆",
+     "code": "motor(0.5, 0.5)\nwhile lidar() < 0.3:\n    wait(0.02)\nstop()\n",
+     "say": "while は「〜のあいだ続ける」。遠いあいだ走り続けたいなら lidar() > 0.25 だよ。",
+     "expect": "fail",
+     "rule": "B_MOTOR_NO_WAIT",
+     "when": "re('lidar\\(\\)\\s*<')"
+    },
+    {
+     "name": "stop を中に入れた",
+     "code": "motor(0.5, 0.5)\nwhile lidar() > 0.3:\n    wait(0.02)\n    stop()\n",
+     "say": "stop() を字下げすると、くり返しの中で毎回止まっちゃう。stop() はくり返しの外へ。",
+     "expect": "fail",
+     "rule": null,
+     "when": "re('^[ \\t]+stop\\(\\)')"
+    }
+   ],
+   "senpai_clear": "while とセンサの組み合わせは、この先ずっと使う「型」だよ。",
+   "explain": {
+    "goal": "stop_at_cone",
+    "goalRadius": 0.5,
+    "expectTurn": null,
+    "target": "cone"
+   },
+   "hud": [
+    "time",
+    "gap",
+    "speed",
+    "lidar"
+   ],
+   "graphs": [
+    "speed",
+    "lidar"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow",
+    "lidar"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 4.2,
+      "x": 0,
+      "y": 2.895,
+      "heading": 0,
+      "lines": 5,
+      "gap": 0.105
+     },
+     {
+      "t_stop": 8.04,
+      "x": 0,
+      "y": 5.852,
+      "heading": 0,
+      "lines": 5,
+      "gap": 0.148
+     },
+     {
+      "t_stop": 12,
+      "x": 0,
+      "y": 8.901,
+      "heading": 0,
+      "lines": 5,
+      "gap": 0.099
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "4-4",
+   "order": 20,
+   "chapter": 4,
+   "title": "遠くのコーンと 3 段ギア",
+   "type": "fix",
+   "lang": "python",
+   "minutes": 9,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "4-3 のプログラムを広い所で使ったら、いきなりエラーで止まった！ コーンが 14 m 先にあって、LiDAR に届かない世界がある。直したうえで、遠いときは速く・近いときはゆっくり走る 3 段ギアにしよう。",
+   "learn": {
+    "python": [
+     "if・elif・else: 上から順に調べ、最初に合ったところだけ実行",
+     "while True: と break: ずっとくり返し、break でぬける",
+     "is not None と and で「値があって、しかも近い」"
+    ],
+    "robot": [
+     "近いほどゆっくり（速さを距離で切りかえる）。これが 6 章の P 制御の芽",
+     "速いまま止めると 13 cm すべる。ゆっくりなら 2 cm",
+     "LiDAR の読みは ±2 cm ばらつく。何度も読むと、近い値が早めに出て、少し手前で止まりやすい"
+    ]
+   },
+   "new": [
+    "elif",
+    "while True",
+    "break"
+   ],
+   "new_reason": "elif・while True・break は「ずっと測って、合ったところでぬける」1 つの形として一緒に使うので、まとめて出す。",
+   "new_split": {
+    "command": [],
+    "syntax": [
+     "elif",
+     "while True",
+     "break"
+    ]
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "lidar"
+   ],
+   "worlds": [
+    {
+     "name": "14 m",
+     "world": {
+      "venue": "船橋キャンパス 建物の裏の通路",
+      "venue_key": "ura",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 0,
+        "y": 14.31,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 40,
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {},
+     "judge": {
+      "T3": 16.727272727272727
+     }
+    },
+    {
+     "name": "7 m",
+     "world": {
+      "venue": "船橋キャンパス 建物の裏の通路",
+      "venue_key": "ura",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 0,
+        "y": 7.31,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 40,
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {},
+     "judge": {
+      "T3": 10.363636363636363
+     }
+    },
+    {
+     "name": "4 m",
+     "world": {
+      "venue": "船橋キャンパス 建物の裏の通路",
+      "venue_key": "ura",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 0,
+        "y": 4.31,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 40,
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {},
+     "judge": {
+      "T3": 7.636363636363637
+     }
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "ok and stopped and gap('cone') <= 0.3 and not touched('cone')",
+     "label": "エラーなしで、すべての世界でコーンの 30 cm 以内",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "gap('cone') <= 0.1 and not touched('cone')",
+     "label": "すべての世界で 10 cm 以内",
+     "need": "all",
+     "tip": "いちばんゆっくりの段で、止まる距離を少し近づけてみよう",
+     "measure": "gap('cone')",
+     "better": "low",
+     "unit": "cm"
+    },
+    {
+     "expr": "t_stop <= T3",
+     "label": "すべての世界で「距離 ÷ 1.1 ＋ 4 秒」以内に止まる",
+     "need": "all",
+     "tip": "遠いあいだは全速。ゆっくりにする距離を短くしてみよう",
+     "measure": "t_stop",
+     "better": "low",
+     "unit": "秒"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "gap('cone')",
+    "text": "コーンの {cm} cm 手前で止まった",
+    "world": "first_failed"
+   },
+   "starter": "motor(0.8, 0.8)\nwhile lidar() > 0.4:\n    wait(0.02)\nstop()\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "14 m の世界では、最初の lidar() が None。None > 0.4 は計算できなくてエラーになる。",
+    "d = lidar() と変数に入れてから if で調べよう。None か 1.5 m より遠ければ全速、0.4 m より遠ければ 0.4、それより近ければ 0.15。",
+    "while True: → d = lidar() → None か 1.5 より遠いなら 1.0 → elif 0.4 より遠いなら 0.4 → elif 0.07 より遠いなら 0.15 → else: break"
+   ],
+   "solution": "while True:\n    # 1. 測る（None なら遠い）\n    d = lidar()\n    # 2. 遠さで速さを 3 段に切りかえる\n    if d is None or d > 1.5:\n        motor(1.0, 1.0)\n    elif d > 0.4:\n        motor(0.4, 0.4)\n    elif d > 0.07:\n        motor(0.15, 0.15)\n    else:\n        break\n# 3. 止まる\nstop()\n",
+   "solution_labels": [
+    "測る（None なら遠い）",
+    "遠さで速さを 3 段に切りかえる",
+    "止まる"
+   ],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "全速のまま",
+     "code": "motor(1.0, 1.0)\nwhile True:\n    d = lidar()\n    if d is not None and d < 0.12:\n        break\nstop()\n",
+     "say": "全速のまま止めると、すべってコーンにぶつかるよ。近づいたら速さを落とそう。",
+     "expect": "fail",
+     "rule": "B_OVERSHOOT",
+     "when": "hit and not has('elif')"
+    },
+    {
+     "name": "elif の順番が逆",
+     "code": "while True:\n    d = lidar()\n    if d is None or d > 0.12:\n        motor(1.0, 1.0)\n    elif d > 0.4:\n        motor(0.4, 0.4)\n    else:\n        break\nstop()\n",
+     "say": "elif は上から調べて、最初に合った所だけ動く。広い条件（d > 0.12）を先に書くと、下は使われないよ。",
+     "expect": "fail",
+     "rule": "B_OVERSHOOT",
+     "when": "has('elif') and (hit or gap < 0.05)"
+    },
+    {
+     "name": "None を調べない",
+     "rule": "NONE_LIDAR",
+     "expect": "fail",
+     "when": "card('NONE_LIDAR')",
+     "code": "motor(0.8, 0.8)\nwhile lidar() > 0.4:\n    wait(0.02)\nstop()\n",
+     "say": "遠すぎると lidar() は None。None と 0.4 は比べられないよ。d is None or を付けよう。",
+     "fix": "比べる前に None かどうか確かめよう。遠い（None）あいだは走り続ける: d = lidar() → if d is None or d > 1.5: で速く走る",
+     "example": {
+      "bad": "while lidar() > 0.4:\n    wait(0.02)",
+      "good": "while True:\n    d = lidar()\n    if d is not None and d < 0.4:\n        break"
+     }
+    }
+   ],
+   "senpai_clear": "None の扱いと elif。本番のプログラムでも、いちばん多いバグがこの 2 つなんだ。",
+   "explain": {
+    "goal": "stop_at_cone",
+    "goalRadius": 0.3,
+    "expectTurn": null,
+    "target": "cone"
+   },
+   "hud": [
+    "time",
+    "gap",
+    "speed",
+    "lidar"
+   ],
+   "graphs": [
+    "speed",
+    "lidar"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow",
+    "lidar"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 15.7,
+      "x": 0,
+      "y": 13.958,
+      "heading": 0,
+      "lines": 11,
+      "gap": 0.042
+     },
+     {
+      "t_stop": 9.4,
+      "x": 0,
+      "y": 6.967,
+      "heading": 0,
+      "lines": 11,
+      "gap": 0.033
+     },
+     {
+      "t_stop": 6.8,
+      "x": 0,
+      "y": 3.978,
+      "heading": 0,
+      "lines": 11,
+      "gap": 0.022
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "4-5",
+   "order": 21,
+   "chapter": 4,
+   "title": "カクカク通路",
+   "type": "boss",
+   "lang": "python",
+   "minutes": 12,
+   "checkpoint": true,
+   "carry_from": null,
+   "story": "建物の裏の通路は、右に左にカクカク曲がっている。どっちに曲がるかは世界ごとにちがう。壁の手前で止まって、右を見て、あいていれば右・ふさがっていれば左へ。4 本目の通路の奥にコーンがある。（ボス面: クリアするまでヒントは 2 つまで）",
+   "learn": {
+    "python": [
+     "for・while・if を組み合わせる",
+     "for の i で「最後の 1 本だけちがうこと」をする: if i < 3:"
+    ],
+    "robot": [
+     "LiDAR は前しか見えない。横を見たいときは、その場で回って測る"
+    ]
+   },
+   "new": [],
+   "new_split": {
+    "command": [],
+    "syntax": []
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "lidar"
+   ],
+   "worlds": [
+    {
+     "name": "通路 1",
+     "world": {
+      "venue": "船橋キャンパス 建物の裏の通路",
+      "venue_key": "ura",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "w0",
+        "type": "wall",
+        "x1": -0.5,
+        "y1": -0.5,
+        "x2": -0.5,
+        "y2": 3.5,
+        "kind": "生け垣"
+       },
+       {
+        "id": "w1",
+        "type": "wall",
+        "x1": -0.5,
+        "y1": 3.5,
+        "x2": 2.0,
+        "y2": 3.5,
+        "kind": "生け垣"
+       },
+       {
+        "id": "w2",
+        "type": "wall",
+        "x1": 2.0,
+        "y1": 3.5,
+        "x2": 2.0,
+        "y2": 5.5,
+        "kind": "生け垣"
+       },
+       {
+        "id": "w3",
+        "type": "wall",
+        "x1": 2.0,
+        "y1": 5.5,
+        "x2": 6.0,
+        "y2": 5.5,
+        "kind": "生け垣"
+       },
+       {
+        "id": "w4",
+        "type": "wall",
+        "x1": 0.5,
+        "y1": -0.5,
+        "x2": 0.5,
+        "y2": 2.5,
+        "kind": "生け垣"
+       },
+       {
+        "id": "w5",
+        "type": "wall",
+        "x1": 0.5,
+        "y1": 2.5,
+        "x2": 3.0,
+        "y2": 2.5,
+        "kind": "生け垣"
+       },
+       {
+        "id": "w6",
+        "type": "wall",
+        "x1": 3.0,
+        "y1": 2.5,
+        "x2": 3.0,
+        "y2": 4.5,
+        "kind": "生け垣"
+       },
+       {
+        "id": "w7",
+        "type": "wall",
+        "x1": 3.0,
+        "y1": 4.5,
+        "x2": 6.0,
+        "y2": 4.5,
+        "kind": "生け垣"
+       },
+       {
+        "id": "w8",
+        "type": "wall",
+        "x1": -0.5,
+        "y1": -0.5,
+        "x2": 0.5,
+        "y2": -0.5,
+        "kind": "生け垣"
+       },
+       {
+        "id": "w9",
+        "type": "wall",
+        "x1": 6.0,
+        "y1": 5.5,
+        "x2": 6.0,
+        "y2": 4.5,
+        "kind": "生け垣"
+       },
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 5.5,
+        "y": 5.0,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 60,
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {},
+     "judge": {}
+    },
+    {
+     "name": "通路 2",
+     "world": {
+      "venue": "船橋キャンパス 建物の裏の通路",
+      "venue_key": "ura",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "w0",
+        "type": "wall",
+        "x1": -0.5,
+        "y1": -0.5,
+        "x2": -0.5,
+        "y2": 1.5,
+        "kind": "生け垣"
+       },
+       {
+        "id": "w1",
+        "type": "wall",
+        "x1": -0.5,
+        "y1": 1.5,
+        "x2": -3.5,
+        "y2": 1.5,
+        "kind": "生け垣"
+       },
+       {
+        "id": "w2",
+        "type": "wall",
+        "x1": -3.5,
+        "y1": 1.5,
+        "x2": -3.5,
+        "y2": 5.5,
+        "kind": "生け垣"
+       },
+       {
+        "id": "w3",
+        "type": "wall",
+        "x1": -3.5,
+        "y1": 5.5,
+        "x2": 0.0,
+        "y2": 5.5,
+        "kind": "生け垣"
+       },
+       {
+        "id": "w4",
+        "type": "wall",
+        "x1": 0.5,
+        "y1": -0.5,
+        "x2": 0.5,
+        "y2": 2.5,
+        "kind": "生け垣"
+       },
+       {
+        "id": "w5",
+        "type": "wall",
+        "x1": 0.5,
+        "y1": 2.5,
+        "x2": -2.5,
+        "y2": 2.5,
+        "kind": "生け垣"
+       },
+       {
+        "id": "w6",
+        "type": "wall",
+        "x1": -2.5,
+        "y1": 2.5,
+        "x2": -2.5,
+        "y2": 4.5,
+        "kind": "生け垣"
+       },
+       {
+        "id": "w7",
+        "type": "wall",
+        "x1": -2.5,
+        "y1": 4.5,
+        "x2": 0.0,
+        "y2": 4.5,
+        "kind": "生け垣"
+       },
+       {
+        "id": "w8",
+        "type": "wall",
+        "x1": -0.5,
+        "y1": -0.5,
+        "x2": 0.5,
+        "y2": -0.5,
+        "kind": "生け垣"
+       },
+       {
+        "id": "w9",
+        "type": "wall",
+        "x1": 0.0,
+        "y1": 5.5,
+        "x2": 0.0,
+        "y2": 4.5,
+        "kind": "生け垣"
+       },
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": -0.5,
+        "y": 5.0,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 60,
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {},
+     "judge": {}
+    },
+    {
+     "name": "通路 3",
+     "world": {
+      "venue": "船橋キャンパス 建物の裏の通路",
+      "venue_key": "ura",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "w0",
+        "type": "wall",
+        "x1": -0.5,
+        "y1": -0.5,
+        "x2": -0.5,
+        "y2": 4.5,
+        "kind": "生け垣"
+       },
+       {
+        "id": "w1",
+        "type": "wall",
+        "x1": -0.5,
+        "y1": 4.5,
+        "x2": 2.5,
+        "y2": 4.5,
+        "kind": "生け垣"
+       },
+       {
+        "id": "w2",
+        "type": "wall",
+        "x1": 2.5,
+        "y1": 4.5,
+        "x2": 2.5,
+        "y2": 2.0,
+        "kind": "生け垣"
+       },
+       {
+        "id": "w3",
+        "type": "wall",
+        "x1": 2.5,
+        "y1": 2.0,
+        "x2": 5.0,
+        "y2": 2.0,
+        "kind": "生け垣"
+       },
+       {
+        "id": "w4",
+        "type": "wall",
+        "x1": 0.5,
+        "y1": -0.5,
+        "x2": 0.5,
+        "y2": 3.5,
+        "kind": "生け垣"
+       },
+       {
+        "id": "w5",
+        "type": "wall",
+        "x1": 0.5,
+        "y1": 3.5,
+        "x2": 1.5,
+        "y2": 3.5,
+        "kind": "生け垣"
+       },
+       {
+        "id": "w6",
+        "type": "wall",
+        "x1": 1.5,
+        "y1": 3.5,
+        "x2": 1.5,
+        "y2": 1.0,
+        "kind": "生け垣"
+       },
+       {
+        "id": "w7",
+        "type": "wall",
+        "x1": 1.5,
+        "y1": 1.0,
+        "x2": 5.0,
+        "y2": 1.0,
+        "kind": "生け垣"
+       },
+       {
+        "id": "w8",
+        "type": "wall",
+        "x1": -0.5,
+        "y1": -0.5,
+        "x2": 0.5,
+        "y2": -0.5,
+        "kind": "生け垣"
+       },
+       {
+        "id": "w9",
+        "type": "wall",
+        "x1": 5.0,
+        "y1": 2.0,
+        "x2": 5.0,
+        "y2": 1.0,
+        "kind": "生け垣"
+       },
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 4.5,
+        "y": 1.5,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 60,
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {},
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "stopped and gap('cone') <= 0.5 and not touched('cone')",
+     "label": "すべての世界で、コーンの 50 cm 以内で止まる",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "bumps == 0 and gap('cone') <= 0.2 and not touched('cone')",
+     "label": "すべての世界で、壁にふれずにコーンの 20 cm 以内",
+     "need": "all",
+     "tip": "最後の 1 本だけ、止まる距離をコーンに合わせよう",
+     "measure": "gap('cone')",
+     "better": "low",
+     "unit": "cm"
+    },
+    {
+     "expr": "t_stop <= 25",
+     "label": "すべての世界で 25 秒以内に止まる",
+     "need": "all",
+     "tip": "止まって待つ時間や、回る時間にむだはないかな？",
+     "measure": "t_stop",
+     "better": "low",
+     "unit": "秒"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "gap('cone')",
+    "text": "コーンの {cm} cm 手前で止まった",
+    "world": "first_failed"
+   },
+   "starter": "# 通路は 4 本。3 回曲がって、4 本目の奥にコーン\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "1 本分の動き: 壁の手前（0.45 m）まで走る → 止まる → 右を向いて測る → ふさがっていたら 180° 回る。これを 3 回、4 本目はコーンの手前（0.2 m）で止まって終わり。",
+    "for i in range(4): の中で、i < 3 のときだけ曲がる。右を見て lidar() が 1.0 より近ければ「ふさがっている」。",
+    "for i in range(4): → near を if で決める → motor(0.6, 0.6) と while True で near まで → stop() → if i < 3: 右へ 90°・測る・近ければ左へ 180°"
+   ],
+   "solution": "# 1. 4 本の通路を順に\nfor i in range(4):\n    if i < 3:\n        near = 0.45\n    else:\n        near = 0.2\n    # 2. 壁かコーンの手前まで走る\n    motor(0.6, 0.6)\n    while True:\n        d = lidar()\n        if d is not None and d < near:\n            break\n    stop()\n    wait(0.3)\n    # 3. 右を見て、ふさがっていれば左へ\n    if i < 3:\n        motor(0.25, -0.25)\n        wait(0.463)\n        stop()\n        wait(0.3)\n        d = lidar()\n        if d is not None and d < 1.0:\n            motor(-0.25, 0.25)\n            wait(0.926)\n            stop()\n            wait(0.3)\n",
+   "solution_labels": [
+    "4 本の通路を順に",
+    "壁かコーンの手前まで走る",
+    "右を見て、ふさがっていれば左へ"
+   ],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "右にしか曲がらない",
+     "code": "for i in range(4):\n    motor(0.6, 0.6)\n    while True:\n        d = lidar()\n        if d is not None and d < 0.35:\n            break\n    stop()\n    wait(0.3)\n    motor(0.25, -0.25)\n    wait(0.463)\n    stop()\n    wait(0.3)\n",
+     "say": "右がふさがっている角もあるよ。曲がったあとに測って、近ければ反対へ回ろう。",
+     "expect": "fail",
+     "rule": null,
+     "when": "moved > 1 and not re('motor\\(\\s*-')"
+    }
+   ],
+   "senpai_clear": "「見る → 決める → 動く」がそろった。これがロボットの基本の形。",
+   "explain": {
+    "goal": "stop_at_cone",
+    "goalRadius": 0.5,
+    "expectTurn": null,
+    "target": "cone"
+   },
+   "hud": [
+    "time",
+    "gap",
+    "speed",
+    "lidar"
+   ],
+   "graphs": [
+    "speed",
+    "lidar"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow",
+    "lidar"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 20.12,
+      "x": 5.092,
+      "y": 4.988,
+      "heading": 89.9,
+      "lines": 23,
+      "gap": 0.098
+     },
+     {
+      "t_stop": 20.34,
+      "x": -0.89,
+      "y": 5.017,
+      "heading": 89.9,
+      "lines": 23,
+      "gap": 0.08
+     },
+     {
+      "t_stop": 21.1,
+      "x": 4.113,
+      "y": 1.48,
+      "heading": 89.9,
+      "lines": 23,
+      "gap": 0.077
+     }
+    ],
+    "sim": "w1"
+   }
+  }
+ ]
+}

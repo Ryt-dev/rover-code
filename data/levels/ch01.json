@@ -1,0 +1,1129 @@
+{
+ "chapter": 1,
+ "levels": [
+  {
+   "id": "1-1",
+   "order": 1,
+   "chapter": 1,
+   "title": "まずは動かしてみよう",
+   "type": "run",
+   "lang": "python",
+   "minutes": 3,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "ようこそ CanSat チームへ！ これが去年の種コンで走ったローバー。まずは何も変えずに ▶ 実行 を押してみて。プログラムのとおりに動くよ。",
+   "learn": {
+    "python": [
+     "命令は 名前(数) の形で書く（例: wait(2)）",
+     "プログラムは上の行から順に 1 行ずつ実行される",
+     "print(\"文字\") で下の欄に文字を出す。# から後ろはメモ（コメント）"
+    ],
+    "robot": [
+     "motor(左, 右) は左右の車輪の速さ（−1〜1。1 がいちばん速い）",
+     "wait(秒) のあいだ、今の速さのまま走る",
+     "stop() で両方の車輪を止める"
+    ]
+   },
+   "new": [
+    "print",
+    "motor",
+    "wait",
+    "stop"
+   ],
+   "new_reason": "最初の面なので、ローバーを走らせて止めるのに要る最小の 4 つ（print・motor・wait・stop）をまとめて出す。スターターに全部入っていて、押すだけで動く。",
+   "new_split": {
+    "command": [
+     "print",
+     "motor",
+     "wait",
+     "stop"
+    ],
+    "syntax": []
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait"
+   ],
+   "worlds": [
+    {
+     "name": "世界1",
+     "world": {
+      "venue": "船橋キャンパス 部室の前の芝生",
+      "venue_key": "bushitsu",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "A",
+        "type": "flag",
+        "x": 0,
+        "y": 1.1,
+        "label": "旗 A（1.1 m）"
+       },
+       {
+        "id": "B",
+        "type": "flag",
+        "x": 0,
+        "y": 2.2,
+        "label": "旗 B（2.2 m）"
+       }
+      ],
+      "time_limit": 30
+     },
+     "inject": {},
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "ok and stopped and min(dist('A'), dist('B')) <= 0.4",
+     "label": "旗のどれかの 40 cm 以内で止まる",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "printed_not_in(['出発！', 'とうちゃく'])",
+     "label": "print の言葉を自分の言葉に変えて実行する",
+     "need": "all",
+     "tip": "print(\"…\") の \" \" の中を、自分の好きな言葉に変えて実行してみよう",
+     "no_measure": "書き方で決まる（数では測れない）"
+    },
+    {
+     "expr": "stopped and dist('B') <= 0.2",
+     "label": "遠い方の旗 B（2.2 m）の 20 cm 以内で止まる",
+     "need": "all",
+     "tip": "旗 B は旗 A の 2 倍遠い。同じ速さなら、走る時間を何倍にする？",
+     "measure": "dist('B')",
+     "better": "low",
+     "unit": "cm"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "dist('B')",
+    "text": "遠い方の旗 B まで {cm} cm",
+    "world": "first_failed"
+   },
+   "starter": "# ▶ 実行 を押してみよう\nprint(\"出発！\")\nmotor(0.5, 0.5)   # 左右の車輪を 0.5 の速さで回す\nwait(2)           # 2 秒そのまま走る\nstop()            # 止める\nprint(\"とうちゃく\")\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "命令はかっこも記号も半角で書く。エラーが出たら、赤い波線の行を見よう。",
+    "\" \" の中の文字は自由に変えられるよ（\" は消さないでね）。旗 B は旗 A の 2 倍遠い。",
+    "同じ速さなら、時間を 2 倍にすれば 2 倍進む → wait(2) を wait(4) に。"
+   ],
+   "solution": "print(\"いってきます！\")\nmotor(0.5, 0.5)\nwait(4)\nstop()\nprint(\"とうちゃく\")\n",
+   "solution_labels": [],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "全角のかっこ",
+     "code": "motor（0.5, 0.5）\nwait(2)\nstop()\n",
+     "say": "（ ）が全角になってるよ。日本語入力をオフ（半角/全角キー）にして打ち直そう。",
+     "expect": "fail",
+     "rule": "FW_PAREN",
+     "when": "card('FW_PAREN')"
+    },
+    {
+     "name": "stop() を消した",
+     "code": "motor(0.5, 0.5)\nwait(4)\n",
+     "say": "stop() が無いと、プログラムが終わっても最後の速さのまま走り続けちゃう（このゲームでは 3 秒）。",
+     "expect": "fail",
+     "rule": "B_NOT_STOPPED",
+     "when": "not has('stop()') and not stopped"
+    },
+    {
+     "name": "\" を付け忘れた",
+     "code": "print(出発！)\nmotor(0.5, 0.5)\nwait(2)\nstop()\n",
+     "say": "文字は \" \" で囲もう。囲まないと Python は命令の名前だと思っちゃう。",
+     "expect": "fail",
+     "rule": "TEXT_UNQUOTED",
+     "when": "card('TEXT_UNQUOTED')"
+    }
+   ],
+   "senpai_clear": "動いた！ これが全部の始まり。プログラムは「上から順に」が基本だよ。",
+   "explain": {
+    "goal": "free",
+    "goalRadius": 1.0,
+    "expectTurn": null,
+    "target": null
+   },
+   "hud": [
+    "time",
+    "speed"
+   ],
+   "graphs": [
+    "speed"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 4.4,
+      "x": 0,
+      "y": 2.2,
+      "heading": 0,
+      "lines": 5
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "1-2",
+   "order": 2,
+   "chapter": 1,
+   "title": "何 m 進む？",
+   "type": "predict",
+   "lang": "python",
+   "minutes": 4,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "1-1 では、0.5 の速さで 2 秒走ると 1.1 m 進んだね。じゃあ、このプログラムだとどこまで行くと思う？ 実行する前に予想してみて。",
+   "learn": {
+    "python": [
+     "小数（0.5・1.0）も整数（2・3）も、同じように数として書ける"
+    ],
+    "robot": [
+     "速さ × 時間 ＝ 進む距離",
+     "速さを 2 倍にすると、同じ時間で 2 倍進む",
+     "motor(1.0, 1.0) がいちばん速い"
+    ]
+   },
+   "new": [],
+   "new_split": {
+    "command": [],
+    "syntax": []
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait"
+   ],
+   "worlds": [
+    {
+     "name": "世界1",
+     "world": {
+      "venue": "船橋キャンパス 部室の前の芝生",
+      "venue_key": "bushitsu",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "f165",
+        "type": "flag",
+        "x": 0,
+        "y": 1.65,
+        "label": "1.65 m"
+       },
+       {
+        "id": "f33",
+        "type": "flag",
+        "x": 0,
+        "y": 3.3,
+        "label": "3.3 m"
+       },
+       {
+        "id": "f55",
+        "type": "flag",
+        "x": 0,
+        "y": 5.5,
+        "label": "5.5 m"
+       },
+       {
+        "id": "f66",
+        "type": "flag",
+        "x": 0,
+        "y": 6.6,
+        "label": "6.6 m"
+       }
+      ],
+      "time_limit": 30
+     },
+     "inject": {},
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "ok",
+     "label": "予想を選んでから実行する",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "prediction_ok",
+     "label": "予想が当たる（1 回目の予想で）",
+     "need": "all",
+     "tip": "1 秒に何 m 進むかと、何秒走るかを、かけ算で考えてみよう",
+     "no_measure": "予想が当たったかどうかで決まる（数では測れない）"
+    },
+    {
+     "expr": "stopped and dist('f55') <= 0.2",
+     "label": "数字を 1 つ変えて、5.5 m の旗の 20 cm 以内へ",
+     "need": "all",
+     "tip": "1.0 の速さは 1 秒に 1.1 m。5.5 m なら何秒走ればいい？",
+     "measure": "dist('f55')",
+     "better": "low",
+     "unit": "cm"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "y_end",
+    "text": "{m} m 進んで止まった",
+    "world": "first_failed"
+   },
+   "starter": "motor(1.0, 1.0)   # 1-1 の 2 倍の速さ\nwait(3)           # 1-1 の 1.5 倍の時間\nstop()\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [
+    {
+     "q": "このプログラムで、ローバーはどの旗の近くで止まる？",
+     "choices": [
+      "1.65 m の旗",
+      "3.3 m の旗",
+      "6.6 m の旗"
+     ],
+     "answer": 1,
+     "why": "0.5 の速さで 2 秒 → 1.1 m。速さが 2 倍で 2.2 m、時間が 1.5 倍でさらに 1.5 倍 → 3.3 m。速さ 1.0 は 1 秒に約 1.1 m。",
+     "check": "dist('f33') <= 0.3"
+    }
+   ],
+   "predict_card": null,
+   "hints": [
+    "1-1 は「0.5 の速さで 2 秒 → 1.1 m」だったね。",
+    "速さが 2 倍なら距離も 2 倍。時間が 1.5 倍なら距離も 1.5 倍。",
+    "1.1 × 2 × 1.5 ＝ 3.3 m。1.0 の速さは 1 秒に 1.1 m なので、5.5 m なら 5 秒 → wait(5)。"
+   ],
+   "solution": "motor(1.0, 1.0)\nwait(5)\nstop()\n",
+   "solution_labels": [],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "5.5 秒走らせた",
+     "code": "motor(1.0, 1.0)\nwait(5.5)\nstop()\n",
+     "say": "1.0 の速さは 1 秒に 1.1 m だから、5.5 m なら 5.5 ÷ 1.1 ＝ 5 秒だよ。",
+     "expect": "star3fail",
+     "rule": "B_OVERSHOOT",
+     "when": "dist > 5.75"
+    }
+   ],
+   "senpai_clear": "「速さ × 時間 ＝ 距離」。この式は最後の章まで、ずっと使うよ。",
+   "explain": {
+    "goal": "free",
+    "goalRadius": 1.0,
+    "expectTurn": null,
+    "target": null
+   },
+   "hud": [
+    "time",
+    "speed"
+   ],
+   "graphs": [
+    "speed"
+   ],
+   "overlays": [
+    "trail",
+    "ghost"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 5.5,
+      "x": 0,
+      "y": 5.5,
+      "heading": 0,
+      "lines": 3
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "1-3",
+   "order": 3,
+   "chapter": 1,
+   "title": "コーンの前で止まろう",
+   "type": "make",
+   "lang": "python",
+   "minutes": 6,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "コーンは 3 m 先。motor() で車輪を回して、wait() で走る時間を決めよう。止めるのを忘れると、コーンを通り過ぎちゃうよ！",
+   "learn": {
+    "python": [
+     "( ) の中に何も入れない命令もある: distance_to_cone()",
+     "print(\"のこり\", distance_to_cone()) のように , で区切ると並べて表示できる"
+    ],
+    "robot": [
+     "走る時間 ＝ 距離 ÷ 速さ（0.6 の速さなら 1 秒に 0.66 m）",
+     "止める命令のあとも 5〜8 cm すべってから止まる。だから「のこり」と止まった所は少しちがう",
+     "distance_to_cone() はコーンまでのすき間（m）を測る練習用のものさし。本物の機体には無い（4 章で別のセンサに交代）"
+    ]
+   },
+   "new": [
+    "distance_to_cone"
+   ],
+   "new_split": {
+    "command": [
+     "distance_to_cone"
+    ],
+    "syntax": []
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "distance_to_cone"
+   ],
+   "worlds": [
+    {
+     "name": "世界1",
+     "world": {
+      "venue": "船橋キャンパス 部室の前の芝生",
+      "venue_key": "bushitsu",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 0,
+        "y": 3.31,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 30
+     },
+     "inject": {},
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "stopped and gap('cone') <= 1.0 and not touched('cone')",
+     "label": "コーンの 1 m 以内で止まる（ぶつからない）",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "stopped and gap('cone') <= 0.3 and not touched('cone')",
+     "label": "コーンの 30 cm 以内で止まる",
+     "need": "all",
+     "tip": "「のこり」の m を 0.66 で割ると、あと何秒走ればいいか分かるよ",
+     "measure": "gap('cone')",
+     "better": "low",
+     "unit": "cm"
+    },
+    {
+     "expr": "stopped and gap('cone') <= 0.1 and not touched('cone')",
+     "label": "コーンの 10 cm 以内で止まる（ぶつからずに）",
+     "need": "all",
+     "tip": "すべる分（5 cm ほど）を引いて、（のこり − 0.05）÷ 0.66 秒だけ wait を足そう",
+     "measure": "gap('cone')",
+     "better": "low",
+     "unit": "cm"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "gap('cone')",
+    "text": "コーンの {cm} cm 手前で止まった",
+    "world": "first_failed"
+   },
+   "starter": "# コーンは 3 m 先\nprint(\"コーンまで\", distance_to_cone(), \"m\")\nmotor(0.6, 0.6)\nwait(1)\nstop()\nprint(\"のこり\", distance_to_cone(), \"m\")\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "0.6 の速さは 1 秒に 0.66 m 進む（1.1 × 0.6）。実行して「のこり」を見ると、あと何 m か分かるよ。",
+    "3 m 進むには 3 ÷ 0.66 ＝ 約 4.5 秒。ぶつからないよう 10 cm 手前を狙うなら 2.9 ÷ 0.66。",
+    "motor(0.6, 0.6) → wait(4.4) → stop()"
+   ],
+   "solution": "motor(0.6, 0.6)\nwait(4.42)\nstop()\nprint(\"のこり\", distance_to_cone(), \"m\")\n",
+   "solution_labels": [],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "走りすぎ",
+     "code": "motor(0.6, 0.6)\nwait(4.7)\nstop()\n",
+     "say": "コーンにぶつかった！ 本番だとコーンを倒しちゃう。wait を少し短くしよう。",
+     "expect": "fail",
+     "rule": "B_OVERSHOOT",
+     "when": "hit"
+    },
+    {
+     "name": "() を付け忘れた",
+     "code": "motor(0.6, 0.6)\nwait(4.42)\nstop()\nprint(distance_to_cone)\n",
+     "say": "distance_to_cone のうしろに () を付けないと、命令が実行されずに「命令そのもの」が表示されるよ。",
+     "expect": "pass",
+     "rule": "L_CALL_WITHOUT_PARENS",
+     "when": "re('distance_to_cone(?!\\s*\\()')"
+    }
+   ],
+   "senpai_clear": "ぶつからずに止まれたね！ 本番の得点も「コーンまでの距離」で決まる。もっと寄せて★を集めよう。",
+   "explain": {
+    "goal": "stop_at_cone",
+    "goalRadius": 1.0,
+    "expectTurn": null,
+    "target": "cone"
+   },
+   "hud": [
+    "time",
+    "gap",
+    "speed"
+   ],
+   "graphs": [
+    "speed"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 4.84,
+      "x": 0,
+      "y": 2.917,
+      "heading": 0,
+      "lines": 4,
+      "gap": 0.083
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "1-4",
+   "order": 4,
+   "chapter": 1,
+   "title": "止まらないローバー",
+   "type": "fix",
+   "lang": "python",
+   "minutes": 5,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "去年の先輩が書いたプログラム、なぜかコーンにぶつかるんだ…。ローバー「止まれって言われてないから、走り続けちゃった…」 直してあげて。",
+   "learn": {
+    "python": [
+     "プログラムが終わっても、最後の motor の命令は残る"
+    ],
+    "robot": [
+     "止めるのは stop()（motor(0, 0) と同じ）",
+     "止まれと言っても、すぐには止まらない（少しすべる）。止まるのを待つなら wait を足す",
+     "本物の機体では、指令が 1 秒とぎれると見張り役の ATOM がモーターを止める（このゲームでは 3 秒走り続ける）"
+    ]
+   },
+   "new": [],
+   "new_split": {
+    "command": [],
+    "syntax": []
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "distance_to_cone"
+   ],
+   "worlds": [
+    {
+     "name": "世界1",
+     "world": {
+      "venue": "船橋キャンパス 部室の前の芝生",
+      "venue_key": "bushitsu",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 0,
+        "y": 2.81,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 30
+     },
+     "inject": {},
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "stopped and not touched('cone') and gap('cone') <= 0.5",
+     "label": "コーンにぶつからず、50 cm 以内で止まる",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "not touched('cone') and gap('cone') <= 0.4",
+     "label": "40 cm 以内で止まる",
+     "need": "all",
+     "tip": "止まるまでに少しすべる。走る時間を少しだけ変えてみよう",
+     "measure": "gap('cone')",
+     "better": "low",
+     "unit": "cm"
+    },
+    {
+     "expr": "speed_at_print('止まった') < 0.05",
+     "label": "「止まった」と表示したとき、本当に止まっている",
+     "need": "all",
+     "tip": "stop() のあと、止まりきるまで少し待ってから print しよう",
+     "no_measure": "書き方で決まる（数では測れない）"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "gap('cone')",
+    "text": "コーンの {cm} cm 手前で止まった",
+    "world": "first_failed"
+   },
+   "starter": "# 先輩のプログラム。どこかおかしい…\nmotor(0.8, 0.8)\nwait(2.5)\nprint(\"止まった？\", distance_to_cone())\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "実行して、どこで止まったか見てみよう。プログラムが終わったあとも走っていない？",
+    "止める命令 stop() が無い。stop() を入れたら、止まるまで少し待ってから表示しよう。",
+    "wait(2.5) の次に stop() → wait(0.5) → print(...)"
+   ],
+   "solution": "motor(0.8, 0.8)\nwait(2.5)\nstop()\nwait(0.5)\nprint(\"止まった！\", distance_to_cone())\n",
+   "solution_labels": [],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "stop() を print の後に置いた",
+     "code": "motor(0.8, 0.8)\nwait(2.5)\nprint(\"止まった？\", distance_to_cone())\nstop()\n",
+     "say": "止まったけど、表示したときはまだ走ってたよ。stop() → wait(0.5) → print の順にしよう。",
+     "expect": "star3fail",
+     "rule": "B_NOT_STOPPED",
+     "when": "has('stop()') and before('print', 'stop()')"
+    },
+    {
+     "name": "motor(0, 0) で止めた",
+     "code": "motor(0.8, 0.8)\nwait(2.5)\nmotor(0, 0)\nwait(0.5)\nprint(\"止まった！\")\n",
+     "say": "motor(0, 0) でも止まれる。stop() と同じ意味だよ。",
+     "expect": "pass",
+     "rule": null,
+     "when": "not has('stop()') and has('motor(0, 0)')"
+    }
+   ],
+   "senpai_clear": "「止める」も立派な命令。本番では止まらないロボットがいちばん怖いんだ。",
+   "explain": {
+    "goal": "stop_at_cone",
+    "goalRadius": 0.5,
+    "expectTurn": null,
+    "target": "cone"
+   },
+   "hud": [
+    "time",
+    "gap",
+    "speed"
+   ],
+   "graphs": [
+    "speed"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 2.96,
+      "x": 0,
+      "y": 2.2,
+      "heading": 0,
+      "lines": 5,
+      "gap": 0.3
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "1-5",
+   "order": 5,
+   "chapter": 1,
+   "title": "右を向け",
+   "type": "make",
+   "lang": "python",
+   "minutes": 6,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "コーンが東（右）に移動されちゃった。その場で右に 90° 回って、コーンの方を向こう。",
+   "learn": {
+    "python": [
+     "マイナスの数も書ける: motor(0.25, -0.25)"
+    ],
+    "robot": [
+     "左を前・右を後ろに回すと、その場で右に回る",
+     "左右の車輪の間は 16.2 cm しかないので、すごく速く回る。motor(0.25, -0.25) で 1 秒に約 195°",
+     "左右の差が小さくても曲がる（差 0.1 で 1 秒に約 39°）"
+    ]
+   },
+   "new": [],
+   "new_split": {
+    "command": [],
+    "syntax": []
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "distance_to_cone"
+   ],
+   "worlds": [
+    {
+     "name": "世界1",
+     "world": {
+      "venue": "船橋キャンパス 部室の前の芝生",
+      "venue_key": "bushitsu",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 3.31,
+        "y": 0,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 30
+     },
+     "inject": {},
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "stopped and heading_err(90) <= 10",
+     "label": "東（コーンの方）を向いて止まる（ずれ 10° 以内）",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "heading_err(90) <= 3",
+     "label": "ずれ 3° 以内",
+     "need": "all",
+     "tip": "90 ÷ 195 を計算しよう。ずれが残ったら「ずれた角度 ÷ 195」秒だけ回る時間を変える",
+     "measure": "heading_err(90)",
+     "better": "low",
+     "unit": "°"
+    },
+    {
+     "expr": "gap('cone') <= 0.3 and not touched('cone') and stopped",
+     "label": "そのままコーンの 30 cm 以内まで走る",
+     "need": "all",
+     "tip": "回ったら止まって、1-3 と同じようにコーンまで走ろう",
+     "measure": "gap('cone')",
+     "better": "low",
+     "unit": "cm"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "heading_err(90)",
+    "text": "東とのずれ {deg}°",
+    "world": "first_failed"
+   },
+   "starter": "# 右に 90° 回ろう（motor(0.25, -0.25) は 1 秒に約 195° 回る）\nmotor(0.25, -0.25)\nwait(1)\nstop()\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "1 秒で 195° 回る。90° ならずっと短い時間でいい。",
+    "90 ÷ 195 ＝ 約 0.46 秒。",
+    "wait(0.46)。回ったら stop() → 少し待って → 1-3 と同じようにコーンまで。"
+   ],
+   "solution": "# 1. 右へ 90° 回る\nmotor(0.25, -0.25)\nwait(0.46)\nstop()\nwait(0.3)\n# 2. コーンまで走る\nmotor(0.6, 0.6)\nwait(4.2)\nstop()\n",
+   "solution_labels": [
+    "右へ 90° 回る",
+    "コーンまで走る"
+   ],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "左右が逆",
+     "code": "motor(-0.25, 0.25)\nwait(0.46)\nstop()\n",
+     "say": "左に回っちゃった。右に回るには、左の車輪を前（プラス）・右を後ろ（マイナス）に。",
+     "expect": "fail",
+     "rule": "B_LEFT_RIGHT",
+     "when": "rule('B_LEFT_RIGHT')"
+    },
+    {
+     "name": "回りすぎ",
+     "code": "motor(0.25, -0.25)\nwait(1)\nstop()\n",
+     "say": "1 秒だと 195° も回るよ。車輪の間がせまいから、ちょっとの時間で大きく回るんだ。",
+     "expect": "fail",
+     "rule": null,
+     "when": "turned > 120 and moved < 0.05"
+    }
+   ],
+   "senpai_clear": "その場で回れるのが 2 輪のローバーのいいところ。でも回りやすいぶん、ずれやすいんだ。",
+   "explain": {
+    "goal": "free",
+    "goalRadius": 1.0,
+    "expectTurn": null,
+    "target": "cone"
+   },
+   "hud": [
+    "time",
+    "gap",
+    "speed"
+   ],
+   "graphs": [
+    "speed"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 5.38,
+      "x": 2.772,
+      "y": 0.026,
+      "heading": 89.5,
+      "lines": 7,
+      "gap": 0.229
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "1-6",
+   "order": 6,
+   "chapter": 1,
+   "title": "L 字の小道",
+   "type": "boss",
+   "lang": "python",
+   "minutes": 8,
+   "checkpoint": true,
+   "carry_from": null,
+   "story": "部室の裏の小道を通って、奥のコーンまで行こう。北へ 3 m 行ったら右に曲がって、東へ。生け垣にぶつからないようにね。（ボス面: クリアするまでヒントは 2 つまで）",
+   "learn": {
+    "python": [
+     "これまでの命令を組み合わせる"
+    ],
+    "robot": [
+     "まっすぐ → 回る → まっすぐ。動きの間に stop() と少しの wait を入れると、ずれにくい"
+    ]
+   },
+   "new": [],
+   "new_split": {
+    "command": [],
+    "syntax": []
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "distance_to_cone"
+   ],
+   "worlds": [
+    {
+     "name": "世界1",
+     "world": {
+      "venue": "船橋キャンパス 部室の前の芝生",
+      "venue_key": "bushitsu",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "w1",
+        "type": "wall",
+        "x1": -0.6,
+        "y1": -0.5,
+        "x2": -0.6,
+        "y2": 3.6,
+        "kind": "生け垣"
+       },
+       {
+        "id": "w2",
+        "type": "wall",
+        "x1": -0.6,
+        "y1": 3.6,
+        "x2": 5.5,
+        "y2": 3.6,
+        "kind": "生け垣"
+       },
+       {
+        "id": "w3",
+        "type": "wall",
+        "x1": 0.6,
+        "y1": -0.5,
+        "x2": 0.6,
+        "y2": 2.4,
+        "kind": "生け垣"
+       },
+       {
+        "id": "w4",
+        "type": "wall",
+        "x1": 0.6,
+        "y1": 2.4,
+        "x2": 5.5,
+        "y2": 2.4,
+        "kind": "生け垣"
+       },
+       {
+        "id": "w5",
+        "type": "wall",
+        "x1": 5.5,
+        "y1": 2.4,
+        "x2": 5.5,
+        "y2": 3.6,
+        "kind": "生け垣"
+       },
+       {
+        "id": "w6",
+        "type": "wall",
+        "x1": -0.6,
+        "y1": -0.5,
+        "x2": 0.6,
+        "y2": -0.5,
+        "kind": "生け垣"
+       },
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 4.5,
+        "y": 3.0,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 40
+     },
+     "inject": {},
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "stopped and gap('cone') <= 1.0 and not touched('cone') and bumps == 0",
+     "label": "生け垣にぶつからず、コーンの 1 m 以内で止まる",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "gap('cone') <= 0.15 and not touched('cone')",
+     "label": "コーンの 15 cm 以内",
+     "need": "all",
+     "tip": "止まった所から、あと何 m かを 1 秒に進む m で割って、最後の wait を直そう",
+     "measure": "gap('cone')",
+     "better": "low",
+     "unit": "cm"
+    },
+    {
+     "expr": "t_stop <= 8.5",
+     "label": "8.5 秒以内に止まる",
+     "need": "all",
+     "tip": "速さを 1.0 にすると早く着く。走る時間も計算し直そう",
+     "measure": "t_stop",
+     "better": "low",
+     "unit": "秒"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "gap('cone')",
+    "text": "コーンの {cm} cm 手前で止まった",
+    "world": "first_failed"
+   },
+   "starter": "# 北へ 3 m → 右へ 90° → 東へ（コーンまで約 4.2 m）\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "3 つに分けよう: ① 北へ 3 m ② 右へ 90° ③ 東へ 4 m ほど。それぞれの時間は 距離 ÷ 速さ。",
+    "速さ 1.0 は 1 秒に 1.1 m。8.5 秒以内に着くには、いちばん速い 1.0 で走ろう。",
+    "motor(1.0, 1.0) wait(2.73) → 止めて 0.3 秒 → motor(0.25, -0.25) wait(0.46) → 止めて 0.3 秒 → motor(1.0, 1.0) wait(3.72) → stop()"
+   ],
+   "solution": "# 1. 北へ 3 m\nmotor(1.0, 1.0)\nwait(2.73)\nstop()\nwait(0.3)\n# 2. 右へ 90°\nmotor(0.25, -0.25)\nwait(0.46)\nstop()\nwait(0.3)\n# 3. 東へコーンまで\nmotor(1.0, 1.0)\nwait(3.72)\nstop()\n",
+   "solution_labels": [
+    "北へ 3 m",
+    "右へ 90°",
+    "東へコーンまで"
+   ],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "左に曲がった",
+     "code": "motor(0.8, 0.8)\nwait(3.41)\nstop()\nwait(0.3)\nmotor(-0.25, 0.25)\nwait(0.46)\nstop()\nwait(0.3)\nmotor(0.8, 0.8)\nwait(4.5)\nstop()\n",
+     "say": "生け垣にぶつかった！ 右に曲がるのは motor(0.25, -0.25) だよ。",
+     "expect": "fail",
+     "rule": "B_LEFT_RIGHT",
+     "when": "rule('B_LEFT_RIGHT')"
+    },
+    {
+     "name": "曲がる前に止めない",
+     "code": "motor(0.8, 0.8)\nwait(3.41)\nmotor(0.25, -0.25)\nwait(0.46)\nmotor(0.8, 0.8)\nwait(4.5)\nstop()\n",
+     "say": "走りながら回ると、少しふくらんで曲がるよ。間に stop() と wait(0.3) を入れると角がきれいになる。",
+     "expect": "pass",
+     "rule": null,
+     "when": "count('stop()') < 3 and turned > 60"
+    }
+   ],
+   "senpai_clear": "命令を順番に並べれば、ロボットは思った所へ行ける。",
+   "explain": {
+    "goal": "stop_at_cone",
+    "goalRadius": 1.0,
+    "expectTurn": null,
+    "target": "cone"
+   },
+   "hud": [
+    "time",
+    "gap",
+    "speed"
+   ],
+   "graphs": [
+    "speed"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 8,
+      "x": 4.094,
+      "y": 3.042,
+      "heading": 89.5,
+      "lines": 11,
+      "gap": 0.098
+     }
+    ],
+    "sim": "w1"
+   }
+  }
+ ]
+}

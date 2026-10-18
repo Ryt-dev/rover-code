@@ -1,0 +1,123 @@
+/*
+ * app/css/tokens.css
+ * 持ち主: W7（画面・流れ・保存・音）
+ * 役割: 色・字・間隔・角丸・動きの変数（明るい／夕方／端末に合わせる）。ほかの CSS はこの変数だけを使う。
+ * SPEC: 10.2（色。〔1.1〕コントラストを直した値）・10.3（字）・10.1（動き）・3.9（色の設定: 明るい／夕方（暗め）／端末に合わせる）
+ *
+ * テーマは <html data-theme="light|dusk|auto">（無ければ明るい）。「動きを減らす」は <html class="reduce-motion">（base.css）。
+ * 見本にない色（ヘッダー・左の欄・出力の地）は見本 mockup/play.html の値。夕方は同じ色合いを暗くしたもの（文字と地は 4.5:1 以上）。
+ */
+
+:root {
+  /* 10.2 の表 */
+  --sky: #dfeef7;
+  --sand: #f3ead8;
+  --ink: #23313a;
+  --sub: #5d6b73;
+  --line: #d9d2c3;
+  --card: #fffdf8;
+  --grass: #5f8f3e;          /* 大きな面や記号。文字には使わない */
+  --grass-btn: #4a7a2e;      /* 実行ボタン・文字の「クリア」（白い字で 5.1:1） */
+  --grass-btn-ink: #ffffff;
+  --accent: #d9672b;         /* 今の面・コーン（記号） */
+  --accent-btn: #b5501b;     /* 次へ ▶ ボタン・橙の文字（白い字で 5.1:1） */
+  --accent-btn-ink: #ffffff;
+  --blue: #2f6f9f;
+  --star: #e9a326;
+  --star-ink: #9a6a12;       /* ★のふち・「★ 8 / 159」の字（4.7:1） */
+  --warn: #fff3e6;
+  --warn-line: #f0d3b3;
+  --error: #b4472f;
+  --focus-ring: #23313a;     /* 2 px の線＋2 px の白いすき間 */
+  --focus-gap: #ffffff;
+
+  /* 見本 play.html の地の色 */
+  --header-bg: #fffaf0;
+  --aside-bg: #faf5ea;
+  --console-bg: #fbf7ee;
+  --bar-bg: #e9e1cf;
+  --tag-bg: #e8f1e0;
+  --tag-ink: #41692a;
+  --code-inline-bg: #f1ebde;
+  --ex-bg: #2a3238;
+  --ex-ink: #e9e4d8;
+  --ex-comment: #8fa6b2;
+  --sq-todo: #efe8d9;        /* 地図のまだのマス（薄茶） */
+  --sq-todo-ink: #6f6450;
+  --map-bg1: #b9d9a0;        /* 地図の絵（芝・砂・空） */
+  --map-bg2: #a5c98a;
+  --map-bg3: #e8d9b4;
+  --map-bg4: #9fc6dc;
+  --road: #fff8e6;
+  --road-dash: #b39a6b;
+  --grid-line: #e7dcc4;      /* ずかんの方眼 */
+
+  /* エディタ（どちらのテーマでも同じ。10.2） */
+  --editor-bg: #262d32;
+  --editor-top: #1f2529;
+  --code-text: #e6e1d5;
+  --code-kw: #e0a05a;
+  --code-fn: #8cc6a0;
+  --code-num: #d7b75b;
+  --code-cm: #8b9ba3;
+  --code-str: #c8a2d8;
+
+  /* 字（10.3） */
+  --font-ui: "Noto Sans JP", system-ui, -apple-system, "Hiragino Sans", "Yu Gothic UI", sans-serif;
+  --font-code: "BIZ UDGothic", "Noto Sans JP", ui-monospace, monospace;
+  --fs-ui: 15px;
+  --lh-ui: 1.7;
+  --fs-code: 15px;
+  --lh-code: 1.75;
+
+  /* 形と間隔 */
+  --radius-card: 14px;
+  --radius-dialog: 16px;
+  --radius-btn: 9px;
+  --gap: 14px;
+  --header-h: 60px;
+  --aside-w: 430px;
+  --console-w: 360px;
+  --timeline-h: 56px;
+  --touch: 44px;             /* 押せる物の最小（3.11） */
+
+  /* 動き（10.1: やわらかく短く 0.15〜0.3 s） */
+  --ease: cubic-bezier(.2, .7, .3, 1);
+  --dur: .2s;
+
+  color-scheme: light;
+}
+
+/* 夕方（暗め）。3.9 の「夕方」を選んだ時 */
+:root[data-theme="dusk"] {
+  --sky: #2b3440; --sand: #23262b; --ink: #e9e4d8; --sub: #a9b3b8; --line: #3a3f45; --card: #2c3036;
+  --grass: #7fae55; --grass-btn: #7fae55; --grass-btn-ink: #23262b;
+  --accent: #e08a52; --accent-btn: #e08a52; --accent-btn-ink: #23262b;
+  --blue: #79a9cf; --star: #e9b04a; --star-ink: #e9b04a;
+  --warn: #3b3127; --warn-line: #6b5236; --error: #e4806a;
+  --focus-ring: #e9e4d8; --focus-gap: #23262b;
+  --header-bg: #2a2d32; --aside-bg: #262a2f; --console-bg: #282b30; --bar-bg: #3a3f45;
+  --tag-bg: #33402b; --tag-ink: #b9d89a; --code-inline-bg: #353a40;
+  --sq-todo: #3a3f45; --sq-todo-ink: #c9c2b2;
+  --map-bg1: #3d5233; --map-bg2: #34472c; --map-bg3: #4a4434; --map-bg4: #2e3e4a;
+  --road: #5a5447; --road-dash: #a89a7a; --grid-line: #353a40;
+  color-scheme: dark;
+}
+
+/* 端末に合わせる（3.9）: 端末が暗い時だけ夕方と同じ値 */
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="auto"] {
+    --sky: #2b3440; --sand: #23262b; --ink: #e9e4d8; --sub: #a9b3b8; --line: #3a3f45; --card: #2c3036;
+    --grass: #7fae55; --grass-btn: #7fae55; --grass-btn-ink: #23262b;
+    --accent: #e08a52; --accent-btn: #e08a52; --accent-btn-ink: #23262b;
+    --blue: #79a9cf; --star: #e9b04a; --star-ink: #e9b04a;
+    --warn: #3b3127; --warn-line: #6b5236; --error: #e4806a;
+    --focus-ring: #e9e4d8; --focus-gap: #23262b;
+    --header-bg: #2a2d32; --aside-bg: #262a2f; --console-bg: #282b30; --bar-bg: #3a3f45;
+    --tag-bg: #33402b; --tag-ink: #b9d89a; --code-inline-bg: #353a40;
+    --sq-todo: #3a3f45; --sq-todo-ink: #c9c2b2;
+    --map-bg1: #3d5233; --map-bg2: #34472c; --map-bg3: #4a4434; --map-bg4: #2e3e4a;
+    --road: #5a5447; --road-dash: #a89a7a; --grid-line: #353a40;
+    color-scheme: dark;
+  }
+}

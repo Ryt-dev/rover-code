@@ -1,0 +1,5 @@
+/* 売る版のフォント（tools/build.mjs が作る。部分集合: 画面の文言の字＋JIS 第 1 水準。OFL 1.1） */
+@font-face{font-family:"Noto Sans JP";font-style:normal;font-weight:400;font-display:swap;src:url(NotoSansJP-400.woff2) format("woff2")}
+@font-face{font-family:"Noto Sans JP";font-style:normal;font-weight:700;font-display:swap;src:url(NotoSansJP-700.woff2) format("woff2")}
+@font-face{font-family:"BIZ UDGothic";font-style:normal;font-weight:400;font-display:swap;src:url(BIZUDGothic-400.woff2) format("woff2")}
+@font-face{font-family:"BIZ UDGothic";font-style:normal;font-weight:700;font-display:swap;src:url(BIZUDGothic-700.woff2) format("woff2")}

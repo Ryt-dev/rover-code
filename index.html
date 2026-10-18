@@ -1,0 +1,71 @@
+<!doctype html>
+<!--
+  app/index.html
+  持ち主: W7（画面・流れ・保存・音）
+  役割: 1 ページのアプリの入口。import map（three）・CodeMirror の先取り・フォント・CSS を読み、js/main.js を起動する。
+  SPEC: 7.2・7.6（読み込みの順番: インラインの最小の CSS とタイトルの静止画 → すぐ Worker → prefetch）・3.2（タイトル）・10.3（字）
+  - JS を待たずにタイトルが出るように、タイトルの骨組みと最小の CSS をここに書く（main.js が同じ形の本物に置きかえる）。
+  - フォントは待たない（display=swap・読み込みも画面を止めない）。CodeMirror・three は低い優先度で先に取る（prefetch）。
+-->
+<html lang="ja" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ROVER CODE</title>
+<meta name="description" content="CanSat ローバーで学ぶ Python">
+<meta name="theme-color" content="#f3ead8">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='11' cy='26' r='9' fill='%232a3238'/%3E%3Ccircle cx='29' cy='26' r='9' fill='%232a3238'/%3E%3Crect x='11' y='15' width='18' height='10' rx='3' fill='%235f8f3e'/%3E%3Ccircle cx='19' cy='8' r='3' fill='%23d9672b'/%3E%3C/svg%3E">
+<style>
+  /* 最小の CSS（7.6 の 1: 外の CSS とフォントを待たずにタイトルを出す） */
+  html,body{margin:0}
+  body{background:#f3ead8;color:#23313a;font-family:"Noto Sans JP",system-ui,-apple-system,"Hiragino Sans","Yu Gothic UI",sans-serif}
+  .boot-title{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden}
+  .boot-title .title-bg{position:absolute;inset:0;background:linear-gradient(180deg,#cfe5f3 0%,#e6f0f4 46%,#c9d8b3 47%,#8fb067 64%,#6f9a48 100%)}
+  .boot-title .title-still{width:100%;height:100%;object-fit:cover;display:block}
+  .boot-title .title-wrap{position:relative;margin:0 0 0 max(24px,7vw);padding:28px 30px;max-width:560px;background:rgba(255,253,248,.9);border:1px solid #d9d2c3;border-radius:20px}
+  .boot-title h1{margin:0;font-size:clamp(34px,6vw,52px);display:flex;gap:14px;align-items:center}
+  .boot-title svg{width:1.3em;height:1.3em}
+  .boot-title p{margin:4px 0 0;font-size:18px;color:#5d6b73}
+  #app-header[hidden]{display:none}
+</style>
+<link rel="stylesheet" href="vendor/fonts/fonts.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/screens.css">
+<link rel="stylesheet" href="css/editor.css">
+<link rel="stylesheet" href="css/replay.css">
+<link rel="preload" href="assets/img/title.webp" as="image" type="image/webp" fetchpriority="high">
+<!-- 7.6 の 3: タイトルを見ている間に、低い優先度で先に取っておく（版は 7.2 で固定） -->
+<link rel="prefetch" href="./vendor/codemirror/codemirror.min.css">
+<link rel="prefetch" href="./vendor/codemirror/codemirror.min.js">
+<link rel="prefetch" href="./vendor/codemirror/mode/python/python.min.js">
+<link rel="prefetch" href="./vendor/codemirror/mode/clike/clike.min.js">
+<link rel="prefetch" href="./vendor/codemirror/addon/edit/matchbrackets.min.js">
+<link rel="prefetch" href="./vendor/codemirror/addon/selection/active-line.min.js">
+<link rel="prefetch" href="./vendor/three/three.module.js">
+<link rel="prefetch" href="data/levels/ch01.json">
+<link rel="prefetch" href="data/api.json">
+<link rel="modulepreload" href="js/main.js">
+<script>/* 売る版（tools/build.mjs）: ライブラリは vendor/ から。Service Worker でオフラインでも遊べる */
+globalThis.ROVERCODE_CM_BASE = 'vendor/codemirror/';
+globalThis.ROVERCODE_BUILD = {"version":"1.0.0"};
+if ('serviceWorker' in navigator && location.protocol !== 'file:') addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+</script>
+<script type="importmap">{ "imports": { "three": "./vendor/three/three.module.js" } }</script>
+</head>
+<body>
+<a class="skip" href="#app">内容へ移る</a>
+<header id="app-header" class="app-header" hidden></header>
+<main id="app" class="screen screen-title">
+  <div class="boot-title" id="boot-title">
+    <div class="title-bg" aria-hidden="true"><img class="title-still" src="assets/img/title.webp" alt="" decoding="async"></div>
+    <div class="title-wrap">
+      <h1><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="11" cy="26" r="9" fill="#2a3238"/><circle cx="29" cy="26" r="9" fill="#2a3238"/><circle cx="11" cy="26" r="4" fill="#f3ead8"/><circle cx="29" cy="26" r="4" fill="#f3ead8"/><rect x="11" y="15" width="18" height="10" rx="3" fill="#5f8f3e"/><rect x="18" y="8" width="2" height="7" fill="#2a3238"/><circle cx="19" cy="7" r="2.5" fill="#d9672b"/></svg>ROVER CODE</h1>
+      <p>CanSat ローバーで学ぶ Python</p>
+    </div>
+  </div>
+</main>
+<noscript><p style="padding:16px">このゲームは JavaScript を使います。ブラウザの設定で JavaScript をオンにしてね。</p></noscript>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

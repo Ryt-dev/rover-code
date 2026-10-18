@@ -1,0 +1,1197 @@
+{
+ "chapter": 2,
+ "levels": [
+  {
+   "id": "2-1",
+   "order": 7,
+   "chapter": 2,
+   "title": "数に名前をつける",
+   "type": "modify",
+   "lang": "python",
+   "minutes": 5,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "このプログラムは、上に SPEED と TIME という名前の数がある。名前の付いた数（変数）だけを変えて、4 m 先のコーンの前に止めよう。",
+   "learn": {
+    "python": [
+     "変数: 名前 = 数 で数に名前をつける（SPEED = 0.5）",
+     "名前を書いたところに、その数が入る: motor(SPEED, SPEED)",
+     "大文字と小文字は別の名前（SPEED と speed はちがう）"
+    ],
+    "robot": [
+     "あとで変えたい数は、プログラムの上にまとめて名前を付けておくと、直す所がすぐ分かる"
+    ]
+   },
+   "new": [
+    "変数"
+   ],
+   "new_split": {
+    "command": [],
+    "syntax": [
+     "変数"
+    ]
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "distance_to_cone"
+   ],
+   "worlds": [
+    {
+     "name": "世界1",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 0,
+        "y": 4.31,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 30
+     },
+     "inject": {},
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "stopped and gap('cone') <= 0.5 and not touched('cone')",
+     "label": "コーンの 50 cm 以内で止まる",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "gap('cone') <= 0.2 and not touched('cone')",
+     "label": "コーンの 20 cm 以内",
+     "need": "all",
+     "tip": "TIME を少しずつ変えて、コーンに寄せよう",
+     "measure": "gap('cone')",
+     "better": "low",
+     "unit": "cm"
+    },
+    {
+     "expr": "t_stop <= 4.5 and gap('cone') <= 0.5 and not touched('cone')",
+     "label": "4.5 秒以内に着いて止まる（速く走る）",
+     "need": "all",
+     "measure": "t_stop",
+     "better": "low",
+     "unit": "秒",
+     "tip": "SPEED を大きくすると、同じ距離を短い時間で走れるよ"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "gap('cone')",
+    "text": "コーンの {cm} cm 手前で止まった",
+    "world": "first_failed"
+   },
+   "starter": "SPEED = 0.5   # 速さ（0〜1）\nTIME = 3      # 走る時間（秒）\n\nmotor(SPEED, SPEED)\nwait(TIME)\nstop()\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "上の 2 行（SPEED と TIME）だけ変えれば OK。",
+    "SPEED 0.5 だと 1 秒に 0.55 m。4 m には 7 秒以上かかる。速く着くなら SPEED を大きく。",
+    "SPEED = 1.0 なら 1 秒に 1.1 m。3.85 m 進むには 3.85 ÷ 1.1 ＝ 3.5 → TIME = 3.5"
+   ],
+   "solution": "SPEED = 1.0\nTIME = 3.5\n\nmotor(SPEED, SPEED)\nwait(TIME)\nstop()\n",
+   "solution_labels": [],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "小文字で書いた",
+     "code": "SPEED = 0.5\nTIME = 3\nspeed = 1.0\ntime = 3.5\nmotor(SPEED, SPEED)\nwait(TIME)\nstop()\n",
+     "say": "Python は大文字と小文字を区別するよ。speed は SPEED とは別の新しい名前になっちゃう。",
+     "expect": "fail",
+     "rule": "NAME_CASE",
+     "when": "re('^(speed|time)\\s*=')"
+    },
+    {
+     "name": "1 より大きくした",
+     "code": "SPEED = 1.5\nTIME = 2.5\nmotor(SPEED, SPEED)\nwait(TIME)\nstop()\n",
+     "say": "motor は −1〜1 まで。1 より大きくしても 1 と同じ速さだよ。",
+     "expect": "fail",
+     "rule": "L_MOTOR_PERCENT",
+     "when": "re('SPEED\\s*=\\s*(1\\.0*[1-9]|[2-9])')"
+    }
+   ],
+   "senpai_clear": "名前を付けておくと、あとで「速さだけ変えたい」ときに 1 か所で済むんだ。",
+   "explain": {
+    "goal": "stop_at_cone",
+    "goalRadius": 0.5,
+    "expectTurn": null,
+    "target": "cone"
+   },
+   "hud": [
+    "time",
+    "gap",
+    "speed"
+   ],
+   "graphs": [
+    "speed"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 4,
+      "x": 0,
+      "y": 3.85,
+      "heading": 0,
+      "lines": 5,
+      "gap": 0.15
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "2-2",
+   "order": 8,
+   "chapter": 2,
+   "title": "距離から時間を計算",
+   "type": "blanks",
+   "lang": "python",
+   "minutes": 7,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "この面では、コーンまでの距離が毎回ちがう（世界が 3 つある）。GAP という変数にすき間（m）が入っているから、計算で時間を出そう。",
+   "learn": {
+    "python": [
+     "計算: + − * /（掛け算は *、割り算は /）",
+     "計算の順番: * と / が先。先にしたいところは ( ) でくくる",
+     "変数を使った式: 例 T = D / v（D と v に入っている数で計算される）"
+    ],
+    "robot": [
+     "1 秒に進む m = 1.1 * motor の速さ",
+     "時間 ＝ 距離 ÷ 速さ",
+     "止める命令のあとも 5 cm ほどすべる。ぴったり GAP ではなく、少し手前を狙おう"
+    ]
+   },
+   "new": [
+    "計算（+ − * /）"
+   ],
+   "new_split": {
+    "command": [],
+    "syntax": [
+     "計算（+ − * /）"
+    ]
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "distance_to_cone"
+   ],
+   "worlds": [
+    {
+     "name": "2.5 m",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 0,
+        "y": 2.81,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 30
+     },
+     "inject": {
+      "GAP": 2.5
+     },
+     "judge": {}
+    },
+    {
+     "name": "4.0 m",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 0,
+        "y": 4.31,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 30
+     },
+     "inject": {
+      "GAP": 4.0
+     },
+     "judge": {}
+    },
+    {
+     "name": "5.5 m",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 0,
+        "y": 5.81,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 30
+     },
+     "inject": {
+      "GAP": 5.5
+     },
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "stopped and gap('cone') <= 0.5 and not touched('cone')",
+     "label": "3 つの世界すべてで、コーンの 50 cm 以内で止まる",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "gap('cone') <= 0.2 and not touched('cone')",
+     "label": "すべての世界で 20 cm 以内",
+     "need": "all",
+     "tip": "ぴったり GAP 進むとぶつかる。少し手前を狙う式にしよう",
+     "measure": "gap('cone')",
+     "better": "low",
+     "unit": "cm"
+    },
+    {
+     "expr": "gap('cone') <= 0.1 and not touched('cone')",
+     "label": "すべての世界で 10 cm 以内",
+     "need": "all",
+     "tip": "止まるまでのすべりは 5 cm ほど。手前を狙う数を見直そう",
+     "measure": "gap('cone')",
+     "better": "low",
+     "unit": "cm"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "gap('cone')",
+    "text": "コーンの {cm} cm 手前で止まった",
+    "world": "first_failed"
+   },
+   "starter": "# GAP = コーンまでのすき間（m。世界ごとにちがう）\nprint(\"コーンまで\", GAP, \"m\")\nSPEED = 0.6\nspeed_mps = 1.1 * SPEED       # 1 秒に進む m\nTIME = ___        # ← GAP と speed_mps で計算\nmotor(SPEED, SPEED)\nwait(TIME)\nstop()\n",
+   "locked": [
+    [
+     1,
+     4
+    ],
+    [
+     6,
+     8
+    ]
+   ],
+   "blanks": [
+    {
+     "line": 5,
+     "col": 7,
+     "label": "TIME = の右側（走る時間の式）"
+    }
+   ],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "時間 ＝ 距離 ÷ 速さ。速さは speed_mps に入っている。",
+    "ぴったり GAP 進むとぶつかる。5 cm 手前を狙うなら、距離は GAP - 0.05。",
+    "TIME = (GAP - 0.05) / speed_mps"
+   ],
+   "solution": "print(\"コーンまで\", GAP, \"m\")\n# 1. 1 秒に進む m を出す\nSPEED = 0.6\nspeed_mps = 1.1 * SPEED\n# 2. 走る時間を計算する\nTIME = (GAP - 0.05) / speed_mps\n# 3. 走って止まる\nmotor(SPEED, SPEED)\nwait(TIME)\nstop()\n",
+   "solution_labels": [
+    "1 秒に進む m を出す",
+    "走る時間を計算する",
+    "走って止まる"
+   ],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "SPEED で割った",
+     "code": "SPEED = 0.6\nTIME = GAP / SPEED\nmotor(SPEED, SPEED)\nwait(TIME)\nstop()\n",
+     "say": "SPEED は 0〜1 の「強さ」で、1 秒に進む m じゃないよ。1.1 を掛けた speed_mps で割ろう。",
+     "expect": "fail",
+     "rule": "B_OVERSHOOT",
+     "when": "re('/\\s*SPEED\\b')"
+    },
+    {
+     "name": "( ) を忘れた",
+     "code": "SPEED = 0.6\nspeed_mps = 1.1 * SPEED\nTIME = GAP - 0.05 / speed_mps\nmotor(SPEED, SPEED)\nwait(TIME)\nstop()\n",
+     "say": "割り算は引き算より先に計算されるよ。( ) でくくろう: (GAP - 0.05) / speed_mps",
+     "expect": "fail",
+     "rule": "B_WAIT_SHORT",
+     "when": "re('GAP\\s*-\\s*[0-9.]+\\s*/')"
+    },
+    {
+     "name": "ぴったり GAP",
+     "code": "SPEED = 0.6\nspeed_mps = 1.1 * SPEED\nTIME = GAP / speed_mps\nmotor(SPEED, SPEED)\nwait(TIME)\nstop()\n",
+     "say": "ぴったり GAP 進むと、ちょうどぶつかる。止まるまでに少しすべるから、5 cm 手前を狙おう。",
+     "expect": "fail",
+     "rule": "B_OVERSHOOT",
+     "when": "hit and re('=\\s*GAP\\s*/\\s*speed_mps')"
+    }
+   ],
+   "senpai_clear": "計算で出せば、距離が変わっても同じプログラムで行ける。これが「プログラムで解く」ってこと。",
+   "explain": {
+    "goal": "stop_at_cone",
+    "goalRadius": 0.5,
+    "expectTurn": null,
+    "target": "cone"
+   },
+   "hud": [
+    "time",
+    "gap",
+    "speed"
+   ],
+   "graphs": [
+    "speed"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 4.14,
+      "x": 0,
+      "y": 2.45,
+      "heading": 0,
+      "lines": 7,
+      "gap": 0.05
+     },
+     {
+      "t_stop": 6.42,
+      "x": 0,
+      "y": 3.949,
+      "heading": 0,
+      "lines": 7,
+      "gap": 0.051
+     },
+     {
+      "t_stop": 8.68,
+      "x": 0,
+      "y": 5.45,
+      "heading": 0,
+      "lines": 7,
+      "gap": 0.05
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "2-3",
+   "order": 9,
+   "chapter": 2,
+   "title": "変数は書きかえられる",
+   "type": "predict",
+   "lang": "python",
+   "minutes": 4,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "変数には、あとから別の数を入れ直せる。このプログラムを読んで、2 つ予想してから実行しよう。",
+   "learn": {
+    "python": [
+     "speed = speed * 2 は「今の speed を 2 倍して、speed に入れ直す」",
+     "= は「同じ」ではなく「右の値を左の名前に入れる」"
+    ],
+    "robot": [
+     "速さを途中で変えると、だんだん速くできる（加速）"
+    ]
+   },
+   "new": [],
+   "new_split": {
+    "command": [],
+    "syntax": []
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "distance_to_cone"
+   ],
+   "worlds": [
+    {
+     "name": "世界1",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "f13",
+        "type": "flag",
+        "x": 0,
+        "y": 1.32,
+        "label": "1.3 m"
+       },
+       {
+        "id": "f20",
+        "type": "flag",
+        "x": 0,
+        "y": 1.98,
+        "label": "2.0 m"
+       },
+       {
+        "id": "f26",
+        "type": "flag",
+        "x": 0,
+        "y": 2.64,
+        "label": "2.6 m"
+       },
+       {
+        "id": "f33",
+        "type": "flag",
+        "x": 0,
+        "y": 3.3,
+        "label": "3.3 m"
+       }
+      ],
+      "time_limit": 30
+     },
+     "inject": {},
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "ok",
+     "label": "予想を選んでから実行する",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "prediction_ok",
+     "label": "2 つとも予想が当たる",
+     "need": "all",
+     "tip": "上から順に、speed の中身を紙に書いてみよう",
+     "no_measure": "予想が当たったかどうかで決まる（数では測れない）"
+    },
+    {
+     "expr": "stopped and dist('f33') <= 0.2",
+     "label": "数字を 1 つ変えて、3.3 m の旗の 20 cm 以内へ",
+     "need": "all",
+     "tip": "最初の speed を変えると、前半も後半も変わるよ",
+     "measure": "dist('f33')",
+     "better": "low",
+     "unit": "cm"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "y_end",
+    "text": "{m} m 進んで止まった",
+    "world": "first_failed"
+   },
+   "starter": "speed = 0.3\nmotor(speed, speed)\nwait(2)\nspeed = speed * 2\nmotor(speed, speed)\nwait(2)\nstop()\nprint(speed)\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [
+    {
+     "q": "最後に表示される数は？",
+     "choices": [
+      "0.3",
+      "0.6",
+      "1.2"
+     ],
+     "answer": 1,
+     "why": "speed は 0.3 → 0.6 と 1 回だけ 2 倍になる。",
+     "check": "printed[-1:] == ['0.6']"
+    },
+    {
+     "q": "どの旗の近くで止まる？",
+     "choices": [
+      "1.3 m の旗",
+      "2.0 m の旗",
+      "2.6 m の旗"
+     ],
+     "answer": 1,
+     "why": "0.3 で 2 秒（0.66 m）＋ 0.6 で 2 秒（1.32 m）＝ 1.98 m。",
+     "check": "dist('f20') <= 0.3"
+    }
+   ],
+   "predict_card": null,
+   "hints": [
+    "上から順に、speed の中身を紙に書いてみよう。",
+    "前半は 0.33 m/s * 2 秒、後半は 0.66 m/s * 2 秒。",
+    "最初の speed を 0.5 にすると、0.55 × 2 ＋ 1.1 × 2 ＝ 3.3 m。"
+   ],
+   "solution": "# 1. はじめの速さで 2 秒\nspeed = 0.5\nmotor(speed, speed)\nwait(2)\n# 2. 速さを 2 倍にして 2 秒\nspeed = speed * 2\nmotor(speed, speed)\nwait(2)\nstop()\nprint(speed)\n",
+   "solution_labels": [
+    "はじめの速さで 2 秒",
+    "速さを 2 倍にして 2 秒"
+   ],
+   "py_equiv": null,
+   "mistakes": [],
+   "senpai_clear": "= は「入れる」。ここをつかめば、くり返しの章がぐっと楽になるよ。",
+   "explain": {
+    "goal": "free",
+    "goalRadius": 1.0,
+    "expectTurn": null,
+    "target": null
+   },
+   "hud": [
+    "time",
+    "speed"
+   ],
+   "graphs": [
+    "speed"
+   ],
+   "overlays": [
+    "trail",
+    "ghost"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 4.5,
+      "x": 0,
+      "y": 3.3,
+      "heading": 0,
+      "lines": 8
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "2-4",
+   "order": 10,
+   "chapter": 2,
+   "title": "回る角度を計算",
+   "type": "make",
+   "lang": "python",
+   "minutes": 7,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "回る角度も計算で決めよう。ANGLE に「右に回る角度（度）」が入っている（世界ごとにちがう）。回った先のコーンへ向かおう。",
+   "learn": {
+    "python": [
+     "式を変数に入れておくと、何度でも使える",
+     "( ) の中の計算から先に行われる"
+    ],
+    "robot": [
+     "1 秒に回る角度 ＝（左 − 右）× 1.1 ÷ 0.162 × 57.3",
+     "0.162 は左右の車輪の間（m）。57.3 は「ラジアン」という角度の単位を「度」に直す数（180 ÷ 3.14）",
+     "回る時間 ＝ 角度 ÷ 1 秒に回る角度"
+    ]
+   },
+   "new": [],
+   "new_split": {
+    "command": [],
+    "syntax": []
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "distance_to_cone"
+   ],
+   "worlds": [
+    {
+     "name": "45°",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 2.1284,
+        "y": 2.1284,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 30
+     },
+     "inject": {
+      "ANGLE": 45
+     },
+     "judge": {}
+    },
+    {
+     "name": "120°",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 2.6067,
+        "y": -1.505,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 30
+     },
+     "inject": {
+      "ANGLE": 120
+     },
+     "judge": {}
+    },
+    {
+     "name": "200°",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": -1.0295,
+        "y": -2.8285,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 30
+     },
+     "inject": {
+      "ANGLE": 200
+     },
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "stopped and heading_err(ANGLE) <= 10",
+     "label": "すべての世界で、ANGLE の向きに止まる（10° 以内）",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "heading_err(ANGLE) <= 3",
+     "label": "すべての世界でずれ 3° 以内",
+     "need": "all",
+     "tip": "回る時間は ANGLE ÷ 回る速さ。式をもう一度たしかめよう",
+     "measure": "heading_err(ANGLE)",
+     "better": "low",
+     "unit": "°"
+    },
+    {
+     "expr": "gap('cone') <= 0.3 and not touched('cone')",
+     "label": "すべての世界で、2.7 m 先のコーンの 30 cm 以内へ",
+     "need": "all",
+     "tip": "回ったら止まって、すき間 2.7 m を計算で走ろう",
+     "measure": "gap('cone')",
+     "better": "low",
+     "unit": "cm"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "heading_err(ANGLE)",
+    "text": "ANGLE とのずれ {deg}°",
+    "world": "first_failed"
+   },
+   "starter": "# ANGLE に「右に回る角度（度）」が入っている\nprint(\"右に\", ANGLE, \"度\")\nTURN = 0.25                                          # 回るときの強さ\ndeg_per_sec = (TURN - (-TURN)) * 1.1 / 0.162 * 57.3  # 1 秒に回る角度\nprint(\"1 秒に\", deg_per_sec, \"度\")\nmotor(TURN, -TURN)\nwait(1)    # ← ANGLE と deg_per_sec で計算しよう\nstop()\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "時間 ＝ 角度 ÷ 回る速さ。",
+    "wait(ANGLE / deg_per_sec)",
+    "コーンまでは 1-3 と同じ: wait((2.7 - 0.15) / 0.66) で 15 cm 手前。"
+   ],
+   "solution": "# 1. 回る速さを計算する\nTURN = 0.25\ndeg_per_sec = (TURN - (-TURN)) * 1.1 / 0.162 * 57.3\n# 2. ANGLE だけ回る\nmotor(TURN, -TURN)\nwait(ANGLE / deg_per_sec)\nstop()\nwait(0.3)\n# 3. コーンまで走る\nmotor(0.6, 0.6)\nwait((2.7 - 0.15) / 0.66)\nstop()\n",
+   "solution_labels": [
+    "回る速さを計算する",
+    "ANGLE だけ回る",
+    "コーンまで走る"
+   ],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "掛け算と割り算が逆",
+     "code": "TURN = 0.25\ndeg_per_sec = (TURN - (-TURN)) * 1.1 / 0.162 * 57.3\nmotor(TURN, -TURN)\nwait(ANGLE * deg_per_sec)\nstop()\n",
+     "say": "時間 ＝ 角度 ÷ 速さ だよ。掛けると、とんでもなく長く回っちゃう。",
+     "expect": "fail",
+     "rule": "B_SPIN_FOREVER",
+     "when": "re('ANGLE\\s*\\*\\s*deg_per_sec|deg_per_sec\\s*\\*\\s*ANGLE')",
+     "fix": "回る時間 ＝ 角度 ÷ 1 秒に回る角度。wait(ANGLE / deg_per_sec) にしよう。"
+    }
+   ],
+   "senpai_clear": "回る速さも計算で出せる。車輪の間 16.2 cm という数が、ここで効いてくるんだ。",
+   "explain": {
+    "goal": "free",
+    "goalRadius": 1.0,
+    "expectTurn": null,
+    "target": "cone"
+   },
+   "hud": [
+    "time",
+    "gap",
+    "speed"
+   ],
+   "graphs": [
+    "speed"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 4.82,
+      "x": 1.806,
+      "y": 1.799,
+      "heading": 45.1,
+      "lines": 9,
+      "gap": 0.151
+     },
+     {
+      "t_stop": 5.2,
+      "x": 2.213,
+      "y": -1.267,
+      "heading": 119.8,
+      "lines": 9,
+      "gap": 0.15
+     },
+     {
+      "t_stop": 5.62,
+      "x": -0.87,
+      "y": -2.397,
+      "heading": 200,
+      "lines": 9,
+      "gap": 0.15
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "2-5",
+   "order": 11,
+   "chapter": 2,
+   "title": "先輩のメモどおりに",
+   "type": "boss",
+   "lang": "python",
+   "minutes": 10,
+   "checkpoint": true,
+   "carry_from": null,
+   "story": "わたしのメモ: 「北へ D1 m 進んで、右に A 度回って、D2 m 先にコーン（すき間）」。D1・A・D2 は世界ごとにちがう。どの世界でも行けるプログラムを書こう。（ボス面: クリアするまでヒントは 2 つまで）",
+   "learn": {
+    "python": [
+     "変数と計算を組み合わせて、どんな数でも動くプログラムにする"
+    ],
+    "robot": [
+     "走る → 回る → 走る を、全部計算で"
+    ]
+   },
+   "new": [],
+   "new_split": {
+    "command": [],
+    "syntax": []
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "distance_to_cone"
+   ],
+   "worlds": [
+    {
+     "name": "D1=2.0 A=90 D2=2.5",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 2.81,
+        "y": 2.0,
+        "r": 0.19
+       },
+       {
+        "id": "r1",
+        "type": "rock",
+        "x": -2.81,
+        "y": 2.0,
+        "r": 0.3,
+        "h": 0.4
+       },
+       {
+        "id": "r2",
+        "type": "rock",
+        "x": 1.5,
+        "y": -1.0,
+        "r": 0.25,
+        "h": 0.3
+       }
+      ],
+      "time_limit": 40
+     },
+     "inject": {
+      "D1": 2.0,
+      "A": 90,
+      "D2": 2.5
+     },
+     "judge": {}
+    },
+    {
+     "name": "D1=3.0 A=45 D2=2.0",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 1.6334,
+        "y": 4.6334,
+        "r": 0.19
+       },
+       {
+        "id": "r1",
+        "type": "rock",
+        "x": -1.6334,
+        "y": 4.6334,
+        "r": 0.3,
+        "h": 0.4
+       },
+       {
+        "id": "r2",
+        "type": "rock",
+        "x": 1.5,
+        "y": -1.0,
+        "r": 0.25,
+        "h": 0.3
+       }
+      ],
+      "time_limit": 40
+     },
+     "inject": {
+      "D1": 3.0,
+      "A": 45,
+      "D2": 2.0
+     },
+     "judge": {}
+    },
+    {
+     "name": "D1=1.5 A=135 D2=3.0",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 2.3405,
+        "y": -0.8405,
+        "r": 0.19
+       },
+       {
+        "id": "r1",
+        "type": "rock",
+        "x": -2.3405,
+        "y": -0.8405,
+        "r": 0.3,
+        "h": 0.4
+       },
+       {
+        "id": "r2",
+        "type": "rock",
+        "x": 1.5,
+        "y": -1.0,
+        "r": 0.25,
+        "h": 0.3
+       }
+      ],
+      "time_limit": 40
+     },
+     "inject": {
+      "D1": 1.5,
+      "A": 135,
+      "D2": 3.0
+     },
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "stopped and gap('cone') <= 0.5 and not touched('cone') and bumps == 0",
+     "label": "すべての世界で、コーンの 50 cm 以内で止まる",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "gap('cone') <= 0.1 and not touched('cone')",
+     "label": "すべての世界で 10 cm 以内",
+     "need": "all",
+     "tip": "すべる分を引いて、手前を狙う数を見直そう",
+     "measure": "gap('cone')",
+     "better": "low",
+     "unit": "cm"
+    },
+    {
+     "expr": "t_stop <= 7 and gap('cone') <= 0.1 and not touched('cone')",
+     "label": "すべての世界で 7 秒以内に 10 cm 以内へ",
+     "need": "all",
+     "tip": "速さを上げると早く着く。v も、すべる分も変わるよ",
+     "measure": "t_stop",
+     "better": "low",
+     "unit": "秒"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "gap('cone')",
+    "text": "コーンの {cm} cm 手前で止まった",
+    "world": "first_failed"
+   },
+   "starter": "# D1, A, D2 が入っている\nprint(\"北へ\", D1, \"m → 右へ\", A, \"度 → すき間\", D2, \"m\")\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "1 秒に進む距離 v と、1 秒に回る角度 w を先に計算しておこう。速くするなら v も変わるよ。",
+    "時間は D1 / v、A / w、（D2 − 手前に止める分）/ v。速さ 0.9 だとすべりは 8 cm ほど。",
+    "v = 1.1 * 0.9 / w = 0.5 * 1.1 / 0.162 * 57.3 → 走る・止める・回る・止める・走る（D2 - 0.08）・止める"
+   ],
+   "solution": "# 1. 走る速さと回る速さを計算する\nv = 1.1 * 0.9\nw = 0.5 * 1.1 / 0.162 * 57.3\n# 2. 北へ D1 m\nmotor(0.9, 0.9)\nwait(D1 / v)\nstop()\nwait(0.3)\n# 3. 右へ A 度\nmotor(0.25, -0.25)\nwait(A / w)\nstop()\nwait(0.3)\n# 4. コーンまで D2 m\nmotor(0.9, 0.9)\nwait((D2 - 0.08) / v)\nstop()\n",
+   "solution_labels": [
+    "走る速さと回る速さを計算する",
+    "北へ D1 m",
+    "右へ A 度",
+    "コーンまで D2 m"
+   ],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "数を直接書いた",
+     "code": "motor(0.6, 0.6)\nwait(3.03)\nstop()\nwait(0.3)\nmotor(0.25, -0.25)\nwait(0.463)\nstop()\nwait(0.3)\nmotor(0.6, 0.6)\nwait(3.7)\nstop()\n",
+     "say": "1 つ目の世界だけに合わせた数だと、ほかの世界で外れるよ。D1・A・D2 を使って計算しよう。",
+     "expect": "fail",
+     "rule": null,
+     "when": "moved > 0.1 and not has('D1') and not has('D2')"
+    }
+   ],
+   "senpai_clear": "「どんな数でも動く」プログラムは、本番の強い味方。",
+   "explain": {
+    "goal": "stop_at_cone",
+    "goalRadius": 0.5,
+    "expectTurn": null,
+    "target": "cone"
+   },
+   "hud": [
+    "time",
+    "gap",
+    "speed"
+   ],
+   "graphs": [
+    "speed"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 6,
+      "x": 2.423,
+      "y": 2.007,
+      "heading": 89.9,
+      "lines": 13,
+      "gap": 0.077
+     },
+     {
+      "t_stop": 6.28,
+      "x": 1.361,
+      "y": 4.355,
+      "heading": 45.1,
+      "lines": 13,
+      "gap": 0.079
+     },
+     {
+      "t_stop": 6.24,
+      "x": 2.067,
+      "y": -0.562,
+      "heading": 135,
+      "lines": 13,
+      "gap": 0.081
+     }
+    ],
+    "sim": "w1"
+   }
+  }
+ ]
+}

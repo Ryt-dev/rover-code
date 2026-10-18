@@ -1,0 +1,200 @@
+{
+  "$comment": "持ち主 W4（レベルと内容）。会場 8 か所（SPEC 8.4 の 5・6.10 の venue_key・3.7）。origin は面の世界の原点と同じ。surface は地面の絵、ground は自由走行場の地面の既定（speed・slip・turn は 6.4 の値）。sky（clear・cloudy・windy）と props（置く物の名前）は見た目の希望で、3D の作りは W5 の venues3d.js が会場のキーで決める（ここに書いた値で上書きしてよい）。",
+  "venues": {
+    "bushitsu": {
+      "name": "船橋キャンパス 部室の前の芝生",
+      "short": "部室前",
+      "chapters": [
+        1,
+        "C"
+      ],
+      "origin": {
+        "lat": 35.726195,
+        "lon": 140.057112
+      },
+      "ground": {
+        "speed": 1.0,
+        "slip": 0.0,
+        "turn": 1.0
+      },
+      "sky": "clear",
+      "props": [
+        "生け垣",
+        "部室の建物",
+        "旗"
+      ],
+      "surface": "grass",
+      "note": "部室の前の、平らで短い芝生。最初の練習はいつもここから。生け垣と旗があり、狭い所の練習にも使う。"
+    },
+    "funabashi": {
+      "name": "船橋キャンパス 滑走路の隣の芝生",
+      "short": "滑走路の隣",
+      "chapters": [
+        2,
+        3,
+        5,
+        7,
+        8
+      ],
+      "origin": {
+        "lat": 35.726195,
+        "lon": 140.057112
+      },
+      "ground": {
+        "speed": 1.0,
+        "slip": 0.0,
+        "turn": 1.0
+      },
+      "sky": "clear",
+      "props": [
+        "滑走路",
+        "フェンス",
+        "遠くの林"
+      ],
+      "surface": "grass",
+      "note": "滑走路の隣の広い芝生。遠くの赤コーンまで、GNSS やカメラの練習ができる。石や池もある。"
+    },
+    "ura": {
+      "name": "船橋キャンパス 建物の裏の通路",
+      "short": "建物の裏の通路",
+      "chapters": [
+        4
+      ],
+      "origin": {
+        "lat": 35.726195,
+        "lon": 140.057112
+      },
+      "ground": {
+        "speed": 1.0,
+        "slip": 0.0,
+        "turn": 1.0
+      },
+      "sky": "cloudy",
+      "props": [
+        "建物の壁",
+        "室外機",
+        "植えこみ"
+      ],
+      "surface": "concrete",
+      "note": "建物の裏の、コンクリートの通路。壁と角があり、LiDAR で測りながら進む練習に向く。"
+    },
+    "kasen": {
+      "name": "河川敷の練習場",
+      "short": "河川敷",
+      "chapters": [
+        6
+      ],
+      "origin": {
+        "lat": 35.726195,
+        "lon": 140.057112
+      },
+      "ground": {
+        "speed": 0.9,
+        "slip": 0.02,
+        "turn": 0.8
+      },
+      "sky": "clear",
+      "props": [
+        "土手",
+        "川",
+        "砂の所"
+      ],
+      "surface": "grass",
+      "note": "河川敷の練習場。芝が深く、砂の所や坂もある。モーターの差や地面のちがいで、まっすぐ走れない。"
+    },
+    "drop": {
+      "name": "落下試験の練習場",
+      "short": "落下試験場",
+      "chapters": [
+        9
+      ],
+      "origin": {
+        "lat": 35.726195,
+        "lon": 140.057112
+      },
+      "ground": {
+        "speed": 1.0,
+        "slip": 0.0,
+        "turn": 1.0
+      },
+      "sky": "clear",
+      "props": [
+        "高所作業車",
+        "吹き流し"
+      ],
+      "surface": "grass",
+      "note": "高所作業車で 30 m の高さからつり下げて落とす、落下試験の練習場。風が吹くとパラシュートが流される。"
+    },
+    "takezaki_b": {
+      "name": "種子島 竹崎 B",
+      "short": "竹崎 B",
+      "chapters": [
+        10
+      ],
+      "origin": {
+        "lat": 30.375868,
+        "lon": 130.960804
+      },
+      "ground": {
+        "speed": 1.0,
+        "slip": 0.0,
+        "turn": 1.0
+      },
+      "sky": "clear",
+      "props": [
+        "海",
+        "クレーン",
+        "テント"
+      ],
+      "surface": "grass",
+      "note": "種子島の竹崎の芝の会場（B）。種コンの本番。投下は 30 m、20 分以内に、コーンまでの距離で点が決まる。"
+    },
+    "takezaki_a": {
+      "name": "種子島 竹崎 A",
+      "short": "竹崎 A",
+      "chapters": [
+        10
+      ],
+      "origin": {
+        "lat": 30.374334492869192,
+        "lon": 130.96002306513225
+      },
+      "ground": {
+        "speed": 1.0,
+        "slip": 0.0,
+        "turn": 1.0
+      },
+      "sky": "windy",
+      "props": [
+        "海",
+        "クレーン",
+        "吹き流し"
+      ],
+      "surface": "grass",
+      "note": "種子島の竹崎の会場（A）。風の強い日の本番。8 m/s 以上なら投下しない決まり。"
+    },
+    "lunar": {
+      "name": "鳥取砂丘 ルナテラス",
+      "short": "ルナテラス",
+      "chapters": [
+        10
+      ],
+      "origin": {
+        "lat": 35.537043,
+        "lon": 134.210939
+      },
+      "ground": {
+        "speed": 0.85,
+        "slip": 0.04,
+        "turn": 1.0
+      },
+      "sky": "clear",
+      "props": [
+        "砂の斜面",
+        "AR マーカー"
+      ],
+      "surface": "sand",
+      "note": "鳥取砂丘の月面フィールド「ルナテラス」。地面は全部やわらかい砂で、斜面と AR マーカーがある。"
+    }
+  }
+}

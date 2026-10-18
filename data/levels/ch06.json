@@ -1,0 +1,2568 @@
+{
+ "chapter": 6,
+ "levels": [
+  {
+   "id": "6-1",
+   "order": 26,
+   "chapter": 6,
+   "title": "heading() で向きを知る",
+   "type": "make",
+   "lang": "python",
+   "minutes": 8,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "この河川敷の芝は深くて、回るのが 25% 遅い。時間で回ると足りなくなる。IMU（地磁気）で向きを測りながら、東（90°）を向くまで回ろう。最初の向きは世界ごとにちがう。",
+   "learn": {
+    "python": [
+     "while heading() < 82: のように、条件がかなうまで回り続ける",
+     "pass は「何もしない」（while の中身が無いとき）",
+     "for で 10 回測って足し、10 で割ると平均"
+    ],
+    "robot": [
+     "heading() は機体の向き（度）。北 0・東 90・南 180・西 270、時計回り。±1.5° ほどばらつく",
+     "止まれと言っても、回る勢いで少し回りすぎる。近くなったらゆっくり、少し手前で止める",
+     "止まってから何回か測って平均すると、ばらつきが小さくなる"
+    ]
+   },
+   "new": [
+    "heading"
+   ],
+   "new_split": {
+    "command": [
+     "heading"
+    ],
+    "syntax": []
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "lidar",
+    "heading"
+   ],
+   "worlds": [
+    {
+     "name": "はじめ 10°",
+     "world": {
+      "venue": "河川敷の練習場（ゆるい坂・深い芝・砂）",
+      "venue_key": "kasen",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 10
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 4.31,
+        "y": 0,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 40,
+      "ground": {
+       "turn": 0.75
+      },
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {},
+     "judge": {}
+    },
+    {
+     "name": "はじめ 30°",
+     "world": {
+      "venue": "河川敷の練習場（ゆるい坂・深い芝・砂）",
+      "venue_key": "kasen",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 30
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 4.31,
+        "y": 0,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 40,
+      "ground": {
+       "turn": 0.75
+      },
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {},
+     "judge": {}
+    },
+    {
+     "name": "はじめ 50°",
+     "world": {
+      "venue": "河川敷の練習場（ゆるい坂・深い芝・砂）",
+      "venue_key": "kasen",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 50
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 4.31,
+        "y": 0,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 40,
+      "ground": {
+       "turn": 0.75
+      },
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {},
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "stopped and heading_err(90) <= 6",
+     "label": "すべての世界で、東（90°）を向いて止まる（6° 以内）",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "heading_err(90) <= 2.5",
+     "label": "すべての世界で、ずれ 2.5° 以内",
+     "need": "all",
+     "tip": "1 回だけの heading() は ±1.5° ばらつく。止まって何回か測ってみよう",
+     "measure": "heading_err(90)",
+     "better": "low",
+     "unit": "°"
+    },
+    {
+     "expr": "gap('cone') <= 0.3 and not touched('cone')",
+     "label": "すべての世界で、東のコーンの 30 cm 以内まで走る",
+     "need": "all",
+     "tip": "向きが少しでもずれると、LiDAR の細い光がコーンを外れるよ",
+     "measure": "gap('cone')",
+     "better": "low",
+     "unit": "cm"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "heading_err(90)",
+    "text": "東とのずれ {deg}°",
+    "world": "first_failed"
+   },
+   "starter": "print(\"今の向き\", heading())\nmotor(0.25, -0.25)          # 右へ回りはじめる\n# heading() が 90 近くになるまで待とう（while）\nstop()\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "while heading() < 90: pass と書くと、90° をこえるまで回り続ける。でも止まるまでに少し回りすぎるよ。",
+    "速く回るのは 60° まで。そこから motor(0.1, -0.1) でゆっくり回って、82° で止める。",
+    "★2: 止まってから heading() を 10 回測って平均し、90 との差だけ回る（この芝では 0.1 の強さで 1 秒に約 58°）。"
+   ],
+   "solution": "# 1. 速く回って 60° まで\nmotor(0.25, -0.25)\nwhile heading() < 60:\n    pass\n# 2. ゆっくり回って 82° で止める（止まるまでに少し回る）\nmotor(0.1, -0.1)\nwhile heading() < 82:\n    pass\nstop()\nwait(0.3)\n# 3. 止まって 10 回測り、平均で残りを直す（この芝では差 0.2 で 1 秒に約 58°）\ntotal = 0\nfor i in range(10):\n    total = total + heading()\ne = 90 - total / 10\nif e > 0:\n    motor(0.1, -0.1)\nelse:\n    motor(-0.1, 0.1)\nwait(abs(e) / 58)\nstop()\nwait(0.3)\n# 4. コーンへ走って、LiDAR で止まる\nmotor(0.6, 0.6)\nwhile True:\n    d = lidar()\n    if d is not None and d < 0.25:\n        break\nstop()\n",
+   "solution_labels": [
+    "速く回って 60° まで",
+    "ゆっくり回って 82° で止める（止まるまでに少し回る）",
+    "止まって 10 回測り、平均で残りを直す（この芝では差 0.2 で 1 秒に約 58°）",
+    "コーンへ走って、LiDAR で止まる"
+   ],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "時間で回った",
+     "code": "motor(0.25, -0.25)\nwait(0.41)\nstop()\n",
+     "say": "この芝は深くて回りにくい。時間で決めると角度が足りないよ。heading() で向きを見ながら回ろう。",
+     "expect": "fail",
+     "rule": null,
+     "when": "not has('heading()')"
+    },
+    {
+     "name": "90 ぴったりで止めた",
+     "code": "motor(0.25, -0.25)\nwhile heading() < 90:\n    pass\nstop()\n",
+     "say": "止まるまでに回る勢いで 15° も回りすぎちゃう。ゆっくりにして、少し手前で止めよう。",
+     "expect": "fail",
+     "rule": null,
+     "when": "re('heading\\(\\)\\s*<\\s*90\\b')"
+    }
+   ],
+   "senpai_clear": "「何秒回るか」じゃなく「何度になるまで回るか」。センサで決めると、地面が変わっても強い。",
+   "explain": {
+    "goal": "free",
+    "goalRadius": 1.0,
+    "expectTurn": null,
+    "target": "cone"
+   },
+   "hud": [
+    "time",
+    "gap",
+    "speed",
+    "lidar",
+    "heading"
+   ],
+   "graphs": [
+    "speed",
+    "heading",
+    "lidar"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow",
+    "lidar"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 7.7,
+      "x": 3.867,
+      "y": -0.063,
+      "heading": 90.9,
+      "lines": 25,
+      "gap": 0.138
+     },
+     {
+      "t_stop": 7.5,
+      "x": 3.848,
+      "y": 0.024,
+      "heading": 89.6,
+      "lines": 25,
+      "gap": 0.153
+     },
+     {
+      "t_stop": 7.42,
+      "x": 3.854,
+      "y": -0.01,
+      "heading": 90.1,
+      "lines": 25,
+      "gap": 0.146
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "6-2",
+   "order": 27,
+   "chapter": 6,
+   "title": "北をまたぐと…",
+   "type": "fix",
+   "lang": "python",
+   "minutes": 8,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "去年の先輩が作った turn_right_to(target) は、ある向きでは動かない。北（0°/360°）をまたぐときと、左に回るときがあやしい。TARGET の向き（世界ごとにちがう）を向いて、その先のコーンへ行こう。",
+   "learn": {
+    "python": [
+     "% はあまり。(target - cur + 180) % 360 - 180 で、角度の差を −180〜180 にできる",
+     "関数が値を返す: def angle_diff(target, cur): return ..."
+    ],
+    "robot": [
+     "角度は 360° で一周する。359° と 1° は 2° しか離れていない",
+     "プラスなら右、マイナスなら左。近い方へ回る",
+     "最後の数度は、何回か測った平均で、時間で回して合わせる"
+    ]
+   },
+   "new": [
+    "%"
+   ],
+   "new_split": {
+    "command": [],
+    "syntax": [
+     "%"
+    ]
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "lidar",
+    "heading"
+   ],
+   "worlds": [
+    {
+     "name": "300°→30°",
+     "world": {
+      "venue": "河川敷の練習場（ゆるい坂・深い芝・砂）",
+      "venue_key": "kasen",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 300
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 1.405,
+        "y": 2.4335,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 30,
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {
+      "TARGET": 30
+     },
+     "judge": {}
+    },
+    {
+     "name": "340°→300°",
+     "world": {
+      "venue": "河川敷の練習場（ゆるい坂・深い芝・砂）",
+      "venue_key": "kasen",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 340
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": -2.4335,
+        "y": 1.405,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 30,
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {
+      "TARGET": 300
+     },
+     "judge": {}
+    },
+    {
+     "name": "20°→330°",
+     "world": {
+      "venue": "河川敷の練習場（ゆるい坂・深い芝・砂）",
+      "venue_key": "kasen",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 20
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": -1.405,
+        "y": 2.4335,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 30,
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {
+      "TARGET": 330
+     },
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "stopped and gap('cone') <= 0.5 and not touched('cone')",
+     "label": "すべての世界で TARGET 先のコーンの 50 cm 以内",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "gap('cone') <= 0.2 and not touched('cone')",
+     "label": "すべての世界で 20 cm 以内",
+     "need": "all",
+     "tip": "向きが数度ずれると、LiDAR の光がコーンを外れる。残りの角度も直そう",
+     "measure": "gap('cone')",
+     "better": "low",
+     "unit": "cm"
+    },
+    {
+     "expr": "turn_total <= 120",
+     "label": "すべての世界で近い向きに回る（合計 120° 以内）",
+     "need": "all",
+     "tip": "差を −180〜180 にすれば、いつも近い方へ回れるよ",
+     "measure": "turn_total",
+     "better": "low",
+     "unit": "°"
+    }
+   ],
+   "steps": [
+    {
+     "label": "TARGET の方を向いて走りだす",
+     "expr": "travel >= 0.5"
+    },
+    {
+     "label": "コーンの 1 m 以内まで近づく",
+     "expr": "min_gap('cone') <= 1.0"
+    },
+    {
+     "label": "コーンの 50 cm 以内で止まる",
+     "expr": "stopped and gap('cone') <= 0.5"
+    }
+   ],
+   "show": {
+    "expr": "gap('cone')",
+    "text": "コーンの {cm} cm 手前で止まった",
+    "world": "first_failed"
+   },
+   "starter": "def turn_right_to(target):\n    motor(0.15, -0.15)\n    while heading() < target - 10:\n        pass\n    stop()\n\nturn_right_to(TARGET)\nwait(0.3)\nmotor(0.6, 0.6)\nwhile True:\n    d = lidar()\n    if d is not None and d < 0.25:\n        break\nstop()\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "1 つ目の世界: 今 300° で TARGET は 30°。300 < 20 は成り立たないので、すぐぬけて回らない。",
+    "差を e = (target - heading() + 180) % 360 - 180 で出すと、300° → 30° は +90（右へ 90°）、340° → 300° は −40（左へ 40°）。",
+    "e の大きさが 9 より大きいあいだ、e がプラスなら右・マイナスなら左に回る。最後は残りの e だけ 0.1 の強さで回す（1 秒に約 78°）。"
+   ],
+   "solution": "def angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\ndef turn_to(target):\n    while True:\n        e = angle_diff(target, heading())\n        if abs(e) < 9:\n            break\n        if abs(e) > 30:\n            p = 0.25\n        else:\n            p = 0.1\n        if e > 0:\n            motor(p, -p)\n        else:\n            motor(-p, p)\n    stop()\n    wait(0.3)\n\n# 1. 近い向きへ回る（9° 以内まで）\nturn_to(TARGET)\n# 2. 残りの角度を 5 回測って平均し、時間で回る（差 0.2 は 1 秒に約 78°）\ntotal = 0\nfor i in range(5):\n    total = total + angle_diff(TARGET, heading())\ne = total / 5\nif e > 0:\n    motor(0.1, -0.1)\nelse:\n    motor(-0.1, 0.1)\nwait(abs(e) / 77.8)\nstop()\nwait(0.3)\n# 3. コーンへ走って、LiDAR で止まる\nmotor(0.6, 0.6)\nwhile True:\n    d = lidar()\n    if d is not None and d < 0.25:\n        break\nstop()\n",
+   "solution_labels": [
+    "近い向きへ回る（9° 以内まで）",
+    "残りの角度を 5 回測って平均し、時間で回る（差 0.2 は 1 秒に約 78°）",
+    "コーンへ走って、LiDAR で止まる"
+   ],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "引き算だけ",
+     "code": "def turn_to(target):\n    while True:\n        e = target - heading()\n        if abs(e) < 9:\n            break\n        if e > 0:\n            motor(0.1, -0.1)\n        else:\n            motor(-0.1, 0.1)\n    stop()\n    wait(0.3)\n\nturn_to(TARGET)\nmotor(0.6, 0.6)\nwhile True:\n    d = lidar()\n    if d is not None and d < 0.25:\n        break\nstop()\n",
+     "say": "ただの引き算だと 300° → 30° が −270 になって遠回り。% 360 で −180〜180 に直そう。",
+     "expect": "star3fail",
+     "rule": "B_HEADING_WRAP",
+     "when": "has('target - heading()') and not has('% 360')"
+    }
+   ],
+   "senpai_clear": "角度の差の 1 行は、本物の機体のプログラムにも必ず入っている「おまじない」だよ。",
+   "explain": {
+    "goal": "stop_at_cone",
+    "goalRadius": 0.5,
+    "expectTurn": null,
+    "target": "cone"
+   },
+   "hud": [
+    "time",
+    "gap",
+    "speed",
+    "lidar",
+    "heading"
+   ],
+   "graphs": [
+    "speed",
+    "heading",
+    "lidar"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow",
+    "lidar"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 5.36,
+      "x": 1.244,
+      "y": 2.048,
+      "heading": 31.3,
+      "lines": 35,
+      "gap": 0.108
+     },
+     {
+      "t_stop": 4.98,
+      "x": -2.047,
+      "y": 1.153,
+      "heading": 299.4,
+      "lines": 35,
+      "gap": 0.151
+     },
+     {
+      "t_stop": 5.08,
+      "x": -1.245,
+      "y": 2.024,
+      "heading": 328.4,
+      "lines": 35,
+      "gap": 0.13
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "6-3",
+   "order": 28,
+   "chapter": 6,
+   "title": "エンコーダで距離を測る",
+   "type": "make",
+   "lang": "python",
+   "minutes": 8,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "5 m 先の旗の上で止まりたい。でも途中に柔らかい砂があって、そこだけ遅くなる（場所は世界ごとにちがう）。時間ではなく、車輪が回った距離で止まろう。",
+   "learn": {
+    "python": [
+     "start = odometer() で最初の値を覚えておき、odometer() - start で「ここから走った距離」",
+     "import math と math.pi（円周率）"
+    ],
+    "robot": [
+     "エンコーダは車輪の回転を数えるセンサ。車輪 1 回転で 2000 カウント、直径 12.7 cm（1 周 0.399 m）",
+     "距離 ＝ カウント ÷ 2000 × π × 0.127。odometer() はそれを計算ずみで返す",
+     "砂ですべると、少し多めに数える"
+    ]
+   },
+   "new": [
+    "odometer",
+    "encoder",
+    "import math"
+   ],
+   "new_reason": "odometer と encoder は同じ車輪のセンサの 2 つの読み方なので一緒に出す。import math は★3（encoder から自分で m に直す）だけで使い、クリアには要らない。",
+   "new_split": {
+    "command": [
+     "odometer",
+     "encoder"
+    ],
+    "syntax": [
+     "import math"
+    ]
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "lidar",
+    "heading",
+    "odometer",
+    "encoder"
+   ],
+   "worlds": [
+    {
+     "name": "砂 1.0〜3.0 m",
+     "world": {
+      "venue": "河川敷の練習場（ゆるい坂・深い芝・砂）",
+      "venue_key": "kasen",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "F",
+        "type": "flag",
+        "x": 0,
+        "y": 5.0,
+        "label": "5 m の旗"
+       },
+       {
+        "id": "sand",
+        "type": "area",
+        "kind": "sand",
+        "rect": [
+         -1,
+         1.0,
+         1,
+         3.0
+        ],
+        "speed": 0.55,
+        "slip": 0.02
+       }
+      ],
+      "time_limit": 40,
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {},
+     "judge": {}
+    },
+    {
+     "name": "砂 2.0〜4.5 m",
+     "world": {
+      "venue": "河川敷の練習場（ゆるい坂・深い芝・砂）",
+      "venue_key": "kasen",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "F",
+        "type": "flag",
+        "x": 0,
+        "y": 5.0,
+        "label": "5 m の旗"
+       },
+       {
+        "id": "sand",
+        "type": "area",
+        "kind": "sand",
+        "rect": [
+         -1,
+         2.0,
+         1,
+         4.5
+        ],
+        "speed": 0.55,
+        "slip": 0.02
+       }
+      ],
+      "time_limit": 40,
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {},
+     "judge": {}
+    },
+    {
+     "name": "砂 3.5〜5.5 m",
+     "world": {
+      "venue": "河川敷の練習場（ゆるい坂・深い芝・砂）",
+      "venue_key": "kasen",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "F",
+        "type": "flag",
+        "x": 0,
+        "y": 5.0,
+        "label": "5 m の旗"
+       },
+       {
+        "id": "sand",
+        "type": "area",
+        "kind": "sand",
+        "rect": [
+         -1,
+         3.5,
+         1,
+         5.5
+        ],
+        "speed": 0.55,
+        "slip": 0.02
+       }
+      ],
+      "time_limit": 40,
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {},
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "stopped and dist('F') <= 0.3",
+     "label": "すべての世界で、旗の 30 cm 以内で止まる",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "dist('F') <= 0.1",
+     "label": "すべての世界で 10 cm 以内",
+     "need": "all",
+     "tip": "止まるまでのすべり（8 cm ほど）を見こんで、少し手前で止めよう",
+     "measure": "dist('F')",
+     "better": "low",
+     "unit": "cm"
+    },
+    {
+     "expr": "calls('encoder') >= 1 and calls('odometer') == 0",
+     "label": "すべての世界で、encoder だけで測る",
+     "need": "all",
+     "tip": "車輪 1 回転は 2000 カウント、1 周は π × 0.127 m。計算で m に直そう",
+     "no_measure": "書き方で決まる（数では測れない）"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "dist('F')",
+    "text": "目標まで {cm} cm",
+    "world": "first_failed"
+   },
+   "starter": "start = odometer()\nmotor(0.6, 0.6)\n# odometer() - start が 5 m 近くになるまで走ろう\nstop()\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "while odometer() - start < 5: pass で 5 m まで走れる。止まるまでに 8 cm すべるから、少し手前で止めよう。",
+    "encoder() は (左, 右) の 2 つの数を返す: l, r = encoder()。平均 (l + r) / 2 を m に直す。",
+    "def dist_m(): l, r = encoder() → return (l + r) / 2 / 2000 * math.pi * 0.127。while dist_m() - start < 4.92: pass"
+   ],
+   "solution": "import math\n\n# 1. カウントを m に直す関数\ndef dist_m():\n    l, r = encoder()\n    return (l + r) / 2 / 2000 * math.pi * 0.127\n\n# 2. 5 m 近くまで走って止まる\nstart = dist_m()\nmotor(0.6, 0.6)\nwhile dist_m() - start < 4.92:\n    pass\nstop()\n",
+   "solution_labels": [
+    "カウントを m に直す関数",
+    "5 m 近くまで走って止まる"
+   ],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "時間で走った",
+     "code": "motor(0.6, 0.6)\nwait(5 / 0.66)\nstop()\n",
+     "say": "砂の上では遅くなるから、時間で決めると手前で止まっちゃう。走った距離で止めよう。",
+     "expect": "fail",
+     "rule": "B_WAIT_SHORT",
+     "when": "moved > 1 and not has('odometer')"
+    },
+    {
+     "name": "start を引き忘れた",
+     "code": "motor(0.6, 0.6)\nwhile odometer() < 4.92:\n    pass\nstop()\n",
+     "say": "この面は 0 から始まるから動くけど、途中から測るときは start を引かないと、それまでの距離が混ざるよ。",
+     "expect": "pass",
+     "rule": null,
+     "when": "moved > 1 and has('odometer') and not re('odometer\\(\\)\\s*-')"
+    }
+   ],
+   "senpai_clear": "時間 → 距離。センサで止まると、砂でも芝でも同じ所で止まれる。",
+   "explain": {
+    "goal": "stop_at_cone",
+    "goalRadius": 0.3,
+    "expectTurn": null,
+    "target": "F"
+   },
+   "hud": [
+    "time",
+    "speed",
+    "lidar",
+    "heading"
+   ],
+   "graphs": [
+    "speed",
+    "heading",
+    "lidar"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow",
+    "lidar"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 10.5,
+      "x": 0,
+      "y": 4.959,
+      "heading": 0,
+      "lines": 9
+     },
+     {
+      "t_stop": 11.12,
+      "x": 0,
+      "y": 4.947,
+      "heading": 0,
+      "lines": 9
+     },
+     {
+      "t_stop": 9.6,
+      "x": 0,
+      "y": 4.934,
+      "heading": 0,
+      "lines": 9
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "6-4",
+   "order": 29,
+   "chapter": 6,
+   "title": "P 制御でまっすぐ",
+   "type": "make",
+   "lang": "python",
+   "minutes": 12,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "石の列の間を北へ 10 m。同じ数を入れても、左右のモーターの差とゆるい坂で、まっすぐ走らない（ずれ方は世界ごとにちがう）。ここの方位センサは値をならしてあるぶん、0.25 秒おくれて届く。向きのずれに比例して直す「P 制御」でまっすぐ走ろう。",
+   "learn": {
+    "python": [
+     "ずれ e を計算 → 曲げる強さ turn = K * e → motor(BASE + turn, BASE - turn) を何度もくり返す",
+     "数（K）を変えて動きを比べる（チューニング）",
+     "ずれの合計: total = total + e * (t - t_prev)。「ずれ × たった時間」を足していく"
+    ],
+    "robot": [
+     "向き: e = angle_diff(TARGET, heading())。右へずれると e はマイナス → turn もマイナス → 左が遅く右が速くなって、左へ戻る",
+     "P 制御: ずれに比例して直す。K が小さいとじわじわ・大きいと行きすぎて戻りすぎ、左右に大きくふれる（発振）",
+     "P だけだと、坂のように押され続けると少しずれが残る。ずれの合計（I）も足すと消せる（PI 制御）",
+     "e * (t - t_prev) と時間を掛けるのは、くり返しの速さが変わっても同じ強さで足すため（回数で足すと、速く回るほど大きくなる）"
+    ]
+   },
+   "new": [
+    "now",
+    "P 制御"
+   ],
+   "new_split": {
+    "command": [
+     "now"
+    ],
+    "syntax": [
+     "P 制御"
+    ]
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "now",
+    "lidar",
+    "heading",
+    "odometer",
+    "encoder"
+   ],
+   "worlds": [
+    {
+     "name": "右が 6% 弱い",
+     "world": {
+      "venue": "河川敷の練習場（ゆるい坂・深い芝・砂）",
+      "venue_key": "kasen",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "L0",
+        "type": "rock",
+        "x": -0.55,
+        "y": 1.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R0",
+        "type": "rock",
+        "x": 0.55,
+        "y": 1.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L1",
+        "type": "rock",
+        "x": -0.55,
+        "y": 1.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R1",
+        "type": "rock",
+        "x": 0.55,
+        "y": 1.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L2",
+        "type": "rock",
+        "x": -0.55,
+        "y": 2.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R2",
+        "type": "rock",
+        "x": 0.55,
+        "y": 2.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L3",
+        "type": "rock",
+        "x": -0.55,
+        "y": 2.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R3",
+        "type": "rock",
+        "x": 0.55,
+        "y": 2.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L4",
+        "type": "rock",
+        "x": -0.55,
+        "y": 3.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R4",
+        "type": "rock",
+        "x": 0.55,
+        "y": 3.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L5",
+        "type": "rock",
+        "x": -0.55,
+        "y": 3.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R5",
+        "type": "rock",
+        "x": 0.55,
+        "y": 3.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L6",
+        "type": "rock",
+        "x": -0.55,
+        "y": 4.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R6",
+        "type": "rock",
+        "x": 0.55,
+        "y": 4.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L7",
+        "type": "rock",
+        "x": -0.55,
+        "y": 4.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R7",
+        "type": "rock",
+        "x": 0.55,
+        "y": 4.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L8",
+        "type": "rock",
+        "x": -0.55,
+        "y": 5.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R8",
+        "type": "rock",
+        "x": 0.55,
+        "y": 5.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L9",
+        "type": "rock",
+        "x": -0.55,
+        "y": 5.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R9",
+        "type": "rock",
+        "x": 0.55,
+        "y": 5.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L10",
+        "type": "rock",
+        "x": -0.55,
+        "y": 6.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R10",
+        "type": "rock",
+        "x": 0.55,
+        "y": 6.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L11",
+        "type": "rock",
+        "x": -0.55,
+        "y": 6.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R11",
+        "type": "rock",
+        "x": 0.55,
+        "y": 6.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L12",
+        "type": "rock",
+        "x": -0.55,
+        "y": 7.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R12",
+        "type": "rock",
+        "x": 0.55,
+        "y": 7.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L13",
+        "type": "rock",
+        "x": -0.55,
+        "y": 7.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R13",
+        "type": "rock",
+        "x": 0.55,
+        "y": 7.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L14",
+        "type": "rock",
+        "x": -0.55,
+        "y": 8.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R14",
+        "type": "rock",
+        "x": 0.55,
+        "y": 8.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L15",
+        "type": "rock",
+        "x": -0.55,
+        "y": 8.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R15",
+        "type": "rock",
+        "x": 0.55,
+        "y": 8.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L16",
+        "type": "rock",
+        "x": -0.55,
+        "y": 9.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R16",
+        "type": "rock",
+        "x": 0.55,
+        "y": 9.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L17",
+        "type": "rock",
+        "x": -0.55,
+        "y": 9.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R17",
+        "type": "rock",
+        "x": 0.55,
+        "y": 9.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L18",
+        "type": "rock",
+        "x": -0.55,
+        "y": 10.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R18",
+        "type": "rock",
+        "x": 0.55,
+        "y": 10.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L19",
+        "type": "rock",
+        "x": -0.55,
+        "y": 10.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R19",
+        "type": "rock",
+        "x": 0.55,
+        "y": 10.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "goal",
+        "type": "flag",
+        "x": 0,
+        "y": 10.0,
+        "label": "10 m の旗"
+       },
+       {
+        "id": "lane",
+        "type": "line",
+        "x1": 0,
+        "y1": 0,
+        "x2": 0,
+        "y2": 10
+       }
+      ],
+      "time_limit": 40,
+      "motor": {
+       "left": 1.0,
+       "right": 0.94
+      },
+      "slope": {
+       "deg": 2,
+       "down": 90
+      },
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "ground": {
+       "turn": 0.25
+      },
+      "sensor": {
+       "heading_latency": 0.25,
+       "heading_noise": 0.3
+      }
+     },
+     "inject": {},
+     "judge": {}
+    },
+    {
+     "name": "右が 3% 弱い",
+     "world": {
+      "venue": "河川敷の練習場（ゆるい坂・深い芝・砂）",
+      "venue_key": "kasen",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "L0",
+        "type": "rock",
+        "x": -0.55,
+        "y": 1.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R0",
+        "type": "rock",
+        "x": 0.55,
+        "y": 1.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L1",
+        "type": "rock",
+        "x": -0.55,
+        "y": 1.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R1",
+        "type": "rock",
+        "x": 0.55,
+        "y": 1.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L2",
+        "type": "rock",
+        "x": -0.55,
+        "y": 2.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R2",
+        "type": "rock",
+        "x": 0.55,
+        "y": 2.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L3",
+        "type": "rock",
+        "x": -0.55,
+        "y": 2.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R3",
+        "type": "rock",
+        "x": 0.55,
+        "y": 2.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L4",
+        "type": "rock",
+        "x": -0.55,
+        "y": 3.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R4",
+        "type": "rock",
+        "x": 0.55,
+        "y": 3.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L5",
+        "type": "rock",
+        "x": -0.55,
+        "y": 3.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R5",
+        "type": "rock",
+        "x": 0.55,
+        "y": 3.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L6",
+        "type": "rock",
+        "x": -0.55,
+        "y": 4.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R6",
+        "type": "rock",
+        "x": 0.55,
+        "y": 4.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L7",
+        "type": "rock",
+        "x": -0.55,
+        "y": 4.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R7",
+        "type": "rock",
+        "x": 0.55,
+        "y": 4.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L8",
+        "type": "rock",
+        "x": -0.55,
+        "y": 5.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R8",
+        "type": "rock",
+        "x": 0.55,
+        "y": 5.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L9",
+        "type": "rock",
+        "x": -0.55,
+        "y": 5.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R9",
+        "type": "rock",
+        "x": 0.55,
+        "y": 5.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L10",
+        "type": "rock",
+        "x": -0.55,
+        "y": 6.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R10",
+        "type": "rock",
+        "x": 0.55,
+        "y": 6.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L11",
+        "type": "rock",
+        "x": -0.55,
+        "y": 6.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R11",
+        "type": "rock",
+        "x": 0.55,
+        "y": 6.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L12",
+        "type": "rock",
+        "x": -0.55,
+        "y": 7.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R12",
+        "type": "rock",
+        "x": 0.55,
+        "y": 7.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L13",
+        "type": "rock",
+        "x": -0.55,
+        "y": 7.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R13",
+        "type": "rock",
+        "x": 0.55,
+        "y": 7.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L14",
+        "type": "rock",
+        "x": -0.55,
+        "y": 8.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R14",
+        "type": "rock",
+        "x": 0.55,
+        "y": 8.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L15",
+        "type": "rock",
+        "x": -0.55,
+        "y": 8.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R15",
+        "type": "rock",
+        "x": 0.55,
+        "y": 8.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L16",
+        "type": "rock",
+        "x": -0.55,
+        "y": 9.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R16",
+        "type": "rock",
+        "x": 0.55,
+        "y": 9.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L17",
+        "type": "rock",
+        "x": -0.55,
+        "y": 9.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R17",
+        "type": "rock",
+        "x": 0.55,
+        "y": 9.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L18",
+        "type": "rock",
+        "x": -0.55,
+        "y": 10.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R18",
+        "type": "rock",
+        "x": 0.55,
+        "y": 10.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L19",
+        "type": "rock",
+        "x": -0.55,
+        "y": 10.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R19",
+        "type": "rock",
+        "x": 0.55,
+        "y": 10.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "goal",
+        "type": "flag",
+        "x": 0,
+        "y": 10.0,
+        "label": "10 m の旗"
+       },
+       {
+        "id": "lane",
+        "type": "line",
+        "x1": 0,
+        "y1": 0,
+        "x2": 0,
+        "y2": 10
+       }
+      ],
+      "time_limit": 40,
+      "motor": {
+       "left": 1.0,
+       "right": 0.97
+      },
+      "slope": {
+       "deg": 2,
+       "down": 90
+      },
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "ground": {
+       "turn": 0.25
+      },
+      "sensor": {
+       "heading_latency": 0.25,
+       "heading_noise": 0.3
+      }
+     },
+     "inject": {},
+     "judge": {}
+    },
+    {
+     "name": "右が 4% 強い",
+     "world": {
+      "venue": "河川敷の練習場（ゆるい坂・深い芝・砂）",
+      "venue_key": "kasen",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "L0",
+        "type": "rock",
+        "x": -0.55,
+        "y": 1.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R0",
+        "type": "rock",
+        "x": 0.55,
+        "y": 1.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L1",
+        "type": "rock",
+        "x": -0.55,
+        "y": 1.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R1",
+        "type": "rock",
+        "x": 0.55,
+        "y": 1.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L2",
+        "type": "rock",
+        "x": -0.55,
+        "y": 2.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R2",
+        "type": "rock",
+        "x": 0.55,
+        "y": 2.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L3",
+        "type": "rock",
+        "x": -0.55,
+        "y": 2.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R3",
+        "type": "rock",
+        "x": 0.55,
+        "y": 2.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L4",
+        "type": "rock",
+        "x": -0.55,
+        "y": 3.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R4",
+        "type": "rock",
+        "x": 0.55,
+        "y": 3.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L5",
+        "type": "rock",
+        "x": -0.55,
+        "y": 3.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R5",
+        "type": "rock",
+        "x": 0.55,
+        "y": 3.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L6",
+        "type": "rock",
+        "x": -0.55,
+        "y": 4.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R6",
+        "type": "rock",
+        "x": 0.55,
+        "y": 4.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L7",
+        "type": "rock",
+        "x": -0.55,
+        "y": 4.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R7",
+        "type": "rock",
+        "x": 0.55,
+        "y": 4.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L8",
+        "type": "rock",
+        "x": -0.55,
+        "y": 5.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R8",
+        "type": "rock",
+        "x": 0.55,
+        "y": 5.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L9",
+        "type": "rock",
+        "x": -0.55,
+        "y": 5.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R9",
+        "type": "rock",
+        "x": 0.55,
+        "y": 5.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L10",
+        "type": "rock",
+        "x": -0.55,
+        "y": 6.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R10",
+        "type": "rock",
+        "x": 0.55,
+        "y": 6.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L11",
+        "type": "rock",
+        "x": -0.55,
+        "y": 6.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R11",
+        "type": "rock",
+        "x": 0.55,
+        "y": 6.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L12",
+        "type": "rock",
+        "x": -0.55,
+        "y": 7.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R12",
+        "type": "rock",
+        "x": 0.55,
+        "y": 7.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L13",
+        "type": "rock",
+        "x": -0.55,
+        "y": 7.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R13",
+        "type": "rock",
+        "x": 0.55,
+        "y": 7.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L14",
+        "type": "rock",
+        "x": -0.55,
+        "y": 8.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R14",
+        "type": "rock",
+        "x": 0.55,
+        "y": 8.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L15",
+        "type": "rock",
+        "x": -0.55,
+        "y": 8.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R15",
+        "type": "rock",
+        "x": 0.55,
+        "y": 8.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L16",
+        "type": "rock",
+        "x": -0.55,
+        "y": 9.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R16",
+        "type": "rock",
+        "x": 0.55,
+        "y": 9.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L17",
+        "type": "rock",
+        "x": -0.55,
+        "y": 9.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R17",
+        "type": "rock",
+        "x": 0.55,
+        "y": 9.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L18",
+        "type": "rock",
+        "x": -0.55,
+        "y": 10.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R18",
+        "type": "rock",
+        "x": 0.55,
+        "y": 10.0,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "L19",
+        "type": "rock",
+        "x": -0.55,
+        "y": 10.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "R19",
+        "type": "rock",
+        "x": 0.55,
+        "y": 10.5,
+        "r": 0.08,
+        "h": 0.2
+       },
+       {
+        "id": "goal",
+        "type": "flag",
+        "x": 0,
+        "y": 10.0,
+        "label": "10 m の旗"
+       },
+       {
+        "id": "lane",
+        "type": "line",
+        "x1": 0,
+        "y1": 0,
+        "x2": 0,
+        "y2": 10
+       }
+      ],
+      "time_limit": 40,
+      "motor": {
+       "left": 1.0,
+       "right": 1.04
+      },
+      "slope": {
+       "deg": 2,
+       "down": 90
+      },
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "ground": {
+       "turn": 0.25
+      },
+      "sensor": {
+       "heading_latency": 0.25,
+       "heading_noise": 0.3
+      }
+     },
+     "inject": {},
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "stopped and dist('goal') <= 0.6 and bumps == 0",
+     "label": "すべての世界で石に当てず、10 m の旗の 60 cm 以内",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "max_offset('lane') <= 0.30",
+     "label": "すべての世界で、まん中の線からのずれ 30 cm 以内",
+     "need": "all",
+     "tip": "K を 0.01 から少しずつ大きくして、ずれが小さくなるところをさがそう（大きすぎると左右にふらふら）",
+     "measure": "max_offset('lane')",
+     "better": "low",
+     "unit": "cm"
+    },
+    {
+     "expr": "max_offset('lane') <= 0.08 and dist('goal') <= 0.3",
+     "label": "すべての世界で、ずれ 8 cm 以内・旗の 30 cm 以内",
+     "need": "all",
+     "measure": "max_offset('lane')",
+     "better": "low",
+     "unit": "cm",
+     "tip": "坂に押され続けると、P だけでは 10 cm 以上ずれが残る。ずれの合計（I）も使おう"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "dist('goal')",
+    "text": "目標まで {cm} cm",
+    "world": "first_failed"
+   },
+   "starter": "def angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\nTARGET = 0     # 北へまっすぐ\nK = 0.0        # ← 0.01 くらいから試そう\nBASE = 0.6\nstart = odometer()\nwhile odometer() - start < 9.92:\n    e = angle_diff(TARGET, heading())\n    turn = K * e\n    if turn > 0.3:       # 曲げる強さの上限（これより強いと、その場で回ってしまう）\n        turn = 0.3\n    if turn < -0.3:\n        turn = -0.3\n    motor(BASE + turn, BASE - turn)\nstop()\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": {
+    "q": "まず予想: スターターのまま実行すると、1 つ目の世界ではどうなる？",
+    "choices": [
+     "まっすぐ旗へ着く",
+     "右へそれて石にぶつかる",
+     "左へそれて石にぶつかる"
+    ],
+    "answer": 1,
+    "why": "この機体は右のモーターが 6% 弱く、坂も東（右）へ下っている。同じ数を入れても右へ曲がる。",
+    "check": "seed != 1 or (bumps > 0 and x_end > 0)"
+   },
+   "hints": [
+    "K = 0 だと何も直さない。K = 0.01、0.03、0.1 と変えて、走り方を比べよう（大きすぎると左右にふらふら）。",
+    "K = 0.03 くらいで★2。★3 は「ずれの合計」total を足す: total = total + e * (t - t_prev)、turn = K * e + KI * total。",
+    "K = 0.02・KI = 0.02 くらい。t = now() で今の時刻（秒）が分かる。t_prev は 1 回前の時刻。"
+   ],
+   "solution": "def angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\n# 1. 向きと強さを決める\nTARGET = 0     # 北へまっすぐ\nK = 0.02       # ずれ 1° あたりの曲げる強さ\nKI = 0.02      # ずれの合計（I）の強さ\nBASE = 0.6\n# 2. ずれの合計を用意する\ntotal = 0\nt_prev = now()\nstart = odometer()\n# 3. ずれに比例して直しながら走る\nwhile odometer() - start < 9.92:\n    e = angle_diff(TARGET, heading())\n    t = now()\n    total = total + e * (t - t_prev)\n    t_prev = t\n    turn = K * e + KI * total\n    if turn > 0.3:       # 曲げる強さの上限（これより強いと、その場で回ってしまう）\n        turn = 0.3\n    if turn < -0.3:\n        turn = -0.3\n    motor(BASE + turn, BASE - turn)\nstop()\n",
+   "solution_labels": [
+    "向きと強さを決める",
+    "ずれの合計を用意する",
+    "ずれに比例して直しながら走る"
+   ],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "P だけ（K = 0.03）",
+     "code": "def angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\nTARGET = 0     # 北へまっすぐ\nK = 0.03       # ずれ 1° あたりの曲げる強さ\nKI = 0.0      # ずれの合計（I）の強さ\nBASE = 0.6\ntotal = 0\nt_prev = now()\nstart = odometer()\nwhile odometer() - start < 9.92:\n    e = angle_diff(TARGET, heading())\n    t = now()\n    total = total + e * (t - t_prev)\n    t_prev = t\n    turn = K * e + KI * total\n    if turn > 0.3:       # 曲げる強さの上限（これより強いと、その場で回ってしまう）\n        turn = 0.3\n    if turn < -0.3:\n        turn = -0.3\n    motor(BASE + turn, BASE - turn)\nstop()\n",
+     "say": "P だけでも★2 まで。坂に押され続けるとずれが残るから、★3 はずれの合計（I）を足そう。",
+     "expect": "star3fail",
+     "rule": null,
+     "when": "re('^KI[ \\t]*=[ \\t]*0(\\.0*)?[ \\t]*$') and bump == 0 and not rule('B_OSCILLATION')"
+    },
+    {
+     "name": "K が大きすぎ",
+     "code": "def angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\nTARGET = 0     # 北へまっすぐ\nK = 0.3       # ずれ 1° あたりの曲げる強さ\nKI = 0.0      # ずれの合計（I）の強さ\nBASE = 0.6\ntotal = 0\nt_prev = now()\nstart = odometer()\nwhile odometer() - start < 9.92:\n    e = angle_diff(TARGET, heading())\n    t = now()\n    total = total + e * (t - t_prev)\n    t_prev = t\n    turn = K * e + KI * total\n    if turn > 0.3:       # 曲げる強さの上限（これより強いと、その場で回ってしまう）\n        turn = 0.3\n    if turn < -0.3:\n        turn = -0.3\n    motor(BASE + turn, BASE - turn)\nstop()\n",
+     "say": "K が大きすぎると、行きすぎて戻りすぎ、左右にふらふら（発振）。少しずつ大きくして、ちょうどいい所を探そう。",
+     "expect": "any",
+     "rule": "B_OSCILLATION",
+     "when": "rule('B_OSCILLATION') and not re('motor\\(BASE\\s*-\\s*turn')"
+    },
+    {
+     "name": "符号が逆",
+     "code": "def angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\nTARGET = 0     # 北へまっすぐ\nK = 0.03       # ずれ 1° あたりの曲げる強さ\nKI = 0.02      # ずれの合計（I）の強さ\nBASE = 0.6\ntotal = 0\nt_prev = now()\nstart = odometer()\nwhile odometer() - start < 9.92:\n    e = angle_diff(TARGET, heading())\n    t = now()\n    total = total + e * (t - t_prev)\n    t_prev = t\n    turn = K * e + KI * total\n    if turn > 0.3:       # 曲げる強さの上限（これより強いと、その場で回ってしまう）\n        turn = 0.3\n    if turn < -0.3:\n        turn = -0.3\n    motor(BASE - turn, BASE + turn)\nstop()\n",
+     "say": "直す向きが逆だと、ずれるほどもっと曲がる。右にずれたら（e がマイナス）左を遅くする向きか確かめよう。",
+     "expect": "fail",
+     "rule": "B_P_SIGN",
+     "when": "rule('B_P_SIGN') or re('motor\\(BASE\\s*-\\s*turn')"
+    },
+    {
+     "name": "dt を掛け忘れた",
+     "rule": null,
+     "expect": "fail",
+     "when": "re('total\\s*=\\s*total\\s*\\+\\s*e[ \\t]*$')",
+     "say": "ずれの合計がすぐ大きくなりすぎたよ。e に時間（t - t_prev）を掛けた？",
+     "fix": "ずれの合計は「ずれ × たった時間」を足す: total = total + e * (t - t_prev)。回数で足すと、くり返しが速いほど大きくなる。",
+     "code": "def angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\n# 1. 向きと強さを決める\nTARGET = 0     # 北へまっすぐ\nK = 0.02       # ずれ 1° あたりの曲げる強さ\nKI = 0.02      # ずれの合計（I）の強さ\nBASE = 0.6\n# 2. ずれの合計を用意する\ntotal = 0\nt_prev = now()\nstart = odometer()\n# 3. ずれに比例して直しながら走る\nwhile odometer() - start < 9.92:\n    e = angle_diff(TARGET, heading())\n    t = now()\n    total = total + e\n    t_prev = t\n    turn = K * e + KI * total\n    if turn > 0.3:       # 曲げる強さの上限（これより強いと、その場で回ってしまう）\n        turn = 0.3\n    if turn < -0.3:\n        turn = -0.3\n    motor(BASE + turn, BASE - turn)\nstop()\n"
+    }
+   ],
+   "senpai_clear": "P 制御！ 本物の機体でも、まっすぐ走る部分はこの数行なんだ。",
+   "explain": {
+    "goal": "stop_at_cone",
+    "goalRadius": 0.6,
+    "expectTurn": null,
+    "target": "goal"
+   },
+   "hud": [
+    "time",
+    "speed",
+    "lidar",
+    "heading"
+   ],
+   "graphs": [
+    "speed",
+    "heading",
+    "lidar"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow",
+    "lidar"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 16.12,
+      "x": 0.017,
+      "y": 9.993,
+      "heading": 355.6,
+      "lines": 21
+     },
+     {
+      "t_stop": 15.86,
+      "x": 0.014,
+      "y": 9.996,
+      "heading": 355.8,
+      "lines": 21
+     },
+     {
+      "t_stop": 15.32,
+      "x": -0.005,
+      "y": 10.005,
+      "heading": 357.7,
+      "lines": 21
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "6-5",
+   "order": 30,
+   "chapter": 6,
+   "title": "坂の上の四角",
+   "type": "boss",
+   "lang": "python",
+   "minutes": 14,
+   "checkpoint": true,
+   "carry_from": null,
+   "story": "ゆるい坂の上で、1 辺 4 m の四角を走ってスタートに戻ろう。モーターの差は世界ごとにちがい、砂の所もある。深い芝で、方位は 0.2 秒おくれて届く。turn_to と、まっすぐ走る straight を作って組み合わせよう。（チェックポイント面）",
+   "learn": {
+    "python": [
+     "関数の中で while・if を使い、引数で向きと距離を渡す",
+     "for target in [0, 90, 180, 270]: のように、リストを直接 for に書ける"
+    ],
+    "robot": [
+     "向きは heading()、距離は odometer()、まっすぐは P 制御。時間に頼らない走り方"
+    ]
+   },
+   "new": [],
+   "new_split": {
+    "command": [],
+    "syntax": []
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "now",
+    "lidar",
+    "heading",
+    "odometer",
+    "encoder"
+   ],
+   "worlds": [
+    {
+     "name": "右 5% 弱い",
+     "world": {
+      "venue": "河川敷の練習場（ゆるい坂・深い芝・砂）",
+      "venue_key": "kasen",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "c1",
+        "type": "flag",
+        "x": 0,
+        "y": 4,
+        "label": "角 1"
+       },
+       {
+        "id": "c2",
+        "type": "flag",
+        "x": 4,
+        "y": 4,
+        "label": "角 2"
+       },
+       {
+        "id": "c3",
+        "type": "flag",
+        "x": 4,
+        "y": 0,
+        "label": "角 3"
+       }
+      ],
+      "time_limit": 60,
+      "motor": {
+       "left": 1.0,
+       "right": 0.95
+      },
+      "slope": {
+       "deg": 3,
+       "down": 90
+      },
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "ground": {
+       "turn": 0.25
+      },
+      "sensor": {
+       "heading_latency": 0.2,
+       "heading_noise": 0.3
+      }
+     },
+     "inject": {},
+     "judge": {}
+    },
+    {
+     "name": "右 4% 強い・砂",
+     "world": {
+      "venue": "河川敷の練習場（ゆるい坂・深い芝・砂）",
+      "venue_key": "kasen",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "c1",
+        "type": "flag",
+        "x": 0,
+        "y": 4,
+        "label": "角 1"
+       },
+       {
+        "id": "c2",
+        "type": "flag",
+        "x": 4,
+        "y": 4,
+        "label": "角 2"
+       },
+       {
+        "id": "c3",
+        "type": "flag",
+        "x": 4,
+        "y": 0,
+        "label": "角 3"
+       },
+       {
+        "id": "sand",
+        "type": "area",
+        "kind": "sand",
+        "rect": [
+         3.4,
+         1.0,
+         4.6,
+         3.0
+        ],
+        "speed": 0.6,
+        "slip": 0.02
+       }
+      ],
+      "time_limit": 60,
+      "motor": {
+       "left": 1.0,
+       "right": 1.04
+      },
+      "slope": {
+       "deg": 3,
+       "down": 90
+      },
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "ground": {
+       "turn": 0.25
+      },
+      "sensor": {
+       "heading_latency": 0.2,
+       "heading_noise": 0.3
+      }
+     },
+     "inject": {},
+     "judge": {}
+    },
+    {
+     "name": "左 3% 弱い",
+     "world": {
+      "venue": "河川敷の練習場（ゆるい坂・深い芝・砂）",
+      "venue_key": "kasen",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "c1",
+        "type": "flag",
+        "x": 0,
+        "y": 4,
+        "label": "角 1"
+       },
+       {
+        "id": "c2",
+        "type": "flag",
+        "x": 4,
+        "y": 4,
+        "label": "角 2"
+       },
+       {
+        "id": "c3",
+        "type": "flag",
+        "x": 4,
+        "y": 0,
+        "label": "角 3"
+       }
+      ],
+      "time_limit": 60,
+      "motor": {
+       "left": 0.97,
+       "right": 1.0
+      },
+      "slope": {
+       "deg": 3,
+       "down": 90
+      },
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "ground": {
+       "turn": 0.25
+      },
+      "sensor": {
+       "heading_latency": 0.2,
+       "heading_noise": 0.3
+      }
+     },
+     "inject": {},
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "visited_in_order(['c1', 'c2', 'c3'], 0.5) and stopped and dist('start') <= 0.6 and bumps == 0",
+     "label": "すべての世界で、3 つの角を通りスタートの 60 cm 以内",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "dist('start') <= 0.3 and t_stop <= 45",
+     "label": "すべての世界で 30 cm 以内・45 秒以内",
+     "need": "all",
+     "tip": "辺の長さと、止まる手前の距離を見直そう。待ち時間にむだはないかな？",
+     "measure": "dist('start')",
+     "better": "low",
+     "unit": "cm"
+    },
+    {
+     "expr": "dist('start') <= 0.08",
+     "label": "すべての世界で、スタートの 8 cm 以内に戻る",
+     "need": "all",
+     "tip": "P だけだと、坂に押されて辺ごとに少しずつずれる。6-4 のずれの合計（I）も使おう",
+     "measure": "dist('start')",
+     "better": "low",
+     "unit": "cm"
+    }
+   ],
+   "steps": [
+    {
+     "label": "1 つ目の角まで行く",
+     "expr": "visited('c1', 0.5)"
+    },
+    {
+     "label": "2 つ目の角まで行く",
+     "expr": "visited_in_order(['c1', 'c2'], 0.5)"
+    },
+    {
+     "label": "3 つ目の角まで行く",
+     "expr": "visited_in_order(['c1', 'c2', 'c3'], 0.5)"
+    },
+    {
+     "label": "スタートに戻って止まる",
+     "expr": "visited_in_order(['c1', 'c2', 'c3'], 0.5) and stopped and dist('start') <= 0.6"
+    }
+   ],
+   "show": {
+    "expr": "dist('start')",
+    "text": "スタートまで {cm} cm",
+    "world": "first_failed"
+   },
+   "starter": "# turn_to(向き) と straight(向き, 距離) を作ろう\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "6-2 の turn_to と、6-4 の PI 制御を関数 straight(target, meters) にする。",
+    "straight の中: start = odometer() → while 走った距離 < meters - 0.1: PI 制御（total は関数の中で 0 から）。",
+    "for target in [0, 90, 180, 270]: turn_to(target) → straight(target, 4.0)"
+   ],
+   "solution": "def angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\n# 1. 向きを変える道具\ndef turn_to(target):\n    while True:\n        e = angle_diff(target, heading())\n        if abs(e) < 9:\n            break\n        if abs(e) > 30:\n            p = 0.25\n        else:\n            p = 0.1\n        if e > 0:\n            motor(p, -p)\n        else:\n            motor(-p, p)\n    stop()\n    wait(0.3)\n\n# 2. まっすぐ走る道具（PI 制御）\ndef straight(target, meters):\n    total = 0\n    t_prev = now()\n    start = odometer()\n    while odometer() - start < meters - 0.1:\n        e = angle_diff(target, heading())\n        t = now()\n        total = total + e * (t - t_prev)\n        t_prev = t\n        turn = 0.02 * e + 0.02 * total\n        if turn > 0.3:\n            turn = 0.3\n        if turn < -0.3:\n            turn = -0.3\n        motor(0.7 + turn, 0.7 - turn)\n    stop()\n    wait(0.3)\n\n# 3. 4 つの辺を走る\nfor target in [0, 90, 180, 270]:\n    turn_to(target)\n    straight(target, 4.0)\n",
+   "solution_labels": [
+    "向きを変える道具",
+    "まっすぐ走る道具（PI 制御）",
+    "4 つの辺を走る"
+   ],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "時間で走った",
+     "code": "def go(m):\n    motor(0.6, 0.6)\n    wait(m / 0.66)\n    stop()\n\ndef turn(deg):\n    if deg > 0:\n        motor(0.25, -0.25)\n    else:\n        motor(-0.25, 0.25)\n    wait(abs(deg) / 194.5)\n    stop()\n\nfor i in range(4):\n    go(4.0)\n    turn(90)\n",
+     "say": "坂とモーターの差で、時間と角度だけだと戻れないね。heading() と odometer() を使おう。",
+     "expect": "fail",
+     "rule": null,
+     "when": "moved > 1 and not has('heading()')"
+    },
+    {
+     "name": "dt を掛け忘れた",
+     "rule": null,
+     "expect": "fail",
+     "when": "re('total\\s*=\\s*total\\s*\\+\\s*e[ \\t]*$')",
+     "say": "ずれの合計がすぐ大きくなりすぎたよ。e に時間（t - t_prev）を掛けた？",
+     "fix": "ずれの合計は「ずれ × たった時間」を足す: total = total + e * (t - t_prev)。回数で足すと、くり返しが速いほど大きくなる。",
+     "code": "def angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\n# 1. 向きを変える道具\ndef turn_to(target):\n    while True:\n        e = angle_diff(target, heading())\n        if abs(e) < 9:\n            break\n        if abs(e) > 30:\n            p = 0.25\n        else:\n            p = 0.1\n        if e > 0:\n            motor(p, -p)\n        else:\n            motor(-p, p)\n    stop()\n    wait(0.3)\n\n# 2. まっすぐ走る道具（PI 制御）\ndef straight(target, meters):\n    total = 0\n    t_prev = now()\n    start = odometer()\n    while odometer() - start < meters - 0.1:\n        e = angle_diff(target, heading())\n        t = now()\n        total = total + e\n        t_prev = t\n        turn = 0.02 * e + 0.02 * total\n        if turn > 0.3:\n            turn = 0.3\n        if turn < -0.3:\n            turn = -0.3\n        motor(0.7 + turn, 0.7 - turn)\n    stop()\n    wait(0.3)\n\n# 3. 4 つの辺を走る\nfor target in [0, 90, 180, 270]:\n    turn_to(target)\n    straight(target, 4.0)\n"
+    }
+   ],
+   "senpai_clear": "「時間ではなくセンサで動く」ができた。ここからが本番の技術だよ。",
+   "explain": {
+    "goal": "stop_at_cone",
+    "goalRadius": 0.6,
+    "expectTurn": null,
+    "target": "start"
+   },
+   "hud": [
+    "time",
+    "speed",
+    "lidar",
+    "heading"
+   ],
+   "graphs": [
+    "speed",
+    "heading",
+    "lidar"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow",
+    "lidar"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 32.48,
+      "x": 0.046,
+      "y": -0.002,
+      "heading": 270.1,
+      "lines": 37
+     },
+     {
+      "t_stop": 33.28,
+      "x": 0.032,
+      "y": 0.042,
+      "heading": 270.2,
+      "lines": 37
+     },
+     {
+      "t_stop": 32.66,
+      "x": 0.036,
+      "y": -0.002,
+      "heading": 270,
+      "lines": 37
+     }
+    ],
+    "sim": "w1"
+   }
+  }
+ ]
+}

@@ -1,0 +1,381 @@
+{
+  "$comment": "持ち主 W4（レベルと内容）。章の間の場面（SPEC 3.10）。after_chapter の章のボスをクリアした後に出す 10 場面・各 2〜3 枚、1 枚 1〜3 行。形 scenes: [{after_chapter, title, art（会場の絵のキー）, slides: [{img, lines: [{who: senpai | rover | you, text}]}]}]。ローバーの名前は文中で {rover}（11.2）。",
+  "scenes": [
+    {
+      "after_chapter": 1,
+      "title": "滑走路の隣へ",
+      "art": "funabashi",
+      "slides": [
+        {
+          "img": null,
+          "lines": [
+            {
+              "who": "senpai",
+              "text": "部室の前で、ちゃんと止まれたね。{rover}も満足そう。"
+            },
+            {
+              "who": "rover",
+              "text": "芝生の上なら、どこまでだって走れるよ。次はもっと遠くへ行きたいな。"
+            }
+          ]
+        },
+        {
+          "img": null,
+          "lines": [
+            {
+              "who": "senpai",
+              "text": "次は滑走路の隣の芝生。コーンの場所が毎回ちがうんだ。"
+            },
+            {
+              "who": "senpai",
+              "text": "だから、走る時間は計算で出す。数に名前をつけるところから始めよう。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "after_chapter": 2,
+      "title": "同じことを何回も",
+      "art": "funabashi",
+      "slides": [
+        {
+          "img": null,
+          "lines": [
+            {
+              "who": "you",
+              "text": "四角を走らせたら、同じ行を 4 回コピーしちゃった。"
+            },
+            {
+              "who": "senpai",
+              "text": "わたしも 1 年のとき、50 行コピーして先輩に笑われた。"
+            }
+          ]
+        },
+        {
+          "img": null,
+          "lines": [
+            {
+              "who": "senpai",
+              "text": "くり返しの書き方を覚えると、4 回でも 100 回でも同じ長さで書けるよ。"
+            },
+            {
+              "who": "rover",
+              "text": "目が回らない程度にお願いします。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "after_chapter": 3,
+      "title": "巻尺を返す日",
+      "art": "ura",
+      "slides": [
+        {
+          "img": null,
+          "lines": [
+            {
+              "who": "senpai",
+              "text": "残念なお知らせ。練習用の巻尺は、今日で返します。"
+            },
+            {
+              "who": "rover",
+              "text": "えっ、ぼく、どうやって距離を知るの？"
+            }
+          ]
+        },
+        {
+          "img": null,
+          "lines": [
+            {
+              "who": "senpai",
+              "text": "本物の機体と同じ LiDAR を付けたよ。光を当てて、前の物までの距離を測る。"
+            },
+            {
+              "who": "senpai",
+              "text": "ただし、少しばらつくし、何も無いと None が返る。測ってから決めよう。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "after_chapter": 4,
+      "title": "部の道具箱",
+      "art": "funabashi",
+      "slides": [
+        {
+          "img": null,
+          "lines": [
+            {
+              "who": "senpai",
+              "text": "部のパソコンに「道具箱」っていうフォルダがあるの。"
+            },
+            {
+              "who": "senpai",
+              "text": "前の先輩たちが作った「回る」「進む」が入ってる。中身は関数だよ。"
+            }
+          ]
+        },
+        {
+          "img": null,
+          "lines": [
+            {
+              "who": "you",
+              "text": "わたしの作った関数も入れていいですか？"
+            },
+            {
+              "who": "senpai",
+              "text": "もちろん。名前はわかりやすくね。「ぐるぐる 2」みたいなのは困るから。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "after_chapter": 5,
+      "title": "河川敷へ",
+      "art": "kasen",
+      "slides": [
+        {
+          "img": null,
+          "lines": [
+            {
+              "who": "senpai",
+              "text": "今度の練習は河川敷。芝が深くて、坂もある。"
+            },
+            {
+              "who": "rover",
+              "text": "左のモーターが、右より少し強いのがばれちゃう……。"
+            }
+          ]
+        },
+        {
+          "img": null,
+          "lines": [
+            {
+              "who": "senpai",
+              "text": "時間で走ると、まっすぐ走ったつもりでも曲がっていく。"
+            },
+            {
+              "who": "senpai",
+              "text": "方位を見ながら、ずれた分だけ直す。これがフィードバックだよ。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "after_chapter": 6,
+      "title": "空からの位置",
+      "art": "funabashi",
+      "slides": [
+        {
+          "img": null,
+          "lines": [
+            {
+              "who": "senpai",
+              "text": "GNSS を付けたよ。宇宙の衛星から、今いる緯度と経度がわかる。"
+            },
+            {
+              "who": "you",
+              "text": "これでゴールまで一直線ですね！"
+            }
+          ]
+        },
+        {
+          "img": null,
+          "lines": [
+            {
+              "who": "senpai",
+              "text": "そう思うでしょ。でも 1 秒に 1 回しか来ないし、数 m ずれる。"
+            },
+            {
+              "who": "rover",
+              "text": "ぼくの位置、ぼくより衛星のほうがくわしいのかな。"
+            }
+          ]
+        },
+        {
+          "img": null,
+          "lines": [
+            {
+              "who": "senpai",
+              "text": "大会の点数は、コーンまでの距離。ずれとの付き合い方が大事なんだ。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "after_chapter": 7,
+      "title": "あと数 m",
+      "art": "funabashi",
+      "slides": [
+        {
+          "img": null,
+          "lines": [
+            {
+              "who": "you",
+              "text": "GNSS だけだと、コーンの 3 m 手前でうろうろしちゃう。"
+            },
+            {
+              "who": "senpai",
+              "text": "そこからはカメラの出番。赤いコーンを画像で探すの。"
+            }
+          ]
+        },
+        {
+          "img": null,
+          "lines": [
+            {
+              "who": "senpai",
+              "text": "去年はカメラの向きを左右逆に付けて、コーンから逃げていったんだよね。"
+            },
+            {
+              "who": "rover",
+              "text": "それはぼくのせいじゃないよね？"
+            }
+          ]
+        },
+        {
+          "img": null,
+          "lines": [
+            {
+              "who": "senpai",
+              "text": "最後の 1 m は LiDAR で。カメラから LiDAR へ、センサのバトンだよ。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "after_chapter": 8,
+      "title": "秋の落下試験",
+      "art": "drop",
+      "slides": [
+        {
+          "img": null,
+          "lines": [
+            {
+              "who": "senpai",
+              "text": "来週は落下試験。高所作業車で 30 m の高さから落とすよ。"
+            },
+            {
+              "who": "rover",
+              "text": "さ、30 m……。"
+            }
+          ]
+        },
+        {
+          "img": null,
+          "lines": [
+            {
+              "who": "senpai",
+              "text": "大会では、パラシュートで毎秒 5 m 以下で降りて、着地してから走り出す。"
+            },
+            {
+              "who": "senpai",
+              "text": "着地したか、パラは切れたか。今どの段かを、プログラムが自分で知っていないとね。"
+            }
+          ]
+        },
+        {
+          "img": null,
+          "lines": [
+            {
+              "who": "you",
+              "text": "「フェーズ」で考えるんですね。"
+            },
+            {
+              "who": "senpai",
+              "text": "そう。待機・着地・分離・逃げる・ゴールへ。1 つずつ確かめよう。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "after_chapter": 9,
+      "title": "3 月、種子島",
+      "art": "takezaki_b",
+      "slides": [
+        {
+          "img": null,
+          "lines": [
+            {
+              "who": "senpai",
+              "text": "ついに種子島。竹崎の芝の上で、本番の種コンだよ。"
+            },
+            {
+              "who": "rover",
+              "text": "風がしょっぱい。海が近いのかな。ぼく、潮風はじめて。"
+            }
+          ]
+        },
+        {
+          "img": null,
+          "lines": [
+            {
+              "who": "senpai",
+              "text": "決まりは 3 つ。投下は 30 m、20 分以内、点数はコーンまでの距離。"
+            },
+            {
+              "who": "senpai",
+              "text": "風が 8 m/s 以上の日は投下しない。でも、それ以下なら何が起きてもおかしくない。"
+            }
+          ]
+        },
+        {
+          "img": null,
+          "lines": [
+            {
+              "who": "you",
+              "text": "本番テストを何回回しても通る、強いプログラムで行きます。"
+            },
+            {
+              "who": "senpai",
+              "text": "いいね。部のみんなが見てるよ。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "after_chapter": 10,
+      "title": "帰りの船で",
+      "art": "takezaki_a",
+      "slides": [
+        {
+          "img": null,
+          "lines": [
+            {
+              "who": "senpai",
+              "text": "おつかれさま。{rover}は、自分のプログラムだけでコーンまで行ったね。"
+            },
+            {
+              "who": "rover",
+              "text": "ぼく、ちょっと砂だらけだけど、元気だよ。"
+            }
+          ],
+          "art": "ship"
+        },
+        {
+          "img": null,
+          "lines": [
+            {
+              "who": "senpai",
+              "text": "来年は、あなたが新入部員に教える番。"
+            },
+            {
+              "who": "senpai",
+              "text": "書いたコードは、SIL に書き出せば本物の機体の練習にも使えるよ。"
+            }
+          ],
+          "art": "ship"
+        }
+      ]
+    }
+  ]
+}

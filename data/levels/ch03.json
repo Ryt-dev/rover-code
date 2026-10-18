@@ -1,0 +1,988 @@
+{
+ "chapter": 3,
+ "levels": [
+  {
+   "id": "3-1",
+   "order": 12,
+   "chapter": 3,
+   "title": "for で四角",
+   "type": "make",
+   "lang": "python",
+   "minutes": 7,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "花だんのまわりを 1 周して、スタートに戻ろう。1 辺 1.5 m の四角。同じ「走る → 右へ 90°」を 4 回くり返すだけ。",
+   "learn": {
+    "python": [
+     "for i in range(4): の下の行を 4 回くり返す",
+     "くり返す行は、行の頭を 4 文字下げる（字下げ・インデント）",
+     "字下げをやめた行から、くり返しの外"
+    ],
+    "robot": [
+     "同じ動きのくり返しで、形を描ける"
+    ]
+   },
+   "new": [
+    "for",
+    "range"
+   ],
+   "new_split": {
+    "command": [],
+    "syntax": [
+     "for",
+     "range"
+    ]
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "distance_to_cone"
+   ],
+   "worlds": [
+    {
+     "name": "世界1",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "bed",
+        "type": "rock",
+        "x": 0.75,
+        "y": 0.75,
+        "r": 0.3,
+        "h": 0.5,
+        "kind": "花だん"
+       },
+       {
+        "id": "c1",
+        "type": "flag",
+        "x": 0,
+        "y": 1.5,
+        "label": "角 1"
+       },
+       {
+        "id": "c2",
+        "type": "flag",
+        "x": 1.5,
+        "y": 1.5,
+        "label": "角 2"
+       },
+       {
+        "id": "c3",
+        "type": "flag",
+        "x": 1.5,
+        "y": 0,
+        "label": "角 3"
+       }
+      ],
+      "time_limit": 40
+     },
+     "inject": {},
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "visited_in_order(['c1', 'c2', 'c3'], 0.35) and dist('start') <= 0.5 and bumps == 0 and uses('for')",
+     "label": "for で 4 つの角を回り、スタートの 50 cm 以内へ",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "dist('start') <= 0.15 and stopped",
+     "label": "スタートの 15 cm 以内に戻る",
+     "need": "all",
+     "tip": "90 ÷ 195 ＝ 0.46…。角がずれたら「ずれた角度 ÷ 195」秒だけ回る時間を変えよう",
+     "measure": "dist('start')",
+     "better": "low",
+     "unit": "cm"
+    },
+    {
+     "expr": "lines <= 7",
+     "label": "7 行以内で書く（コメント・空行は数えない）",
+     "need": "all",
+     "tip": "くり返しの中に、同じ行が 2 回出ていない？",
+     "measure": "lines",
+     "better": "low",
+     "unit": "行"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "dist('start')",
+    "text": "スタートまで {cm} cm",
+    "world": "first_failed"
+   },
+   "starter": "for i in range(4):\n    # ここに「1.5 m 走る」と「右へ 90°」を書こう（行の頭に空白 4 つ）\n    pass\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "1.5 m は 0.6 の速さで 1.5 ÷ 0.66 ＝ 2.27 秒。右へ 90° は motor(0.25, -0.25) で 0.463 秒。",
+    "for の下の行は全部、頭に空白 4 つ。pass は消してね（中身が空のときだけ使う「何もしない」）。",
+    "for i in range(4): の下に motor(0.6, 0.6) / wait(2.27) / stop() / motor(0.25, -0.25) / wait(0.463) / stop()"
+   ],
+   "solution": "for i in range(4):\n    # 1. 1.5 m 走る\n    motor(0.6, 0.6)\n    wait(2.27)\n    stop()\n    # 2. 右へ 90°\n    motor(0.25, -0.25)\n    wait(0.463)\n    stop()\n",
+   "solution_labels": [
+    "1.5 m 走る",
+    "右へ 90°"
+   ],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "字下げを忘れた",
+     "code": "for i in range(4):\nmotor(0.6, 0.6)\nwait(2.27)\n",
+     "say": "for の次の行は、頭に空白 4 つ。くり返す行だという印なんだ。",
+     "expect": "fail",
+     "rule": "INDENT_EXPECTED",
+     "when": "card('INDENT_EXPECTED')"
+    },
+    {
+     "name": ": を忘れた",
+     "code": "for i in range(4)\n    motor(0.6, 0.6)\n",
+     "say": "for の行の最後には : が要るよ。",
+     "expect": "fail",
+     "rule": "COLON_MISSING",
+     "when": "card('COLON_MISSING')"
+    }
+   ],
+   "senpai_clear": "4 回書く代わりに 1 回。くり返しは、ロボットのプログラムの心臓だよ。",
+   "explain": {
+    "goal": "reach_cone",
+    "goalRadius": 0.5,
+    "expectTurn": null,
+    "target": "start"
+   },
+   "hud": [
+    "time",
+    "speed"
+   ],
+   "graphs": [
+    "speed"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 10.9,
+      "x": 0.012,
+      "y": 0.004,
+      "heading": 0.2,
+      "lines": 7
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "3-2",
+   "order": 13,
+   "chapter": 3,
+   "title": "range の数を予想",
+   "type": "predict",
+   "lang": "python",
+   "minutes": 4,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "for i in range(4) の i には、毎回ちがう数が入る。このプログラムを読んで予想しよう。",
+   "learn": {
+    "python": [
+     "for i in range(数): の i には、くり返すたびにちがう数が入る",
+     "i を計算に使える: motor(0.2 * i, 0.2 * i)"
+    ],
+    "robot": [
+     "速さを少しずつ上げる（加速）"
+    ]
+   },
+   "new": [],
+   "new_split": {
+    "command": [],
+    "syntax": []
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "distance_to_cone"
+   ],
+   "worlds": [
+    {
+     "name": "世界1",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "f13",
+        "type": "flag",
+        "x": 0,
+        "y": 1.32,
+        "label": "1.32 m"
+       },
+       {
+        "id": "f22",
+        "type": "flag",
+        "x": 0,
+        "y": 2.2,
+        "label": "2.2 m"
+       }
+      ],
+      "time_limit": 30
+     },
+     "inject": {},
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "ok",
+     "label": "予想を選んでから実行する",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "prediction_ok",
+     "label": "2 つとも予想が当たる",
+     "need": "all",
+     "tip": "i が毎回いくつになるか、紙に書いてから選ぼう",
+     "no_measure": "予想が当たったかどうかで決まる（数では測れない）"
+    },
+    {
+     "expr": "stopped and dist('f22') <= 0.2",
+     "label": "range を変えて 2.2 m の旗の 20 cm 以内へ",
+     "need": "all",
+     "tip": "range の始まりの数を変えると、i の並びが変わるよ",
+     "measure": "dist('f22')",
+     "better": "low",
+     "unit": "cm"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "y_end",
+    "text": "{m} m 進んで止まった",
+    "world": "first_failed"
+   },
+   "starter": "for i in range(4):\n    print(i)\n    motor(0.2 * i, 0.2 * i)\n    wait(1)\nstop()\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [
+    {
+     "q": "最後に表示される i は？",
+     "choices": [
+      "3",
+      "4",
+      "5"
+     ],
+     "answer": 0,
+     "why": "range(4) は 0〜3。4 は入らない。",
+     "check": "printed == ['0', '1', '2', '3']"
+    },
+    {
+     "q": "最初の 1 秒、ローバーは？",
+     "choices": [
+      "0.2 の速さで進む",
+      "止まったまま",
+      "後ろに下がる"
+     ],
+     "answer": 1,
+     "why": "最初の i は 0。motor(0, 0) なので動かない。",
+     "check": "dist('f13') <= 0.3"
+    }
+   ],
+   "predict_card": null,
+   "hints": [
+    "i は 0 から始まる。",
+    "range(4) だと速さは 0, 0.2, 0.4, 0.6。",
+    "range(1, 5) にすると速さ 0.2, 0.4, 0.6, 0.8 → 0.22＋0.44＋0.66＋0.88 ＝ 2.2 m"
+   ],
+   "solution": "for i in range(1, 5):\n    print(i)\n    motor(0.2 * i, 0.2 * i)\n    wait(1)\nstop()\n",
+   "solution_labels": [],
+   "py_equiv": null,
+   "mistakes": [],
+   "senpai_clear": "range(4) は 0, 1, 2, 3（4 は入らない）。range(1, 5) なら 1, 2, 3, 4。i は 0 から始まるのを覚えておこう。",
+   "explain": {
+    "goal": "free",
+    "goalRadius": 1.0,
+    "expectTurn": null,
+    "target": null
+   },
+   "hud": [
+    "time",
+    "speed"
+   ],
+   "graphs": [
+    "speed"
+   ],
+   "overlays": [
+    "trail",
+    "ghost"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 4.46,
+      "x": 0,
+      "y": 2.2,
+      "heading": 0,
+      "lines": 5
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "3-3",
+   "order": 14,
+   "chapter": 3,
+   "title": "ジグザグで石をよける",
+   "type": "parsons",
+   "lang": "python",
+   "minutes": 7,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "石が 1 列に並んだ道を、ジグザグに抜けて北へ 11 m。必要な行はそろっているけど、順番がばらばら。並べて、字下げも直そう。",
+   "learn": {
+    "python": [
+     "for の中に、いくつもの動きを入れられる",
+     "どの行をくり返しの中に入れるかは、字下げで決まる"
+    ],
+    "robot": [
+     "右へ 60° → 2 m → 左へ 60° → 2 m のくり返しでジグザグ"
+    ]
+   },
+   "new": [],
+   "new_split": {
+    "command": [],
+    "syntax": []
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "distance_to_cone"
+   ],
+   "worlds": [
+    {
+     "name": "世界1",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "r0",
+        "type": "rock",
+        "x": 0,
+        "y": 0.866,
+        "r": 0.12,
+        "h": 0.25
+       },
+       {
+        "id": "r1",
+        "type": "rock",
+        "x": 0,
+        "y": 2.598,
+        "r": 0.12,
+        "h": 0.25
+       },
+       {
+        "id": "r2",
+        "type": "rock",
+        "x": 0,
+        "y": 4.33,
+        "r": 0.12,
+        "h": 0.25
+       },
+       {
+        "id": "r3",
+        "type": "rock",
+        "x": 0,
+        "y": 6.062,
+        "r": 0.12,
+        "h": 0.25
+       },
+       {
+        "id": "r4",
+        "type": "rock",
+        "x": 0,
+        "y": 7.794,
+        "r": 0.12,
+        "h": 0.25
+       },
+       {
+        "id": "r5",
+        "type": "rock",
+        "x": 0,
+        "y": 9.526,
+        "r": 0.12,
+        "h": 0.25
+       },
+       {
+        "id": "r6",
+        "type": "rock",
+        "x": 0,
+        "y": 11.258,
+        "r": 0.12,
+        "h": 0.25
+       },
+       {
+        "id": "goal",
+        "type": "flag",
+        "x": -0.5,
+        "y": 11.26,
+        "label": "ゴール（北へ 11 m）"
+       }
+      ],
+      "time_limit": 40
+     },
+     "inject": {},
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "y_end >= 10.8 and bumps == 0 and stopped",
+     "label": "石にぶつからず、北へ 11 m の線を越えて止まる",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "attempt == 1",
+     "label": "1 回目の実行でクリア",
+     "need": "all",
+     "tip": "ほかの面を 1 つクリアしてから戻ると、もう一度ねらえるよ",
+     "no_measure": "1 回目の実行でクリアしたかどうかで決まる（数では測れない）"
+    },
+    {
+     "expr": "t_stop <= 18.5 and y_end >= 10.8 and bumps == 0",
+     "label": "速さ 0.8 で（時間も直して）18.5 秒以内に抜ける",
+     "need": "all",
+     "tip": "速さを 0.8 にしたら、走る時間も計算し直そう",
+     "measure": "t_stop",
+     "better": "low",
+     "unit": "秒"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "y_end",
+    "text": "北へ {m} m 進んだ",
+    "world": "first_failed"
+   },
+   "starter": "# ↓ 最初の 2 つは並んでいる（左へ 30° 向いて 1 m）\nmotor(-0.25, 0.25)\nwait(0.154)\nmotor(0.6, 0.6)\nwait(1.52)\n# ↓ ここから下の行を並べかえよう（字下げも）\nwait(3.03)\nmotor(-0.25, 0.25)\nfor i in range(3):\nmotor(0.6, 0.6)\nwait(0.308)\nmotor(0.25, -0.25)\nwait(3.03)\nwait(0.308)\nmotor(0.6, 0.6)\nstop()\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": {
+    "fixed_lines": 4,
+    "answer": "motor(-0.25, 0.25)\nwait(0.154)\nmotor(0.6, 0.6)\nwait(1.52)\nfor i in range(3):\n    motor(0.25, -0.25)\n    wait(0.308)\n    motor(0.6, 0.6)\n    wait(3.03)\n    motor(-0.25, 0.25)\n    wait(0.308)\n    motor(0.6, 0.6)\n    wait(3.03)\nstop()\n",
+    "distractors": []
+   },
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "くり返す 1 回分は「右へ回る → 2 m → 左へ回る → 2 m」。",
+    "右へ回る: motor(0.25, -0.25) と wait(0.308)。2 m: motor(0.6, 0.6) と wait(3.03)。stop() はくり返しの外（最後）。",
+    "for i in range(3): の下に、右・前・左・前 の順で 8 行。速さ 0.8 なら 2 m は 2 ÷ 0.88 ＝ 2.27 秒、1 m は 1.14 秒。"
+   ],
+   "solution": "# 1. 左へ 30° 向いて 1 m\nmotor(-0.25, 0.25)\nwait(0.154)\nmotor(0.8, 0.8)\nwait(1.14)\n# 2. 右・前・左・前を 3 回\nfor i in range(3):\n    motor(0.25, -0.25)\n    wait(0.308)\n    motor(0.8, 0.8)\n    wait(2.27)\n    motor(-0.25, 0.25)\n    wait(0.308)\n    motor(0.8, 0.8)\n    wait(2.27)\nstop()\n",
+   "solution_labels": [
+    "左へ 30° 向いて 1 m",
+    "右・前・左・前を 3 回"
+   ],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "stop をくり返しの中に",
+     "code": "motor(-0.25, 0.25)\nwait(0.154)\nmotor(0.6, 0.6)\nwait(1.52)\nfor i in range(3):\n    motor(0.25, -0.25)\n    wait(0.308)\n    motor(0.6, 0.6)\n    wait(3.03)\n    motor(-0.25, 0.25)\n    wait(0.308)\n    stop()\n    motor(0.6, 0.6)\n    wait(3.03)\n",
+     "say": "stop() は最後に 1 回でいいよ。くり返しの中に入れても動くけど、最後に止まらないと走り続けちゃう。",
+     "expect": "fail",
+     "rule": "B_NOT_STOPPED",
+     "when": "re('^[ \\t]+stop\\(\\)') and not stopped"
+    }
+   ],
+   "senpai_clear": "並べるだけでも、くり返しの形が見えてきたでしょ？ 次は自分で書く番。",
+   "explain": {
+    "goal": "free",
+    "goalRadius": 1.0,
+    "expectTurn": null,
+    "target": null
+   },
+   "hud": [
+    "time",
+    "speed"
+   ],
+   "graphs": [
+    "speed"
+   ],
+   "overlays": [
+    "trail",
+    "ghost"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 17.22,
+      "x": -0.487,
+      "y": 11.344,
+      "heading": 330,
+      "lines": 14
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "3-4",
+   "order": 15,
+   "chapter": 3,
+   "title": "字下げのわな",
+   "type": "fix",
+   "lang": "python",
+   "minutes": 5,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "倉庫のまわりを 1 周するはずが、まっすぐフェンスに突っこんでいく…。どこがおかしい？",
+   "learn": {
+    "python": [
+     "字下げした行だけがくり返される。字下げを戻した行は、くり返しが全部終わってから 1 回だけ"
+    ],
+    "robot": [
+     "動きが変なときは、どの行が何回実行されたか（行の光り方）を見る"
+    ]
+   },
+   "new": [],
+   "new_split": {
+    "command": [],
+    "syntax": []
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "distance_to_cone"
+   ],
+   "worlds": [
+    {
+     "name": "世界1",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "soko",
+        "type": "rock",
+        "x": 1.0,
+        "y": 1.0,
+        "r": 0.45,
+        "h": 1.0
+       },
+       {
+        "id": "fence",
+        "type": "wall",
+        "x1": -1.0,
+        "y1": 3.2,
+        "x2": 3.0,
+        "y2": 3.2,
+        "kind": "フェンス"
+       },
+       {
+        "id": "c1",
+        "type": "flag",
+        "x": 0,
+        "y": 2.0,
+        "label": "角 1"
+       },
+       {
+        "id": "c2",
+        "type": "flag",
+        "x": 2.0,
+        "y": 2.0,
+        "label": "角 2"
+       },
+       {
+        "id": "c3",
+        "type": "flag",
+        "x": 2.0,
+        "y": 0,
+        "label": "角 3"
+       }
+      ],
+      "time_limit": 40
+     },
+     "inject": {},
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "visited_in_order(['c1', 'c2', 'c3'], 0.4) and dist('start') <= 0.5 and bumps == 0",
+     "label": "3 つの角を回り、ぶつからずにスタートの 50 cm 以内",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "dist('start') <= 0.2 and stopped",
+     "label": "スタートの 20 cm 以内に戻る",
+     "need": "all",
+     "tip": "回る行もくり返しの中に入っているか、光り方で確かめよう",
+     "measure": "dist('start')",
+     "better": "low",
+     "unit": "cm"
+    },
+    {
+     "expr": "lines <= 7",
+     "label": "7 行以内",
+     "need": "all",
+     "tip": "使っていない行や、まとめられる行はないかな？",
+     "measure": "lines",
+     "better": "low",
+     "unit": "行"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "dist('start')",
+    "text": "スタートまで {cm} cm",
+    "world": "first_failed"
+   },
+   "starter": "for i in range(4):\n    motor(0.6, 0.6)\n    wait(3.03)\nmotor(0.25, -0.25)\nwait(0.463)\nstop()\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "実行して、行の光り方を見よう。motor(0.25, -0.25) は何回光った？",
+    "回る行もくり返しの中に入れたい。",
+    "下の 3 行の頭にも空白 4 つを入れる。"
+   ],
+   "solution": "for i in range(4):\n    # 1. まっすぐ走る\n    motor(0.6, 0.6)\n    wait(3.03)\n    # 2. 右へ 90°\n    motor(0.25, -0.25)\n    wait(0.463)\n    stop()\n",
+   "solution_labels": [
+    "まっすぐ走る",
+    "右へ 90°"
+   ],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "stop だけ外",
+     "code": "for i in range(4):\n    motor(0.6, 0.6)\n    wait(3.03)\n    motor(0.25, -0.25)\n    wait(0.463)\nstop()\n",
+     "say": "それでも OK！ 回ったあとすぐ次の「走る」に移るから、角が少しふくらむけどね。",
+     "expect": "pass",
+     "rule": null,
+     "when": "re('^[ \\t]+motor\\(0\\.25, -0\\.25\\)') and re('^stop\\(\\)')"
+    }
+   ],
+   "senpai_clear": "字下げ 1 つで動きがまるで変わる。Python では見た目がそのまま意味なんだ。",
+   "explain": {
+    "goal": "reach_cone",
+    "goalRadius": 0.5,
+    "expectTurn": null,
+    "target": "start"
+   },
+   "hud": [
+    "time",
+    "speed"
+   ],
+   "graphs": [
+    "speed"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 13.94,
+      "x": 0.011,
+      "y": 0.005,
+      "heading": 0.2,
+      "lines": 6
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "3-5",
+   "order": 16,
+   "chapter": 3,
+   "title": "うずまき探索",
+   "type": "boss",
+   "lang": "python",
+   "minutes": 9,
+   "checkpoint": true,
+   "carry_from": null,
+   "story": "芝生のどこかに部品（ねじ）を落とした！ うずまきに広がって探そう。辺の長さを 0.5 m から 0.4 m ずつのばして、右へ曲がるのを 6 回。最後の角に部品があるはず。（ボス面: クリアするまでヒントは 2 つまで）",
+   "learn": {
+    "python": [
+     "ループの変数 i は 0, 1, 2… と 1 ずつ増える。これを計算に使える"
+    ],
+    "robot": [
+     "うずまきは、ものを探すときの基本の動き（探索の形）"
+    ]
+   },
+   "new": [],
+   "new_split": {
+    "command": [],
+    "syntax": []
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "distance_to_cone"
+   ],
+   "worlds": [
+    {
+     "name": "世界1",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "k1",
+        "type": "flag",
+        "x": 0.0,
+        "y": 0.5,
+        "label": "角 1"
+       },
+       {
+        "id": "k2",
+        "type": "flag",
+        "x": 0.9,
+        "y": 0.5,
+        "label": "角 2"
+       },
+       {
+        "id": "k3",
+        "type": "flag",
+        "x": 0.9,
+        "y": -0.8,
+        "label": "角 3"
+       },
+       {
+        "id": "k4",
+        "type": "flag",
+        "x": -0.8,
+        "y": -0.8,
+        "label": "角 4"
+       },
+       {
+        "id": "k5",
+        "type": "flag",
+        "x": -0.8,
+        "y": 1.3,
+        "label": "角 5"
+       },
+       {
+        "id": "part",
+        "type": "flag",
+        "x": 1.7,
+        "y": 1.3,
+        "label": "落とした部品"
+       }
+      ],
+      "time_limit": 60
+     },
+     "inject": {},
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "visited_in_order(['k1', 'k2', 'k3', 'k4', 'k5', 'part'], 0.3) and uses('for')",
+     "label": "for で 5 つの角を順に通り、部品の 30 cm 以内へ",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "dist('part') <= 0.2 and stopped",
+     "label": "部品の 20 cm 以内で止まる",
+     "need": "all",
+     "tip": "最後の辺のあと、止まる所が部品に近いか見てみよう",
+     "measure": "dist('part')",
+     "better": "low",
+     "unit": "cm"
+    },
+    {
+     "expr": "lines <= 7",
+     "label": "7 行以内",
+     "need": "all",
+     "tip": "長さの計算を、wait の ( ) の中にまとめられないかな？",
+     "measure": "lines",
+     "better": "low",
+     "unit": "行"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "t_end",
+    "text": "{s} 秒で終わった",
+    "world": "first_failed"
+   },
+   "starter": "# 辺の長さ: 0.5, 0.9, 1.3, 1.7, 2.1, 2.5 m（右へ 90° ずつ）\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "6 回くり返す。i が 0, 1, 2… と増えるのを使って、辺の長さを i の式で書こう。",
+    "1 回目 0.5 m、2 回目 0.9 m…。0.5 に「0.4 の i 倍」を足すと？ 時間は 長さ ÷ 0.66。",
+    "for i in range(6): → motor(0.6, 0.6) → wait((0.5 + 0.4 * i) / 0.66) → stop() → 右へ 90° → stop()"
+   ],
+   "solution": "for i in range(6):\n    # 1. 辺の長さ（0.5 + 0.4 * i）だけ走る\n    motor(0.6, 0.6)\n    wait((0.5 + 0.4 * i) / 0.66)\n    stop()\n    # 2. 右へ 90°\n    motor(0.25, -0.25)\n    wait(0.463)\n    stop()\n",
+   "solution_labels": [
+    "辺の長さ（0.5 + 0.4 * i）だけ走る",
+    "右へ 90°"
+   ],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "長さが変わらない",
+     "code": "for i in range(6):\n    motor(0.6, 0.6)\n    wait(0.5 / 0.66)\n    stop()\n    motor(0.25, -0.25)\n    wait(0.463)\n    stop()\n",
+     "say": "同じ長さだと、同じ所をぐるぐる回るだけ。i を使って長さを変えよう。",
+     "expect": "fail",
+     "rule": null,
+     "when": "has('for') and not re('[*+]\\s*i\\b|\\bi\\s*[*+]')"
+    }
+   ],
+   "senpai_clear": "i を使えば「少しずつ変わるくり返し」も書ける。",
+   "explain": {
+    "goal": "free",
+    "goalRadius": 1.0,
+    "expectTurn": null,
+    "target": null
+   },
+   "hud": [
+    "time",
+    "speed"
+   ],
+   "graphs": [
+    "speed"
+   ],
+   "overlays": [
+    "trail",
+    "ghost"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 16.38,
+      "x": 1.715,
+      "y": 1.289,
+      "heading": 180.3,
+      "lines": 7
+     }
+    ],
+    "sim": "w1"
+   }
+  }
+ ]
+}

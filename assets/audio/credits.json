@@ -1,0 +1,15 @@
+{
+  "$comment": "持ち主 W7（画面・流れ・保存・音）。音の素材の出典とライセンス（SPEC 10.6・12 章「法と表示」）。いまは録音を使わず、js/audio.js の中で木・板・弦の鳴り方をまねて作った音だけ（kind: synthesized）。録音（CC0 か商用で使えるもの）に差しかえる時は、ファイルをこのフォルダに置き、kind: recording・file・author・source_url・license を書く。audio.js は kind が recording の音を録音で鳴らす。",
+  "sounds": [
+    { "name": "run", "label": "木のクリック（拍子木を小さく）", "kind": "synthesized", "file": null, "author": "ROVER CODE", "source_url": null, "license": "このゲームの一部（録音なし）" },
+    { "name": "star", "label": "マリンバ（★ごとに 1 音ずつ上がる）", "kind": "synthesized", "file": null, "author": "ROVER CODE", "source_url": null, "license": "このゲームの一部（録音なし）" },
+    { "name": "clear", "label": "マリンバの短い分散和音", "kind": "synthesized", "file": null, "author": "ROVER CODE", "source_url": null, "license": "このゲームの一部（録音なし）" },
+    { "name": "leaves", "label": "カリンバの高い 2 音", "kind": "synthesized", "file": null, "author": "ROVER CODE", "source_url": null, "license": "このゲームの一部（録音なし）" },
+    { "name": "error", "label": "ウッドブロックの小さな 1 打", "kind": "synthesized", "file": null, "author": "ROVER CODE", "source_url": null, "license": "このゲームの一部（録音なし）" },
+    { "name": "note", "label": "鉛筆でノートに書く音", "kind": "synthesized", "file": null, "author": "ROVER CODE", "source_url": null, "license": "このゲームの一部（録音なし）" },
+    { "name": "page", "label": "紙をめくる音", "kind": "synthesized", "file": null, "author": "ROVER CODE", "source_url": null, "license": "このゲームの一部（録音なし）" },
+    { "name": "chute", "label": "布がはためく音・小さく焼ける音", "kind": "synthesized", "file": null, "author": "ROVER CODE", "source_url": null, "license": "このゲームの一部（録音なし）" },
+    { "name": "chapter", "label": "木琴とアコースティックギターの短いフレーズ", "kind": "synthesized", "file": null, "author": "ROVER CODE", "source_url": null, "license": "このゲームの一部（録音なし）" },
+    { "name": "drive", "label": "小さなギアモーターと芝を踏む音（ループ）", "kind": "synthesized", "file": null, "author": "ROVER CODE", "source_url": null, "license": "このゲームの一部（録音なし）" }
+  ]
+}

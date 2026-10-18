@@ -1,0 +1,681 @@
+{
+ "chapter": "C",
+ "levels": [
+  {
+   "id": "C-1",
+   "order": 51,
+   "chapter": "C",
+   "title": "C で動かす",
+   "type": "make",
+   "lang": "c",
+   "minutes": 8,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "1-3 と同じ、3 m 先のコーンの前で止まろう。今度は C で。命令の名前は Python と同じ。ちがうのは書き方のきまりだけ。",
+   "learn": {
+    "python": [
+     "（C）#include \"rover.h\" で命令を使えるようにする",
+     "（C）プログラムは int main(void) { … } の中に書き、最後に return 0;",
+     "（C）1 つの命令の終わりに ; （セミコロン）",
+     "（C）表示は printf(\"のこり %.2f m\\n\", 数); %.2f は小数 2 けた、\\n は改行"
+    ],
+    "robot": [
+     "マイコン（M5 ATOM・ESP32）は C/C++ で書くことが多い。Python より速く、小さいメモリで動く"
+    ]
+   },
+   "new": [
+    "#include",
+    "main",
+    "printf"
+   ],
+   "new_reason": "#include・main・printf は、C のプログラムが動くための決まった枠（1 つの形）なので、まとめて出す。",
+   "new_split": {
+    "command": [],
+    "syntax": [
+     "#include",
+     "main",
+     "printf"
+    ]
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "wait",
+    "stop",
+    "distance_to_cone",
+    "lidar",
+    "heading",
+    "now"
+   ],
+   "worlds": [
+    {
+     "name": "世界1",
+     "world": {
+      "venue": "船橋キャンパス 部室の前の芝生",
+      "venue_key": "bushitsu",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 0,
+        "y": 3.31,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 30
+     },
+     "inject": {},
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "stopped and gap('cone') <= 1.0 and not touched('cone')",
+     "label": "コーンの 1 m 以内で止まる",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "gap('cone') <= 0.1 and not touched('cone')",
+     "label": "コーンの 10 cm 以内",
+     "need": "all",
+     "tip": "wait の秒数を少しずつ変えて、コーンに寄せよう",
+     "measure": "gap('cone')",
+     "better": "low",
+     "unit": "cm"
+    },
+    {
+     "expr": "printed_number_near(gap('cone'), 0.1)",
+     "label": "printf で残りの距離を表示する",
+     "need": "all",
+     "tip": "printf(\"のこり %.2f m\\n\", 数); で小数 2 けたを表示できるよ",
+     "no_measure": "書き方で決まる（数では測れない）"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "gap('cone')",
+    "text": "コーンの {cm} cm 手前で止まった",
+    "world": "first_failed"
+   },
+   "starter": "#include \"rover.h\"\n\nint main(void) {\n    motor(0.6, 0.6);\n    wait(1);\n    stop();\n    return 0;\n}\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "Python の 1-3 と同じ数でいい: 0.6 の速さで 4.42 秒。",
+    "行の終わりの ; を忘れずに。{ } の中に書く。",
+    "printf(\"のこり %.2f m\\n\", distance_to_cone()); で表示。止まってから表示するなら、前に wait(0.5);"
+   ],
+   "solution": "#include \"rover.h\"\n\nint main(void) {\n    // 1. 走って止まる\n    motor(0.6, 0.6);\n    wait(4.42);\n    stop();\n    wait(0.5);\n    // 2. 残りを表示する\n    printf(\"のこり %.2f m\\n\", distance_to_cone());\n    return 0;\n}\n",
+   "solution_labels": [
+    "走って止まる",
+    "残りを表示する"
+   ],
+   "py_equiv": "motor(0.6, 0.6)\nwait(4.42)\nstop()\nwait(0.5)\nprint(\"のこり %.2f m\" % distance_to_cone())\n",
+   "mistakes": [
+    {
+     "name": "; を忘れた",
+     "code": "#include \"rover.h\"\n\nint main(void) {\n    motor(0.6, 0.6)\n    wait(4.42);\n    stop();\n    return 0;\n}\n",
+     "say": "C では文の終わりに ; が要る。エラーの行の 1 つ上の行の終わりを見よう。",
+     "expect": "fail",
+     "rule": "C_SEMICOLON",
+     "when": "card('C_SEMICOLON')"
+    },
+    {
+     "name": "print と書いた",
+     "code": "#include \"rover.h\"\n\nint main(void) {\n    motor(0.6, 0.6);\n    wait(4.42);\n    stop();\n    print(\"のこり\", distance_to_cone());\n    return 0;\n}\n",
+     "say": "C の表示は printf。数を出すときは %.2f のような「書式」を使うよ。",
+     "expect": "fail",
+     "rule": "C_PRINT",
+     "when": "card('C_PRINT')"
+    }
+   ],
+   "senpai_clear": "C でも同じように動いた！ ; と { } に慣れれば、あとは Python とほとんど同じ考え方だよ。",
+   "explain": {
+    "goal": "stop_at_cone",
+    "goalRadius": 1.0,
+    "expectTurn": null,
+    "target": "cone"
+   },
+   "hud": [
+    "time",
+    "gap",
+    "speed",
+    "lidar",
+    "heading"
+   ],
+   "graphs": [
+    "speed",
+    "heading",
+    "lidar"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow",
+    "lidar"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 4.84,
+      "x": 0,
+      "y": 2.917,
+      "heading": 0,
+      "lines": 9,
+      "gap": 0.083
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "C-2",
+   "order": 52,
+   "chapter": "C",
+   "title": "C の変数と for",
+   "type": "make",
+   "lang": "c",
+   "minutes": 10,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "3-1 の四角（1 辺 1.5 m）を C で。C の変数は、入れる前に「型」を決める。",
+   "learn": {
+    "python": [
+     "（C）型: 整数は int、小数は double。double speed = 0.6;",
+     "（C）for (int i = 0; i < 4; i++) { … }: 「始め; 続ける条件; 1 回ごとにすること」",
+     "（C）i++ は i = i + 1 と同じ",
+     "（C）字下げは見やすさのためだけ。くり返す範囲は { } で決まる"
+    ],
+    "robot": [
+     "計算で時間を出す: 時間 ＝ 距離 ÷（1.1 × 速さ）"
+    ]
+   },
+   "new": [
+    "int",
+    "double",
+    "for（C）"
+   ],
+   "new_reason": "int・double・for は、C で「型を決めた変数でくり返す」1 つの形なので、まとめて出す。",
+   "new_split": {
+    "command": [],
+    "syntax": [
+     "int",
+     "double",
+     "for（C）"
+    ]
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "wait",
+    "stop",
+    "distance_to_cone",
+    "lidar",
+    "heading",
+    "now"
+   ],
+   "worlds": [
+    {
+     "name": "世界1",
+     "world": {
+      "venue": "船橋キャンパス 部室の前の芝生",
+      "venue_key": "bushitsu",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "bed",
+        "type": "rock",
+        "x": 0.75,
+        "y": 0.75,
+        "r": 0.3,
+        "h": 0.5
+       },
+       {
+        "id": "c1",
+        "type": "flag",
+        "x": 0,
+        "y": 1.5,
+        "label": "角 1"
+       },
+       {
+        "id": "c2",
+        "type": "flag",
+        "x": 1.5,
+        "y": 1.5,
+        "label": "角 2"
+       },
+       {
+        "id": "c3",
+        "type": "flag",
+        "x": 1.5,
+        "y": 0,
+        "label": "角 3"
+       }
+      ],
+      "time_limit": 40
+     },
+     "inject": {},
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "visited_in_order(['c1', 'c2', 'c3'], 0.35) and dist('start') <= 0.5 and bumps == 0",
+     "label": "4 つの角を回ってスタートの 50 cm 以内に戻る",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "dist('start') <= 0.15 and stopped",
+     "label": "スタートの 15 cm 以内",
+     "need": "all",
+     "tip": "回る時間を少しずつ変えて、角をぴったりにしよう",
+     "measure": "dist('start')",
+     "better": "low",
+     "unit": "cm"
+    },
+    {
+     "expr": "lines <= 14",
+     "label": "14 行以内（#include・{ } だけの行も数える）",
+     "need": "all",
+     "tip": "使っていない変数や、まとめられる行はないかな？",
+     "measure": "lines",
+     "better": "low",
+     "unit": "行"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "dist('start')",
+    "text": "スタートまで {cm} cm",
+    "world": "first_failed"
+   },
+   "starter": "#include \"rover.h\"\n\nint main(void) {\n    double speed = 0.6;\n    double side = 1.5;\n    // ここに for を書こう\n    return 0;\n}\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "for (int i = 0; i < 4; i++) { … } の中に、走る・止める・回る・止める。",
+    "走る時間は side / (1.1 * speed)。",
+    "回るのは Python と同じ motor(0.25, -0.25); wait(0.463);"
+   ],
+   "solution": "#include \"rover.h\"\n\nint main(void) {\n    // 1. 速さと辺の長さを決める\n    double speed = 0.6;\n    double side = 1.5;\n    // 2. 4 つの辺を走る\n    for (int i = 0; i < 4; i++) {\n        motor(speed, speed);\n        wait(side / (1.1 * speed));\n        stop();\n        motor(0.25, -0.25);\n        wait(0.463);\n        stop();\n    }\n    return 0;\n}\n",
+   "solution_labels": [
+    "速さと辺の長さを決める",
+    "4 つの辺を走る"
+   ],
+   "py_equiv": "speed = 0.6\nside = 1.5\nfor i in range(4):\n    motor(speed, speed)\n    wait(side / (1.1 * speed))\n    stop()\n    motor(0.25, -0.25)\n    wait(0.463)\n    stop()\n",
+   "mistakes": [
+    {
+     "name": "整数で割り算",
+     "code": "#include \"rover.h\"\n\nint main(void) {\n    double speed = 0.6;\n    int side = 1.5;          // int に 1.5 を入れると 1 になる\n    for (int i = 0; i < 4; i++) {\n        motor(speed, speed);\n        wait(side / (1.1 * speed));\n        stop();\n        motor(0.25, -0.25);\n        wait(0.463);\n        stop();\n    }\n    return 0;\n}\n",
+     "say": "int に小数を入れると切り捨て（1.5 は 1）。int どうしの割り算も小数を捨てる。小数は double に。",
+     "expect": "fail",
+     "rule": null,
+     "py_equiv": "speed = 0.6\nside = int(1.5)\nfor i in range(4):\n    motor(speed, speed)\n    wait(side / (1.1 * speed))\n    stop()\n    motor(0.25, -0.25)\n    wait(0.463)\n    stop()\n",
+     "when": "re('\\bint\\s+(side|speed)\\b')"
+    },
+    {
+     "name": "{ } を忘れた",
+     "code": "#include \"rover.h\"\n\nint main(void) {\n    double speed = 0.6;\n    double side = 1.5;\n    for (int i = 0; i < 4; i++)\n        motor(speed, speed);\n        wait(side / (1.1 * speed));\n        stop();\n        motor(0.25, -0.25);\n        wait(0.463);\n        stop();\n    return 0;\n}\n",
+     "say": "for の後ろに { } が無いと、次の 1 行だけがくり返される。字下げは関係ないよ（Python とちがう所）。",
+     "expect": "fail",
+     "rule": null,
+     "py_equiv": "speed = 0.6\nside = 1.5\nfor i in range(4):\n    motor(speed, speed)\nwait(side / (1.1 * speed))\nstop()\nmotor(0.25, -0.25)\nwait(0.463)\nstop()\n",
+     "when": "re('for\\s*\\([^)]*\\)\\s*\\n')"
+    }
+   ],
+   "senpai_clear": "型と { }。ここが Python と C のいちばんの違い。",
+   "explain": {
+    "goal": "reach_cone",
+    "goalRadius": 0.5,
+    "expectTurn": null,
+    "target": "start"
+   },
+   "hud": [
+    "time",
+    "speed",
+    "lidar",
+    "heading"
+   ],
+   "graphs": [
+    "speed",
+    "heading",
+    "lidar"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow",
+    "lidar"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 10.9,
+      "x": 0.002,
+      "y": 0.015,
+      "heading": 0.6,
+      "lines": 14
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "C-3",
+   "order": 53,
+   "chapter": "C",
+   "title": "C の while と関数",
+   "type": "make",
+   "lang": "c",
+   "minutes": 12,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "4-3 と同じく、コーンまでの距離は世界ごとにちがう。LiDAR で測りながら近づいて止まる関数 forward_until(near) を C で作ろう。C には None が無いので、lidar() は「何も無い」とき −1 を返す。",
+   "learn": {
+    "python": [
+     "（C）関数: void forward_until(double near) { … }。値を返すなら double など、返さないなら void",
+     "（C）while (1) { … if (…) break; }",
+     "（C）None の代わりに −1（ありえない値＝番兵）で「無い」を表す",
+     "（C）かつ は &&、または は ||"
+    ],
+    "robot": [
+     "マイコンでも「測る → 決める → 動く」のくり返しは同じ",
+     "Arduino では main の代わりに setup()（1 回）と loop()（くり返し）。loop() の中身が状態機械になる"
+    ]
+   },
+   "new": [
+    "void",
+    "while（C）",
+    "&&"
+   ],
+   "new_reason": "void・while・&& は「測りながら走って、値があって近ければぬける」関数の 1 つの形なので、まとめて出す。",
+   "new_split": {
+    "command": [],
+    "syntax": [
+     "void",
+     "while（C）",
+     "&&"
+    ]
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "wait",
+    "stop",
+    "lidar",
+    "heading",
+    "now"
+   ],
+   "worlds": [
+    {
+     "name": "3 m",
+     "world": {
+      "venue": "船橋キャンパス 建物の裏の通路",
+      "venue_key": "ura",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 0,
+        "y": 3.31,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 40,
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {},
+     "judge": {}
+    },
+    {
+     "name": "6 m",
+     "world": {
+      "venue": "船橋キャンパス 建物の裏の通路",
+      "venue_key": "ura",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 0,
+        "y": 6.31,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 40,
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {},
+     "judge": {}
+    },
+    {
+     "name": "9 m",
+     "world": {
+      "venue": "船橋キャンパス 建物の裏の通路",
+      "venue_key": "ura",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 0,
+        "y": 9.31,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 40,
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {},
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "stopped and gap('cone') <= 0.5 and not touched('cone')",
+     "label": "すべての世界で、コーンの 50 cm 以内で止まる",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "gap('cone') <= 0.15 and not touched('cone')",
+     "label": "すべての世界で 15 cm 以内",
+     "need": "all",
+     "tip": "止まる距離（near）を少し近づけてみよう。すべる分も見こもう",
+     "measure": "gap('cone')",
+     "better": "low",
+     "unit": "cm"
+    },
+    {
+     "expr": "t_stop <= 15",
+     "label": "すべての世界で 15 秒以内",
+     "need": "all",
+     "tip": "走る速さを上げると早く着く。そのぶん早めに止め始めよう",
+     "measure": "t_stop",
+     "better": "low",
+     "unit": "秒"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "gap('cone')",
+    "text": "コーンの {cm} cm 手前で止まった",
+    "world": "first_failed"
+   },
+   "starter": "#include \"rover.h\"\n\nvoid forward_until(double near) {\n    // LiDAR が near より近くなるまで走る（lidar() は何も無いとき -1）\n}\n\nint main(void) {\n    forward_until(0.25);\n    return 0;\n}\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "motor(0.7, 0.7); のあと while (1) { double d = lidar(); … }",
+    "「値があって（d >= 0）、しかも近い（d < near）」は d >= 0 && d < near。合ったら break;",
+    "ループの後で stop();"
+   ],
+   "solution": "#include \"rover.h\"\n\n// 1. LiDAR で止まる関数を作る\nvoid forward_until(double near) {\n    motor(0.7, 0.7);\n    while (1) {\n        double d = lidar();\n        if (d >= 0 && d < near) {\n            break;\n        }\n    }\n    stop();\n}\n\n// 2. 呼んで走る\nint main(void) {\n    forward_until(0.22);\n    return 0;\n}\n",
+   "solution_labels": [
+    "LiDAR で止まる関数を作る",
+    "呼んで走る"
+   ],
+   "py_equiv": "def forward_until(near):\n    motor(0.7, 0.7)\n    while True:\n        d = lidar()\n        if d is None:\n            d = -1\n        if d >= 0 and d < near:\n            break\n    stop()\n\nforward_until(0.22)\n",
+   "mistakes": [
+    {
+     "name": "−1 を調べない",
+     "code": "#include \"rover.h\"\n\nvoid forward_until(double near) {\n    motor(0.7, 0.7);\n    while (1) {\n        double d = lidar();\n        if (d < near) {\n            break;\n        }\n    }\n    stop();\n}\n\nint main(void) {\n    forward_until(0.22);\n    return 0;\n}\n",
+     "say": "12 m より遠いと lidar() は −1。−1 < 0.22 で近いと思って止まる。d >= 0 も確かめよう。",
+     "expect": "pass",
+     "rule": null,
+     "py_equiv": "def forward_until(near):\n    motor(0.7, 0.7)\n    while True:\n        d = lidar()\n        if d is None:\n            d = -1\n        if d < near:\n            break\n    stop()\n\nforward_until(0.22)\n",
+     "when": "has('lidar()') and not re('d\\s*>=?\\s*0') and not re('if\\s*\\(\\s*\\w+\\s*=\\s*[^=]')"
+    },
+    {
+     "name": "= と == をまちがえた",
+     "code": "#include \"rover.h\"\n\nvoid forward_until(double near) {\n    motor(0.7, 0.7);\n    while (1) {\n        double d = lidar();\n        if (d = near) {\n            break;\n        }\n    }\n    stop();\n}\n\nint main(void) {\n    forward_until(0.22);\n    return 0;\n}\n",
+     "say": "if (d = 0.25) は「入れる」になって、いつも成り立つ。比べるのは ==。C ではエラーにならないので要注意。",
+     "expect": "fail",
+     "rule": null,
+     "py_equiv": "def forward_until(near):\n    motor(0.7, 0.7)\n    while True:\n        d = lidar()\n        d = near\n        if d:\n            break\n    stop()\n\nforward_until(0.22)\n",
+     "when": "re('if\\s*\\(\\s*\\w+\\s*=\\s*[^=]')"
+    }
+   ],
+   "senpai_clear": "この forward_until は、そのまま ATOM の見張りプログラムの部品になるよ。",
+   "explain": {
+    "goal": "stop_at_cone",
+    "goalRadius": 0.5,
+    "expectTurn": null,
+    "target": "cone"
+   },
+   "hud": [
+    "time",
+    "gap",
+    "speed",
+    "lidar",
+    "heading"
+   ],
+   "graphs": [
+    "speed",
+    "heading",
+    "lidar"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow",
+    "lidar"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 4.22,
+      "x": 0,
+      "y": 2.91,
+      "heading": 0,
+      "lines": 15,
+      "gap": 0.09
+     },
+     {
+      "t_stop": 8.12,
+      "x": 0,
+      "y": 5.913,
+      "heading": 0,
+      "lines": 15,
+      "gap": 0.087
+     },
+     {
+      "t_stop": 12,
+      "x": 0,
+      "y": 8.901,
+      "heading": 0,
+      "lines": 15,
+      "gap": 0.099
+     }
+    ],
+    "sim": "w1"
+   }
+  }
+ ]
+}

@@ -1,0 +1,1061 @@
+{
+ "chapter": 5,
+ "levels": [
+  {
+   "id": "5-1",
+   "order": 22,
+   "chapter": 5,
+   "title": "def で命令を作る",
+   "type": "parsons",
+   "lang": "python",
+   "minutes": 7,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "「走る」「右へ 90°」「左へ 90°」を、自分の命令（関数）にしよう。行はそろっているので、正しく並べて Z の形の道を通り、コーンの前で止まろう。",
+   "learn": {
+    "python": [
+     "def 名前(引数): で自分の命令を作る。中身は字下げ",
+     "作った命令は forward(3.03) のように呼ぶ。( ) の数が引数 sec に入る",
+     "def を書いただけでは動かない。呼んだときに動く"
+    ],
+    "robot": [
+     "よく使う動きを部品（関数）にすると、道順が読みやすくなる"
+    ]
+   },
+   "new": [
+    "def",
+    "引数"
+   ],
+   "new_split": {
+    "command": [],
+    "syntax": [
+     "def",
+     "引数"
+    ]
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "lidar"
+   ],
+   "worlds": [
+    {
+     "name": "世界1",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "c1",
+        "type": "flag",
+        "x": 0,
+        "y": 2.0,
+        "label": "角 1"
+       },
+       {
+        "id": "c2",
+        "type": "flag",
+        "x": 2.0,
+        "y": 2.0,
+        "label": "角 2"
+       },
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 2.08,
+        "y": 4.4,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 40,
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {},
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "visited_in_order(['c1', 'c2'], 0.4) and stopped and gap('cone') <= 0.5 and not touched('cone')",
+     "label": "2 つの角を通って、コーンの 50 cm 以内で止まる",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "attempt == 1",
+     "label": "1 回目の実行でクリア",
+     "need": "all",
+     "tip": "ほかの面を 1 つクリアしてから戻ると、もう一度ねらえるよ",
+     "no_measure": "1 回目の実行でクリアしたかどうかで決まる（数では測れない）"
+    },
+    {
+     "expr": "t_stop <= 10 and gap('cone') <= 0.5 and not touched('cone')",
+     "label": "forward を速くして（数も直して）10 秒以内に止まる",
+     "need": "all",
+     "measure": "t_stop",
+     "better": "low",
+     "unit": "秒",
+     "tip": "forward の中の速さを上げたら、呼ぶときの秒数も直そう"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "gap('cone')",
+    "text": "コーンの {cm} cm 手前で止まった",
+    "world": "first_failed"
+   },
+   "starter": "forward(3.03)\ndef right():\n    motor(0.6, 0.6)\nleft()\ndef forward(sec):\n    stop()\nforward(3.03)\n    wait(sec)\n    motor(0.25, -0.25)\n    wait(0.463)\n    stop()\ndef left():\n    motor(-0.25, 0.25)\nright()\n    wait(0.463)\n    stop()\nforward(3.03)\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": {
+    "fixed_lines": 0,
+    "answer": "def forward(sec):\n    motor(0.6, 0.6)\n    wait(sec)\n    stop()\n\ndef right():\n    motor(0.25, -0.25)\n    wait(0.463)\n    stop()\n\ndef left():\n    motor(-0.25, 0.25)\n    wait(0.463)\n    stop()\n\nforward(3.03)\nright()\nforward(3.03)\nleft()\nforward(3.03)\n",
+    "distractors": []
+   },
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "def のまとまりを 3 つ作る（forward・right・left）。それぞれの中身は字下げ。",
+    "def は呼ぶより上に書く。下の 5 行（forward → right → forward → left → forward）が道順。",
+    "速さ 0.8 なら 2 m は 2 ÷ 0.88 ＝ 2.27 秒。forward の中を motor(0.8, 0.8) に、呼ぶ数を 2.27 に。"
+   ],
+   "solution": "# 1. 走る・右・左の命令を作る\ndef forward(sec):\n    motor(0.8, 0.8)\n    wait(sec)\n    stop()\n\ndef right():\n    motor(0.25, -0.25)\n    wait(0.463)\n    stop()\n\ndef left():\n    motor(-0.25, 0.25)\n    wait(0.463)\n    stop()\n\n# 2. 道順どおりに呼ぶ\nforward(2.27)\nright()\nforward(2.27)\nleft()\nforward(2.27)\n",
+   "solution_labels": [
+    "走る・右・左の命令を作る",
+    "道順どおりに呼ぶ"
+   ],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "呼ぶ前に def が無い",
+     "code": "forward(3.03)\ndef forward(sec):\n    motor(0.6, 0.6)\n    wait(sec)\n    stop()\n",
+     "say": "Python は上から読むので、forward を作る（def）より先に呼ぶと「知らない名前」になるよ。def を上へ。",
+     "expect": "fail",
+     "rule": "NAME_CALLED_BEFORE_DEF",
+     "when": "card('NAME_CALLED_BEFORE_DEF')"
+    }
+   ],
+   "senpai_clear": "道順の 5 行が、そのまま日本語みたいに読めるでしょ。関数の力だよ。",
+   "explain": {
+    "goal": "stop_at_cone",
+    "goalRadius": 0.5,
+    "expectTurn": null,
+    "target": "cone"
+   },
+   "hud": [
+    "time",
+    "gap",
+    "speed",
+    "lidar"
+   ],
+   "graphs": [
+    "speed",
+    "lidar"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow",
+    "lidar"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 8.2,
+      "x": 2.044,
+      "y": 4.019,
+      "heading": 0.4,
+      "lines": 17,
+      "gap": 0.073
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "5-2",
+   "order": 23,
+   "chapter": 5,
+   "title": "角度を渡す turn(deg)",
+   "type": "blanks",
+   "lang": "python",
+   "minutes": 8,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "right() と left() を 1 つにまとめた turn(deg) を作ろう。プラスなら右、マイナスなら左、角度の大きさで回る時間が変わる。空欄 ___ を埋めて、旗 A・B・C を回ってコーンへ。",
+   "learn": {
+    "python": [
+     "関数の中で if を使える",
+     "abs(x) は x の大きさ（マイナスを取る）",
+     "return 値 で、関数が計算した結果を返す: def secs(m): return m / 0.66"
+    ],
+    "robot": [
+     "どんな角度でも回れる道具を作っておくと、あとの章がずっと楽になる"
+    ]
+   },
+   "new": [
+    "abs",
+    "return"
+   ],
+   "new_split": {
+    "command": [],
+    "syntax": [
+     "abs",
+     "return"
+    ]
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "lidar"
+   ],
+   "worlds": [
+    {
+     "name": "世界1",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "A",
+        "type": "flag",
+        "x": 1.0607,
+        "y": 1.0607,
+        "label": "旗 A"
+       },
+       {
+        "id": "B",
+        "type": "flag",
+        "x": 0.0,
+        "y": 2.1213,
+        "label": "旗 B"
+       },
+       {
+        "id": "C",
+        "type": "flag",
+        "x": 2.0,
+        "y": 2.1213,
+        "label": "旗 C"
+       },
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 1.045,
+        "y": 3.7754,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 40,
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {},
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "visited_in_order(['A', 'B', 'C'], 0.35) and stopped and gap('cone') <= 0.5 and not touched('cone')",
+     "label": "旗 A・B・C を順に通って、コーンの 50 cm 以内へ",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "gap('cone') <= 0.2 and not touched('cone')",
+     "label": "コーンの 20 cm 以内",
+     "need": "all",
+     "tip": "最後の go の長さを少し変えて、コーンに寄せよう",
+     "measure": "gap('cone')",
+     "better": "low",
+     "unit": "cm"
+    },
+    {
+     "expr": "uses('return')",
+     "label": "時間を計算する関数（return を使う）を作って使う",
+     "need": "all",
+     "tip": "クリアすると鍵が外せる。go の中の計算を、return で返す関数に分けよう",
+     "no_measure": "書き方で決まる（数では測れない）"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "gap('cone')",
+    "text": "コーンの {cm} cm 手前で止まった",
+    "world": "first_failed"
+   },
+   "starter": "def go(m):\n    motor(0.6, 0.6)\n    wait(m / 0.66)\n    stop()\n\ndef turn(deg):\n    # deg がプラスなら右、マイナスなら左\n    if ___:\n        motor(0.25, -0.25)\n    else:\n        motor(-0.25, 0.25)\n    wait(___ / 194.5)\n    stop()\n\nturn(45)\ngo(1.5)\nturn(-90)\ngo(1.5)\nturn(135)\ngo(2.0)\nturn(-120)\ngo(1.5)\n",
+   "locked": [
+    [
+     1,
+     7
+    ],
+    [
+     9,
+     11
+    ],
+    [
+     13,
+     22
+    ]
+   ],
+   "blanks": [
+    {
+     "line": 8,
+     "col": 7,
+     "label": "if の条件"
+    },
+    {
+     "line": 12,
+     "col": 9,
+     "label": "wait の中の角度の大きさ"
+    }
+   ],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "「プラスなら」は deg > 0。",
+    "回る時間はマイナスにできない。角度の大きさは abs(deg)。",
+    "return を使うなら: def secs(m): return m / 0.66 を作って、go の中で wait(secs(m))。"
+   ],
+   "solution": "# 1. 時間を計算する関数\ndef secs(m):\n    return m / 0.66\n\n# 2. 走る関数\ndef go(m):\n    motor(0.6, 0.6)\n    wait(secs(m))\n    stop()\n\n# 3. 回る関数\ndef turn(deg):\n    if deg > 0:\n        motor(0.25, -0.25)\n    else:\n        motor(-0.25, 0.25)\n    wait(abs(deg) / 194.5)\n    stop()\n\n# 4. 旗をめぐってコーンへ\nturn(45)\ngo(1.5)\nturn(-90)\ngo(1.5)\nturn(135)\ngo(2.0)\nturn(-120)\ngo(1.5)\n",
+   "solution_labels": [
+    "時間を計算する関数",
+    "走る関数",
+    "回る関数",
+    "旗をめぐってコーンへ"
+   ],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "abs を忘れた",
+     "code": "def go(m):\n    motor(0.6, 0.6)\n    wait(m / 0.66)\n    stop()\n\ndef turn(deg):\n    if deg > 0:\n        motor(0.25, -0.25)\n    else:\n        motor(-0.25, 0.25)\n    wait(deg / 194.5)\n    stop()\n\nturn(45)\ngo(1.5)\nturn(-90)\ngo(1.5)\n",
+     "say": "deg がマイナスだと、wait の秒数がマイナスになってエラー。abs(deg) で大きさだけにしよう。",
+     "expect": "fail",
+     "rule": "API_WAIT_NEGATIVE",
+     "fix": "deg がマイナス（左）だと時間もマイナスになる。回る時間は角度の大きさで: wait(abs(deg) / 194.5)",
+     "example": {
+      "bad": "wait(deg / 194.5)",
+      "good": "wait(abs(deg) / 194.5)"
+     },
+     "when": "card('API_WAIT_NEGATIVE')"
+    }
+   ],
+   "senpai_clear": "turn(deg) は、このあとの章でずっと使う道具。自分の道具箱に入ったね。",
+   "explain": {
+    "goal": "stop_at_cone",
+    "goalRadius": 0.5,
+    "expectTurn": null,
+    "target": "cone"
+   },
+   "hud": [
+    "time",
+    "gap",
+    "speed",
+    "lidar"
+   ],
+   "graphs": [
+    "speed",
+    "lidar"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow",
+    "lidar"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 12.28,
+      "x": 1.276,
+      "y": 3.491,
+      "heading": 330.4,
+      "lines": 21,
+      "gap": 0.057
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "5-3",
+   "order": 24,
+   "chapter": 5,
+   "title": "道順をリストに",
+   "type": "make",
+   "lang": "python",
+   "minutes": 8,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "わたしのメモ:「北へ 1.5 m → 右 90° で 2 m → 右 90° で 1 m → 左 90° で 1.5 m → 左 45° で 1.414 m で花だんの旗」。(回る角度, 進む m) の組をリストに並べて、for で順に走ろう。",
+   "learn": {
+    "python": [
+     "リスト [ ] にいくつも値を並べる。( , ) の組（タプル）も入れられる",
+     "for a, m in ROUTE: で、組を 2 つの変数に分けて受け取る",
+     "ROUTE[0] で最初の組（0 から数える）。len(ROUTE) で組の数（次の 5-4 で使う）"
+    ],
+    "robot": [
+     "道順を「データ」にしておくと、プログラムを変えずに道だけ変えられる（経路計画）"
+    ]
+   },
+   "new": [
+    "リスト",
+    "タプル",
+    "for ... in リスト"
+   ],
+   "new_reason": "リスト・タプル・for … in は「道順をデータにする」1 つの形（組を並べて、順に取り出す）なので、まとめて出す。",
+   "new_split": {
+    "command": [],
+    "syntax": [
+     "リスト",
+     "タプル",
+     "for ... in リスト"
+    ]
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "lidar"
+   ],
+   "worlds": [
+    {
+     "name": "世界1",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "p1",
+        "type": "flag",
+        "x": 0.0,
+        "y": 1.5,
+        "label": "旗 1"
+       },
+       {
+        "id": "p2",
+        "type": "flag",
+        "x": 2.0,
+        "y": 1.5,
+        "label": "旗 2"
+       },
+       {
+        "id": "p3",
+        "type": "flag",
+        "x": 2.0,
+        "y": 0.5,
+        "label": "旗 3"
+       },
+       {
+        "id": "p4",
+        "type": "flag",
+        "x": 3.5,
+        "y": 0.5,
+        "label": "旗 4"
+       },
+       {
+        "id": "p5",
+        "type": "flag",
+        "x": 4.5,
+        "y": 1.5,
+        "label": "旗 5"
+       }
+      ],
+      "time_limit": 60,
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {},
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "visited_in_order(['p1', 'p2', 'p3', 'p4', 'p5'], 0.35) and uses('list') and uses('for')",
+     "label": "リストと for を使って、5 本の旗を順に通る",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "stopped and (dist('p5') <= 0.15 or dist('start') <= 0.3)",
+     "label": "最後の旗（★3 の道順ならスタート）の近くで止まる",
+     "need": "all",
+     "tip": "最後の組の数（角度と長さ）をメモとくらべよう",
+     "measure_alt": [
+      {
+       "when": "dist('p5') > 0.15 and dist('start') <= 0.3",
+       "measure": "dist('start')",
+       "label": "スタートまで",
+       "unit": "cm"
+      }
+     ],
+     "measure": "dist('p5')",
+     "better": "low",
+     "unit": "cm"
+    },
+    {
+     "expr": "dist('start') <= 0.3 and stopped",
+     "label": "リストに 2 組足して、スタートの 30 cm 以内に戻る",
+     "need": "all",
+     "tip": "最後の旗から西へ 4.5 m、南へ 1.5 m でスタート。組を 2 つ足そう",
+     "measure": "dist('start')",
+     "better": "low",
+     "unit": "cm"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "t_end",
+    "text": "{s} 秒で終わった",
+    "world": "first_failed"
+   },
+   "starter": "def go(m):\n    motor(0.6, 0.6)\n    wait(m / 0.66)\n    stop()\n\ndef turn(deg):\n    if deg > 0:\n        motor(0.25, -0.25)\n    else:\n        motor(-0.25, 0.25)\n    wait(abs(deg) / 194.5)\n    stop()\n\nROUTE = [\n    (0, 1.5),      # (回る角度, 進む m)\n    (90, 2.0),\n    # ← メモの続きを書こう\n]\nfor a, m in ROUTE:\n    turn(a)\n    go(m)\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "メモの「右 90° で 1 m」は (90, 1.0)、「左 90°」はマイナスで (-90, 1.5)。",
+    "turn(0) は回らないだけ。最後の旗は (-45, 1.414)。",
+    "スタートに戻るには、最後の旗（東 4.5 m・北 1.5 m）から西を向いて 4.5 m、南を向いて 1.5 m。(-135, 4.5), (-90, 1.5) を足す。"
+   ],
+   "solution": "# 1. 走る・回る道具\ndef go(m):\n    motor(0.6, 0.6)\n    wait(m / 0.66)\n    stop()\n\ndef turn(deg):\n    if deg > 0:\n        motor(0.25, -0.25)\n    else:\n        motor(-0.25, 0.25)\n    wait(abs(deg) / 194.5)\n    stop()\n\n# 2. 道順をリストに書く\nROUTE = [\n    (0, 1.5),\n    (90, 2.0),\n    (90, 1.0),\n    (-90, 1.5),\n    (-45, 1.414),\n    (-135, 4.5),\n    (-90, 1.5),\n]\n# 3. リストの順に走る\nfor a, m in ROUTE:\n    turn(a)\n    go(m)\n",
+   "solution_labels": [
+    "走る・回る道具",
+    "道順をリストに書く",
+    "リストの順に走る"
+   ],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "カンマを忘れた",
+     "code": "def go(m):\n    motor(0.6, 0.6)\n    wait(m / 0.66)\n    stop()\n\ndef turn(deg):\n    if deg > 0:\n        motor(0.25, -0.25)\n    else:\n        motor(-0.25, 0.25)\n    wait(abs(deg) / 194.5)\n    stop()\n\nROUTE = [\n    (0, 1.5)\n    (90, 2.0),\n]\nfor a, m in ROUTE:\n    turn(a)\n    go(m)\n",
+     "say": "リストの組と組の間には , が要るよ。( ) の後ろを確かめて。",
+     "expect": "fail",
+     "rule": "ITEMS_COMMA_MISSING",
+     "when": "card('ITEMS_COMMA_MISSING')"
+    }
+   ],
+   "senpai_clear": "道順がデータになった！ 7 章では、このリストに緯度・経度が入るよ。",
+   "explain": {
+    "goal": "free",
+    "goalRadius": 1.0,
+    "expectTurn": null,
+    "target": null,
+    "fallback_kind": "list"
+   },
+   "hud": [
+    "time",
+    "speed",
+    "lidar"
+   ],
+   "graphs": [
+    "speed",
+    "lidar"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "lidar"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 23.52,
+      "x": 0.01,
+      "y": 0.014,
+      "heading": 180.7,
+      "lines": 23
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "5-4",
+   "order": 25,
+   "chapter": 5,
+   "title": "配達ローバー",
+   "type": "boss",
+   "lang": "python",
+   "minutes": 12,
+   "checkpoint": true,
+   "carry_from": null,
+   "story": "部室の荷物を配達しよう。ROUTE に道順のリストが入っている（世界ごとにちがう）。最後の組の長さは、コーンの「中心」まで。そのまま走るとコーンにぶつかるよ。関数とリストで、どの道順でも走れるプログラムを。（チェックポイント面）",
+   "learn": {
+    "python": [
+     "def・if・abs・for・リストを全部使う",
+     "for i in range(len(ROUTE)): で、何番目の組かを i で数える。a, m = ROUTE[i] で i 番目を取り出す（0 から数える）",
+     "最後の組は i == len(ROUTE) - 1"
+    ],
+    "robot": [
+     "同じプログラムで、ちがう道順を走る",
+     "コーンの中心までの長さから、半径 19 cm・機体 12 cm・すべりの分を引いて手前で止まる"
+    ]
+   },
+   "new": [],
+   "new_split": {
+    "command": [],
+    "syntax": []
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "lidar"
+   ],
+   "worlds": [
+    {
+     "name": "道順 1",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "p1",
+        "type": "flag",
+        "x": 0.0,
+        "y": 2.0,
+        "label": "配達先 1"
+       },
+       {
+        "id": "p2",
+        "type": "flag",
+        "x": 1.5,
+        "y": 2.0,
+        "label": "配達先 2"
+       },
+       {
+        "id": "p3",
+        "type": "flag",
+        "x": 1.5,
+        "y": 3.0,
+        "label": "配達先 3"
+       },
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 2.3485,
+        "y": 3.8485,
+        "r": 0.19
+       },
+       {
+        "id": "r1",
+        "type": "rock",
+        "x": -2.0,
+        "y": -1.5,
+        "r": 0.3,
+        "h": 0.4
+       }
+      ],
+      "time_limit": 60,
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {
+      "ROUTE": [
+       [
+        0,
+        2.0
+       ],
+       [
+        90,
+        1.5
+       ],
+       [
+        -90,
+        1.0
+       ],
+       [
+        45,
+        1.2
+       ]
+      ]
+     },
+     "judge": {
+      "FLAGS": [
+       "p1",
+       "p2",
+       "p3"
+      ]
+     }
+    },
+    {
+     "name": "道順 2",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "p1",
+        "type": "flag",
+        "x": 1.0,
+        "y": 1.7321,
+        "label": "配達先 1"
+       },
+       {
+        "id": "p2",
+        "type": "flag",
+        "x": -0.5,
+        "y": 1.7321,
+        "label": "配達先 2"
+       },
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": -0.5,
+        "y": 3.7321,
+        "r": 0.19
+       },
+       {
+        "id": "r1",
+        "type": "rock",
+        "x": -2.0,
+        "y": -1.5,
+        "r": 0.3,
+        "h": 0.4
+       }
+      ],
+      "time_limit": 60,
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {
+      "ROUTE": [
+       [
+        30,
+        2.0
+       ],
+       [
+        -120,
+        1.5
+       ],
+       [
+        90,
+        2.0
+       ]
+      ]
+     },
+     "judge": {
+      "FLAGS": [
+       "p1",
+       "p2"
+      ]
+     }
+    },
+    {
+     "name": "道順 3",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "p1",
+        "type": "flag",
+        "x": -1.0,
+        "y": 0.0,
+        "label": "配達先 1"
+       },
+       {
+        "id": "p2",
+        "type": "flag",
+        "x": -1.0,
+        "y": 2.5,
+        "label": "配達先 2"
+       },
+       {
+        "id": "p3",
+        "type": "flag",
+        "x": -0.2929,
+        "y": 1.7929,
+        "label": "配達先 3"
+       },
+       {
+        "id": "p4",
+        "type": "flag",
+        "x": 1.2071,
+        "y": 1.7929,
+        "label": "配達先 4"
+       },
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 1.2071,
+        "y": 2.7929,
+        "r": 0.19
+       },
+       {
+        "id": "r1",
+        "type": "rock",
+        "x": -2.0,
+        "y": -1.5,
+        "r": 0.3,
+        "h": 0.4
+       }
+      ],
+      "time_limit": 60,
+      "api_off": [
+       "distance_to_cone"
+      ]
+     },
+     "inject": {
+      "ROUTE": [
+       [
+        -90,
+        1.0
+       ],
+       [
+        90,
+        2.5
+       ],
+       [
+        135,
+        1.0
+       ],
+       [
+        -45,
+        1.5
+       ],
+       [
+        -90,
+        1.0
+       ]
+      ]
+     },
+     "judge": {
+      "FLAGS": [
+       "p1",
+       "p2",
+       "p3",
+       "p4"
+      ]
+     }
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "visited_in_order(FLAGS, 0.4) and stopped and gap('cone') <= 0.5 and not touched('cone') and bumps == 0",
+     "label": "すべての世界で、配達先を順に通りコーンの 50 cm 以内",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "gap('cone') <= 0.15 and not touched('cone')",
+     "label": "すべての世界で 15 cm 以内（ぶつからずに）",
+     "need": "all",
+     "tip": "最後に引く長さを、止まった所のすき間を見て直そう",
+     "measure": "gap('cone')",
+     "better": "low",
+     "unit": "cm"
+    },
+    {
+     "expr": "t_stop <= 9.5 and gap('cone') <= 0.15 and not touched('cone')",
+     "label": "すべての世界で 9.5 秒以内に 15 cm 以内",
+     "need": "all",
+     "tip": "速さを 1.0 にすると 1 秒に 1.1 m。時間の計算と、すべる分も直そう",
+     "measure": "t_stop",
+     "better": "low",
+     "unit": "秒"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "gap('cone')",
+    "text": "コーンの {cm} cm 手前で止まった",
+    "world": "first_failed"
+   },
+   "starter": "# ROUTE に道順が入っている: [(回る角度, 進む m), ...]\nprint(ROUTE)\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "ROUTE の最後の組の長さはコーンの中心まで。全部そのまま走ると、コーンにぶつかる。",
+    "for i in range(len(ROUTE)): → a, m = ROUTE[i] と書くと、i で何番目かが分かる。最後は i == len(ROUTE) - 1。",
+    "最後だけ m を 0.4 m ほど短くする（半径 0.19＋機体 0.12＋すべり）。★3 は速さ 1.0（m / 1.1 秒）で、すべりも少し大きくなる。"
+   ],
+   "solution": "# 1. 走る・回る道具\ndef go(m):\n    motor(1.0, 1.0)\n    wait(m / 1.1)\n    stop()\n\ndef turn(deg):\n    if deg > 0:\n        motor(0.25, -0.25)\n    else:\n        motor(-0.25, 0.25)\n    wait(abs(deg) / 194.5)\n    stop()\n\n# 2. ROUTE の順に走る（最後の組だけ手前で止まる）\nfor i in range(len(ROUTE)):\n    a, m = ROUTE[i]\n    if i == len(ROUTE) - 1:\n        m = m - 0.45    # 最後はコーンの中心まで。半径・機体・すべりの分だけ手前\n    turn(a)\n    go(m)\n",
+   "solution_labels": [
+    "走る・回る道具",
+    "ROUTE の順に走る（最後の組だけ手前で止まる）"
+   ],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "右にしか回らない turn",
+     "code": "def go(m):\n    motor(0.6, 0.6)\n    wait(m / 0.66)\n    stop()\n\ndef turn(deg):\n    motor(0.25, -0.25)\n    wait(abs(deg) / 194.5)\n    stop()\n\nfor a, m in ROUTE:\n    turn(a)\n    go(m)\n",
+     "say": "マイナスの角度は左だよ。turn の中で if を使って、左右を分けよう。",
+     "expect": "fail",
+     "rule": null,
+     "when": "moved > 1 and not re('motor\\(\\s*-')"
+    },
+    {
+     "name": "最後もそのまま",
+     "say": "最後の組の長さはコーンの中心まで。最後の 1 組だけ、手前で止まるように短くしよう。",
+     "expect": "fail",
+     "rule": "B_OVERSHOOT",
+     "code": "# 1. 走る・回る道具\ndef go(m):\n    motor(1.0, 1.0)\n    wait(m / 1.1)\n    stop()\n\ndef turn(deg):\n    if deg > 0:\n        motor(0.25, -0.25)\n    else:\n        motor(-0.25, 0.25)\n    wait(abs(deg) / 194.5)\n    stop()\n\n# 2. ROUTE の順に走る（最後の組だけ手前で止まる）\nfor i in range(len(ROUTE)):\n    a, m = ROUTE[i]\n    turn(a)\n    go(m)\n",
+     "when": "hit"
+    }
+   ],
+   "senpai_clear": "関数とリストで、プログラムが「道具」と「データ」に分かれた。",
+   "explain": {
+    "goal": "stop_at_cone",
+    "goalRadius": 0.5,
+    "expectTurn": null,
+    "target": "cone",
+    "fallback_kind": "list"
+   },
+   "hud": [
+    "time",
+    "gap",
+    "speed",
+    "lidar"
+   ],
+   "graphs": [
+    "speed",
+    "lidar"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow",
+    "lidar"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 6.42,
+      "x": 2.067,
+      "y": 3.586,
+      "heading": 44.7,
+      "lines": 17,
+      "gap": 0.074
+     },
+     {
+      "t_stop": 6.32,
+      "x": -0.571,
+      "y": 3.337,
+      "heading": 359.6,
+      "lines": 17,
+      "gap": 0.091
+     },
+     {
+      "t_stop": 8.76,
+      "x": 1.26,
+      "y": 2.43,
+      "heading": 0,
+      "lines": 17,
+      "gap": 0.057
+     }
+    ],
+    "sim": "w1"
+   }
+  }
+ ]
+}

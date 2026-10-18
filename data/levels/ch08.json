@@ -1,0 +1,2090 @@
+{
+ "chapter": 8,
+ "levels": [
+  {
+   "id": "8-1",
+   "order": 37,
+   "chapter": 8,
+   "title": "カメラでコーンを探す",
+   "type": "make",
+   "lang": "python",
+   "minutes": 10,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "コーンはどこかの方向、5 m 先（世界ごとにちがう）。カメラで探して、コーンの方を向こう。カメラは 1 枚写すのに 0.4 秒かかる。少し回る → 止まる → 写す、をくり返そう。",
+   "learn": {
+    "python": [
+     "c = camera() の c.found（見えたか True/False）・c.angle（右がプラスの角度）・c.size（大きさ）",
+     "while True と break で「見つかるまで」"
+    ],
+    "robot": [
+     "カメラの画角は左右 62°（±31°）。それより小さい角度ずつ回れば見のがさない",
+     "写真の処理に 0.4 秒。止まってから写すと、正しい角度が分かる",
+     "少しだけ回るときは時間で（0.1 の強さで 1 秒に約 78°）"
+    ]
+   },
+   "new": [
+    "camera"
+   ],
+   "new_split": {
+    "command": [
+     "camera"
+    ],
+    "syntax": []
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "now",
+    "lidar",
+    "heading",
+    "odometer",
+    "encoder",
+    "gnss",
+    "camera"
+   ],
+   "worlds": [
+    {
+     "name": "70°",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 4.9898,
+        "y": 1.8161,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 60,
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "sensor": {
+       "gnss_sigma": 2.0,
+       "gnss_tau": 30.0,
+       "gnss_white": 0.0,
+       "gnss_latency": 0.3,
+       "gnss_ttff": 1.0
+      }
+     },
+     "inject": {},
+     "judge": {}
+    },
+    {
+     "name": "160°",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 1.8161,
+        "y": -4.9898,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 60,
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "sensor": {
+       "gnss_sigma": 2.0,
+       "gnss_tau": 30.0,
+       "gnss_white": 0.0,
+       "gnss_latency": 0.3,
+       "gnss_ttff": 1.0
+      }
+     },
+     "inject": {},
+     "judge": {}
+    },
+    {
+     "name": "250°",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": -4.9898,
+        "y": -1.8161,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 60,
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "sensor": {
+       "gnss_sigma": 2.0,
+       "gnss_tau": 30.0,
+       "gnss_white": 0.0,
+       "gnss_latency": 0.3,
+       "gnss_ttff": 1.0
+      }
+     },
+     "inject": {},
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "stopped and (aim_err('cone') <= 8 or (gap('cone') <= 0.3 and not touched('cone')))",
+     "label": "すべての世界で、コーンの方を向く（8° 以内）か前で止まる",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "aim_err('cone') <= 3",
+     "label": "すべての世界で、最後にコーンとのずれ 3° 以内",
+     "need": "all",
+     "measure": "aim_err('cone')",
+     "better": "low",
+     "unit": "°",
+     "tip": "止まった後も、もう一度 camera() で見て、見えた角度だけ回ろう"
+    },
+    {
+     "expr": "gap('cone') <= 0.3 and not touched('cone')",
+     "label": "すべての世界で、コーンの 30 cm 以内まで走る",
+     "need": "all",
+     "tip": "遠くでの小さなずれは、近くで大きなずれになる。途中で見直そう",
+     "measure": "gap('cone')",
+     "better": "low",
+     "unit": "cm"
+    }
+   ],
+   "steps": [
+    {
+     "label": "止まってカメラで見る",
+     "expr": "still_shots >= 1"
+    },
+    {
+     "label": "見えた角度だけ回って、もう一度見る",
+     "expr": "still_shots >= 2"
+    },
+    {
+     "label": "コーンの 3 m 以内まで近づく",
+     "expr": "min_gap('cone') <= 3"
+    },
+    {
+     "label": "LiDAR でコーンの手前に止まる",
+     "expr": "stopped and gap('cone') <= 0.3"
+    }
+   ],
+   "show": {
+    "expr": "gap('cone')",
+    "text": "コーンの {cm} cm 手前で止まった",
+    "world": "first_failed"
+   },
+   "starter": "\ndef turn_small(deg):          # 少しだけ回る（0.1 の強さで 1 秒に約 78°）\n    if deg > 0:\n        motor(0.1, -0.1)\n    else:\n        motor(-0.1, 0.1)\n    wait(abs(deg) / 77.8)\n    stop()\n    wait(0.3)\n\nc = camera()\nprint(c.found, c.angle, c.size)\n# 見つかるまで: 少し回る → 写す をくり返そう\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "while True: の中で c = camera()。c.found なら break、ちがえば turn_small(40)。",
+    "見つかったら turn_small(c.angle) でコーンの方へ。もう一度 camera() で確かめるとより正確。",
+    "★3: 5 m 先で 2° ずれると、LiDAR の細い光はコーンを外れる。2.5 m 走ったら止まって、もう一度 camera() で向きを直してから、LiDAR で 0.22 m まで。"
+   ],
+   "solution": "\n# 1. 少しだけ回る道具\ndef turn_small(deg):          # 少しだけ回る（0.1 の強さで 1 秒に約 78°）\n    if deg > 0:\n        motor(0.1, -0.1)\n    else:\n        motor(-0.1, 0.1)\n    wait(abs(deg) / 77.8)\n    stop()\n    wait(0.3)\n\n# 2. 見つかるまで、回って見る\nwhile True:\n    c = camera()            # 0.4 秒かかる\n    if c.found:\n        break\n    turn_small(40)          # 画角 62° より小さく回って、もう一度見る\nturn_small(c.angle)         # 見えた角度だけ回る\nc = camera()                # もう一度見て、少しのずれを直す\nif c.found:\n    turn_small(c.angle)\n\n# 半分くらい近づいたら、もう一度見て向きを直す（遠いと 2° のずれでも LiDAR の光が外れる）\n# 3. 半分走って見直し、LiDAR で止まる\nstart = odometer()\nmotor(0.5, 0.5)\nwhile odometer() - start < 2.5:\n    pass\nstop()\nwait(0.3)\nc = camera()\nif c.found:\n    turn_small(c.angle)\nmotor(0.5, 0.5)\nwhile True:\n    d = lidar()\n    if d is not None and d < 0.22:\n        break\nstop()\nwait(0.3)\nc = camera()                # 4. 止まった後も、もう一度見て向きを直す（★2）\nif c.found:\n    turn_small(c.angle)\n",
+   "solution_labels": [
+    "少しだけ回る道具",
+    "見つかるまで、回って見る",
+    "半分走って見直し、LiDAR で止まる"
+   ],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "見えた角度を使わない",
+     "code": "\ndef turn_small(deg):          # 少しだけ回る（0.1 の強さで 1 秒に約 78°）\n    if deg > 0:\n        motor(0.1, -0.1)\n    else:\n        motor(-0.1, 0.1)\n    wait(abs(deg) / 77.8)\n    stop()\n    wait(0.3)\n\nwhile True:\n    c = camera()\n    if c.found:\n        break\n    turn_small(40)\n",
+     "say": "見つかっただけだと、コーンは画面のはし（±31°）かも。c.angle の角度だけ回って、まん中に入れよう。",
+     "expect": "fail",
+     "rule": "B_CAMERA_EDGE",
+     "when": "rule('B_CAMERA_EDGE') or (has('camera()') and not has('c.angle'))"
+    }
+   ],
+   "senpai_clear": "「止まって・見て・回る」。シンプルだけど、本番でも一番確実な探し方なんだ。",
+   "explain": {
+    "goal": "stop_at_cone",
+    "goalRadius": 0.3,
+    "expectTurn": null,
+    "target": "cone"
+   },
+   "hud": [
+    "time",
+    "gap",
+    "speed",
+    "lidar",
+    "heading",
+    "gnss_err"
+   ],
+   "graphs": [
+    "speed",
+    "heading",
+    "lidar",
+    "gnss_err"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow",
+    "lidar",
+    "cameraFov",
+    "gnss",
+    "truth"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 13.32,
+      "x": 4.593,
+      "y": 1.652,
+      "heading": 67.5,
+      "lines": 36,
+      "gap": 0.119
+     },
+     {
+      "t_stop": 16.62,
+      "x": 1.633,
+      "y": -4.599,
+      "heading": 154.5,
+      "lines": 36,
+      "gap": 0.121
+     },
+     {
+      "t_stop": 19.16,
+      "x": -4.639,
+      "y": -1.589,
+      "heading": 237.2,
+      "lines": 36,
+      "gap": 0.108
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "8-2",
+   "order": 38,
+   "chapter": 8,
+   "title": "回りながら見ると",
+   "type": "fix",
+   "lang": "python",
+   "minutes": 8,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "OB の先輩いわく「8-1 は時間がかかるから、回り続けながら写せば速いでしょ？」 …でも、コーンを見のがしたり、ちがう方へ走っていったりする。なぜだろう？ 直してコーンへ行こう。",
+   "learn": {
+    "python": [],
+    "robot": [
+     "0.4 秒のあいだに、0.3 の強さなら 93° も回る。画角 62° を飛びこえて見のがす",
+     "見えたと分かったときには、もう 0.4 秒前の向き。止まるまでにさらに回る",
+     "速さより確かさ。止まって見る"
+    ]
+   },
+   "new": [],
+   "new_split": {
+    "command": [],
+    "syntax": []
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "now",
+    "lidar",
+    "heading",
+    "odometer",
+    "encoder",
+    "gnss",
+    "camera"
+   ],
+   "worlds": [
+    {
+     "name": "100°",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 6.2141,
+        "y": -1.0957,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 40,
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "sensor": {
+       "gnss_sigma": 2.0,
+       "gnss_tau": 30.0,
+       "gnss_white": 0.0,
+       "gnss_latency": 0.3,
+       "gnss_ttff": 1.0
+      }
+     },
+     "inject": {},
+     "judge": {}
+    },
+    {
+     "name": "200°",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": -2.1581,
+        "y": -5.9295,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 40,
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "sensor": {
+       "gnss_sigma": 2.0,
+       "gnss_tau": 30.0,
+       "gnss_white": 0.0,
+       "gnss_latency": 0.3,
+       "gnss_ttff": 1.0
+      }
+     },
+     "inject": {},
+     "judge": {}
+    },
+    {
+     "name": "300°",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": -5.4646,
+        "y": 3.155,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 40,
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "sensor": {
+       "gnss_sigma": 2.0,
+       "gnss_tau": 30.0,
+       "gnss_white": 0.0,
+       "gnss_latency": 0.3,
+       "gnss_ttff": 1.0
+      }
+     },
+     "inject": {},
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "stopped and gap('cone') <= 0.5 and not touched('cone')",
+     "label": "すべての世界で、コーンの 50 cm 以内で止まる",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "gap('cone') <= 0.2 and not touched('cone')",
+     "label": "すべての世界で 20 cm 以内",
+     "need": "all",
+     "tip": "6 m 先で 2° ずれると光が外れる。途中で止まって見直そう",
+     "measure": "gap('cone')",
+     "better": "low",
+     "unit": "cm"
+    },
+    {
+     "expr": "t_stop <= 25",
+     "label": "すべての世界で 25 秒以内",
+     "need": "all",
+     "tip": "回る角度を画角より少し小さくすると、見のがさずに速く探せるよ",
+     "measure": "t_stop",
+     "better": "low",
+     "unit": "秒"
+    }
+   ],
+   "steps": [
+    {
+     "label": "止まってカメラで見る",
+     "expr": "still_shots >= 1"
+    },
+    {
+     "label": "見えた角度だけ回って、もう一度見る",
+     "expr": "still_shots >= 2"
+    },
+    {
+     "label": "半分走って、止まって見直す",
+     "expr": "still_shots >= 3 and min_gap('cone') <= 4"
+    },
+    {
+     "label": "LiDAR でコーンの手前に止まる",
+     "expr": "stopped and gap('cone') <= 0.5"
+    }
+   ],
+   "show": {
+    "expr": "gap('cone')",
+    "text": "コーンの {cm} cm 手前で止まった",
+    "world": "first_failed"
+   },
+   "starter": "motor(0.3, -0.3)          # 回り続ける\nwhile True:\n    c = camera()\n    if c.found:\n        break\nstop()\nmotor(0.6, 0.6)\nwhile True:\n    d = lidar()\n    if d is not None and d < 0.25:\n        break\nstop()\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "実行して、カメラの扇形（画角）を見よう。1 枚写すあいだにどれだけ回っている？",
+    "8-1 のように、回る → 止まる → 写す、にする。見えたら c.angle だけ回る。",
+    "8-1 の turn_small を使う: 見つかるまで turn_small(40) → turn_small(c.angle) → 半分走って見直す → LiDAR で近づく。"
+   ],
+   "solution": "# 1. 少しだけ回る道具（0.1 の強さで 1 秒に約 78°）\ndef turn_small(deg):\n    if deg > 0:\n        motor(0.1, -0.1)\n    else:\n        motor(-0.1, 0.1)\n    wait(abs(deg) / 77.8)\n    stop()\n    wait(0.3)\n\n# 2. 止まって見る → 見えなければ 40° 回る、をくり返す\nwhile True:\n    c = camera()            # 0.4 秒かかる\n    if c.found:\n        break\n    turn_small(40)          # 画角 62° より小さく回って、もう一度見る\nturn_small(c.angle)         # 見えた角度だけ回る\nc = camera()                # もう一度見て、少しのずれを直す\nif c.found:\n    turn_small(c.angle)\n\n# 3. 半分くらい走ったら、止まってもう一度見る（遠いと少しのずれでも LiDAR の光が外れる）\nstart = odometer()\nmotor(0.6, 0.6)\nwhile odometer() - start < 3:\n    pass\nstop()\nwait(0.3)\nc = camera()\nif c.found:\n    turn_small(c.angle)\n\n# 4. LiDAR で止まる\nmotor(0.6, 0.6)\nwhile True:\n    d = lidar()\n    if d is not None and d < 0.25:\n        break\nstop()\n",
+   "solution_labels": [
+    "少しだけ回る道具（0.1 の強さで 1 秒に約 78°）",
+    "止まって見る → 見えなければ 40° 回る、をくり返す",
+    "半分くらい走ったら、止まってもう一度見る（遠いと少しのずれでも LiDAR の光が外れる）",
+    "LiDAR で止まる"
+   ],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "ゆっくり回りながら見る",
+     "code": "motor(0.1, -0.1)\nwhile True:\n    c = camera()\n    if c.found:\n        break\nstop()\nmotor(0.6, 0.6)\nwhile True:\n    d = lidar()\n    if d is not None and d < 0.25:\n        break\nstop()\n",
+     "say": "ゆっくりなら見のがさないけど、見えた時にはもう 0.4 秒ぶん回っている。止まってから c.angle で向きを直そう。",
+     "expect": "any",
+     "rule": "B_CAMERA_LATENCY",
+     "when": "re('motor\\(0\\.1, -0\\.1\\)') and not has('c.angle')"
+    }
+   ],
+   "senpai_clear": "カメラの「遅れ」を体で覚えた？ 本物の Pi でも推論に 0.4 秒くらいかかるんだ。",
+   "explain": {
+    "goal": "stop_at_cone",
+    "goalRadius": 0.5,
+    "expectTurn": null,
+    "target": "cone"
+   },
+   "hud": [
+    "time",
+    "gap",
+    "speed",
+    "lidar",
+    "heading",
+    "gnss_err"
+   ],
+   "graphs": [
+    "speed",
+    "heading",
+    "lidar",
+    "gnss_err"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow",
+    "lidar",
+    "cameraFov",
+    "gnss",
+    "truth"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 14.56,
+      "x": 5.817,
+      "y": -0.979,
+      "heading": 97,
+      "lines": 32,
+      "gap": 0.104
+     },
+     {
+      "t_stop": 17.88,
+      "x": -2.075,
+      "y": -5.506,
+      "heading": 201.2,
+      "lines": 32,
+      "gap": 0.121
+     },
+     {
+      "t_stop": 20.54,
+      "x": -5.063,
+      "y": 2.955,
+      "heading": 298.6,
+      "lines": 32,
+      "gap": 0.138
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "8-3",
+   "order": 39,
+   "chapter": 8,
+   "title": "カメラで近づく",
+   "type": "make",
+   "lang": "python",
+   "minutes": 12,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "10 m 先のコーンが、少し横に見えている。カメラの角度で向きを直しながら近づき、コーンが大きく見えたら止まろう。モーターの差は世界ごとにちがう。",
+   "learn": {
+    "python": [
+     "見えた・見えないで動きを分ける。見えない回数を数える（lost）"
+    ],
+    "robot": [
+     "画像で向きを直しながら走る（ビジュアルサーボ）",
+     "カメラは 0.4 秒に 1 回。強く曲げると行きすぎるので、ゲインは小さく",
+     "c.size は画面の高さに対するコーンの大きさ（0〜1）。0.7 で約 1.1 m、0.5 で約 1.6 m",
+     "1 回見のがしても、すぐあわてない"
+    ]
+   },
+   "new": [
+    "c.size"
+   ],
+   "new_split": {
+    "command": [],
+    "syntax": [
+     "c.size"
+    ]
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "now",
+    "lidar",
+    "heading",
+    "odometer",
+    "encoder",
+    "gnss",
+    "camera"
+   ],
+   "worlds": [
+    {
+     "name": "+20°",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 3.5262,
+        "y": 9.6882,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 60,
+      "motor": {
+       "left": 1.0,
+       "right": 0.95
+      },
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "sensor": {
+       "cam_miss": 0.05,
+       "gnss_sigma": 2.0,
+       "gnss_tau": 30.0,
+       "gnss_white": 0.0,
+       "gnss_latency": 0.3,
+       "gnss_ttff": 1.0
+      }
+     },
+     "inject": {},
+     "judge": {}
+    },
+    {
+     "name": "-25°",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": -4.3572,
+        "y": 9.344,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 60,
+      "motor": {
+       "left": 1.0,
+       "right": 1.03
+      },
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "sensor": {
+       "cam_miss": 0.05,
+       "gnss_sigma": 2.0,
+       "gnss_tau": 30.0,
+       "gnss_white": 0.0,
+       "gnss_latency": 0.3,
+       "gnss_ttff": 1.0
+      }
+     },
+     "inject": {},
+     "judge": {}
+    },
+    {
+     "name": "+10°",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 1.7903,
+        "y": 10.1534,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 60,
+      "motor": {
+       "left": 1.0,
+       "right": 1.0
+      },
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "sensor": {
+       "cam_miss": 0.05,
+       "gnss_sigma": 2.0,
+       "gnss_tau": 30.0,
+       "gnss_white": 0.0,
+       "gnss_latency": 0.3,
+       "gnss_ttff": 1.0
+      }
+     },
+     "inject": {},
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "stopped and gap('cone') <= 1.0 and not touched('cone')",
+     "label": "すべての世界で、コーンの 1 m 以内で止まる",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "gap('cone') <= 0.7 and not touched('cone')",
+     "label": "すべての世界で 70 cm 以内",
+     "need": "all",
+     "tip": "止まる大きさ（size）を少し大きくすると、もっと近くで止まれるよ",
+     "measure": "gap('cone')",
+     "better": "low",
+     "unit": "cm"
+    },
+    {
+     "expr": "t_stop <= 30",
+     "label": "すべての世界で 30 秒以内",
+     "need": "all",
+     "tip": "ふらふらしないゲインにすると、まっすぐ早く着くよ",
+     "measure": "t_stop",
+     "better": "low",
+     "unit": "秒"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "gap('cone')",
+    "text": "コーンの {cm} cm 手前で止まった",
+    "world": "first_failed"
+   },
+   "starter": "BASE = 0.4\nK = 0.01            # ← 大きすぎるかも？\nwhile True:\n    c = camera()\n    if c.found:\n        if c.size > 0.7:\n            break\n        turn = K * c.angle\n        motor(BASE + turn, BASE - turn)\nstop()\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "K = 0.01 だと、1 枚ごとに行きすぎてふらふら。0.002 くらいまで小さくしてみよう。",
+    "見えなかったとき（else）は、今の動きのまま。3 回続けて見えなければ、ゆっくり回って探す。",
+    "lost = 0 を用意して、見えなければ lost = lost + 1、見えたら 0 に戻す。"
+   ],
+   "solution": "# 1. 強さを決める\nBASE = 0.4\nK = 0.0015          # 角度 1° あたりの曲げる強さ（カメラは遅いので小さく）\nlost = 0\n# 2. 見ながら近づく（見えない回数を数える）\nwhile True:\n    c = camera()\n    if c.found:\n        lost = 0\n        if c.size > 0.7:\n            break\n        turn = K * c.angle\n        motor(BASE + turn, BASE - turn)\n    else:\n        lost = lost + 1\n        if lost >= 3:\n            motor(0.12, -0.12)   # 3 回続けて見えなければ、回って探す\nstop()\n",
+   "solution_labels": [
+    "強さを決める",
+    "見ながら近づく（見えない回数を数える）"
+   ],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "K が大きい",
+     "code": "BASE = 0.4\nK = 0.01\nwhile True:\n    c = camera()\n    if c.found:\n        if c.size > 0.7:\n            break\n        turn = K * c.angle\n        motor(BASE + turn, BASE - turn)\nstop()\n",
+     "say": "K が大きいと、0.4 秒ごとに大きく曲げすぎて、コーンが画面の外へ。遅いセンサには小さいゲイン（7-4 と同じ）。",
+     "expect": "any",
+     "rule": "B_OSCILLATION",
+     "when": "rule('B_OSCILLATION') or re('^K\\s*=\\s*0\\.0[1-9]')"
+    }
+   ],
+   "senpai_clear": "カメラの角度で走れた！ GNSS のずれに関係なく、本物のコーンに向かえる。",
+   "explain": {
+    "goal": "stop_at_cone",
+    "goalRadius": 1.0,
+    "expectTurn": null,
+    "target": "cone"
+   },
+   "hud": [
+    "time",
+    "gap",
+    "speed",
+    "lidar",
+    "heading",
+    "gnss_err"
+   ],
+   "graphs": [
+    "speed",
+    "heading",
+    "lidar",
+    "gnss_err"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow",
+    "lidar",
+    "cameraFov",
+    "gnss",
+    "truth"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 23.18,
+      "x": 3.541,
+      "y": 8.881,
+      "heading": 9.9,
+      "lines": 16,
+      "gap": 0.497
+     },
+     {
+      "t_stop": 22.38,
+      "x": -4.192,
+      "y": 8.65,
+      "heading": 340.2,
+      "lines": 16,
+      "gap": 0.403
+     },
+     {
+      "t_stop": 22.38,
+      "x": 1.645,
+      "y": 9.357,
+      "heading": 10.4,
+      "lines": 16,
+      "gap": 0.5
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "8-4",
+   "order": 40,
+   "chapter": 8,
+   "title": "最後の 1 m は LiDAR",
+   "type": "make",
+   "lang": "python",
+   "minutes": 14,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "カメラだけだと 0.5 m より近くは測れない。大きく見えたら（size > 0.5）止まってまん中に入れ、そこから先は LiDAR で距離を測りながら、そっとコーンにタッチしよう。本番ではタッチ（0 m）が最高点！",
+   "learn": {
+    "python": [
+     "いくつもの段階を順に書く（カメラで近づく → 向きを合わせる → LiDAR で寄る）"
+    ],
+    "robot": [
+     "センサの得意・不得意: カメラ＝方向（遠くまで）、LiDAR＝距離（近くを正確に・前の 1 本だけ）",
+     "向きを heading() で保たないと、LiDAR の細い光がコーンから外れる",
+     "見張り: 光は細い 1 本なので、横を通ることもある。1.5 m 進んでもふれなければやめる（本物でも起きる）",
+     "コーンにふれるときは 0.2 m/s 以下で。強く当たると倒れる"
+    ]
+   },
+   "new": [],
+   "new_split": {
+    "command": [],
+    "syntax": []
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "now",
+    "lidar",
+    "heading",
+    "odometer",
+    "encoder",
+    "gnss",
+    "camera"
+   ],
+   "worlds": [
+    {
+     "name": "+15°",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 3.1861,
+        "y": 11.8905,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 80,
+      "motor": {
+       "left": 1.0,
+       "right": 0.96
+      },
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "sensor": {
+       "cam_miss": 0.08,
+       "gnss_sigma": 2.0,
+       "gnss_tau": 30.0,
+       "gnss_white": 0.0,
+       "gnss_latency": 0.3,
+       "gnss_ttff": 1.0
+      }
+     },
+     "inject": {},
+     "judge": {}
+    },
+    {
+     "name": "-15°",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": -3.1861,
+        "y": 11.8905,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 80,
+      "motor": {
+       "left": 1.0,
+       "right": 1.04
+      },
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "sensor": {
+       "cam_miss": 0.08,
+       "gnss_sigma": 2.0,
+       "gnss_tau": 30.0,
+       "gnss_white": 0.0,
+       "gnss_latency": 0.3,
+       "gnss_ttff": 1.0
+      }
+     },
+     "inject": {},
+     "judge": {}
+    },
+    {
+     "name": "+5°",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 1.0729,
+        "y": 12.2632,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 80,
+      "motor": {
+       "left": 1.0,
+       "right": 0.98
+      },
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "sensor": {
+       "cam_miss": 0.08,
+       "gnss_sigma": 2.0,
+       "gnss_tau": 30.0,
+       "gnss_white": 0.0,
+       "gnss_latency": 0.3,
+       "gnss_ttff": 1.0
+      }
+     },
+     "inject": {},
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "stopped and gap('cone') <= 0.3 and hit_speed('cone') <= 0.3",
+     "label": "すべての世界で、強く当てずにコーンの 30 cm 以内",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "gap('cone') <= 0.1 and hit_speed('cone') <= 0.3",
+     "label": "すべての世界で 10 cm 以内",
+     "need": "all",
+     "tip": "最後は LiDAR で、ゆっくり近づこう",
+     "measure": "gap('cone')",
+     "better": "low",
+     "unit": "cm"
+    },
+    {
+     "expr": "touched('cone') and hit_speed('cone') <= 0.2",
+     "label": "すべての世界で、0.2 m/s 以下でそっとタッチ",
+     "need": "all",
+     "tip": "ふれる前の速さは 0.2 m/s 以下。近くでは弱い速さにしよう",
+     "measure": "hit_speed('cone')",
+     "better": "low",
+     "unit": "m/s"
+    }
+   ],
+   "steps": [
+    {
+     "label": "カメラでコーンの 1.6 m まで近づく",
+     "expr": "min_gap('cone') <= 1.6"
+    },
+    {
+     "label": "LiDAR で測りながら近づく",
+     "expr": "calls('lidar') >= 1 and min_gap('cone') <= 0.3"
+    },
+    {
+     "label": "そっとタッチする",
+     "expr": "touched('cone') and hit_speed('cone') <= 0.2"
+    }
+   ],
+   "show": {
+    "expr": "gap('cone')",
+    "text": "コーンの {cm} cm 手前で止まった",
+    "world": "first_failed"
+   },
+   "starter": "\ndef turn_small(deg):          # 少しだけ回る（0.1 の強さで 1 秒に約 78°）\n    if deg > 0:\n        motor(0.1, -0.1)\n    else:\n        motor(-0.1, 0.1)\n    wait(abs(deg) / 77.8)\n    stop()\n    wait(0.3)\nBASE = 0.4\nK = 0.0015          # 角度 1° あたりの曲げる強さ（カメラは遅いので小さく）\nlost = 0\nwhile True:\n    c = camera()\n    if c.found:\n        lost = 0\n        if c.size > 0.5:\n            break\n        turn = K * c.angle\n        motor(BASE + turn, BASE - turn)\n    else:\n        lost = lost + 1\n        if lost >= 3:\n            motor(0.12, -0.12)   # 3 回続けて見えなければ、回って探す\nstop()\n\n# ここから: まん中に入れて、LiDAR でそっと近づこう\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "止まって camera() → turn_small(c.angle) でまん中に。",
+    "target = heading() で今の向きを覚え、P 制御で保ちながら前へ。0.6 m より近くは 0.12 の強さに。1.5 m 進んでもふれなければやめる（見張り）。",
+    "lidar() が 0.06 より近くなったら、wait(0.4) でそっと進んでから stop()。"
+   ],
+   "solution": "# 1. 道具: 少しだけ回る・角度の差\ndef turn_small(deg):          # 少しだけ回る（0.1 の強さで 1 秒に約 78°）\n    if deg > 0:\n        motor(0.1, -0.1)\n    else:\n        motor(-0.1, 0.1)\n    wait(abs(deg) / 77.8)\n    stop()\n    wait(0.3)\n\ndef angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\n# 2. カメラで近づく（大きく見えたら止まる）\nBASE = 0.4\nK = 0.0015          # 角度 1° あたりの曲げる強さ（カメラは遅いので小さく）\nlost = 0\nwhile True:\n    c = camera()\n    if c.found:\n        lost = 0\n        if c.size > 0.5:\n            break\n        turn = K * c.angle\n        motor(BASE + turn, BASE - turn)\n    else:\n        lost = lost + 1\n        if lost >= 3:\n            motor(0.12, -0.12)   # 3 回続けて見えなければ、回って探す\nstop()\nwait(0.3)\n# 3. 止まって、まん中に入れる（見えなければ、少しずつ回って探す）\nc = camera()\nfor i in range(9):\n    if c.found:\n        break\n    turn_small(40)\n    c = camera()\nif c.found:\n    turn_small(c.angle)\n# 4. 向きを保ちながら、LiDAR でそっと近づく\ntarget = heading()\nstart = odometer()           # 見張り: 1.5 m 進んでもふれなければやめる（光がコーンの横を通った時）\nwhile abs(odometer() - start) < 1.5:\n    d = lidar()\n    if d is not None and d < 0.06:\n        break\n    if d is not None and d < 0.6:\n        base = 0.12\n    else:\n        base = 0.2              # LiDAR が値を返さない間もゆっくり\n    e = angle_diff(target, heading())\n    motor(base + 0.02 * e, base - 0.02 * e)\nwait(0.4)        # そっとタッチ\nstop()\n",
+   "solution_labels": [
+    "道具: 少しだけ回る・角度の差",
+    "カメラで近づく（大きく見えたら止まる）",
+    "止まって、まん中に入れる（見えなければ、少しずつ回って探す）",
+    "向きを保ちながら、LiDAR でそっと近づく"
+   ],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "向きを保たない",
+     "code": "\ndef turn_small(deg):          # 少しだけ回る（0.1 の強さで 1 秒に約 78°）\n    if deg > 0:\n        motor(0.1, -0.1)\n    else:\n        motor(-0.1, 0.1)\n    wait(abs(deg) / 77.8)\n    stop()\n    wait(0.3)\nBASE = 0.4\nK = 0.0015          # 角度 1° あたりの曲げる強さ（カメラは遅いので小さく）\nlost = 0\nwhile True:\n    c = camera()\n    if c.found:\n        lost = 0\n        if c.size > 0.5:\n            break\n        turn = K * c.angle\n        motor(BASE + turn, BASE - turn)\n    else:\n        lost = lost + 1\n        if lost >= 3:\n            motor(0.12, -0.12)   # 3 回続けて見えなければ、回って探す\nstop()\n\nmotor(0.15, 0.15)\nwhile True:\n    d = lidar()\n    if d is not None and d < 0.06:\n        break\nwait(0.4)\nstop()\n",
+     "say": "モーターの差で少しずつ曲がって、LiDAR の光がコーンから外れたかも。heading() で向きを保とう。",
+     "expect": "any",
+     "rule": "B_LIDAR_MISS",
+     "when": "rule('B_LIDAR_MISS') or (timeup and has('lidar()') and not has('heading()'))",
+     "fix": "LiDAR で近づく前に target = heading() を覚えて、ずれを直しながら進もう。1.5 m 進んでもふれなければ止める見張りも入れよう。"
+    }
+   ],
+   "senpai_clear": "タッチ！ 「GNSS → カメラ → LiDAR」のバトンの最後の 1 本ができた。",
+   "explain": {
+    "goal": "stop_at_cone",
+    "goalRadius": 0.3,
+    "expectTurn": null,
+    "target": "cone"
+   },
+   "hud": [
+    "time",
+    "gap",
+    "speed",
+    "lidar",
+    "heading",
+    "gnss_err"
+   ],
+   "graphs": [
+    "speed",
+    "heading",
+    "lidar",
+    "gnss_err"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow",
+    "lidar",
+    "cameraFov",
+    "gnss",
+    "truth"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 33.98,
+      "x": 3.161,
+      "y": 11.582,
+      "heading": 338.9,
+      "lines": 49,
+      "gap": 0
+     },
+     {
+      "t_stop": 32.52,
+      "x": -3.12,
+      "y": 11.588,
+      "heading": 5.3,
+      "lines": 49,
+      "gap": 0
+     },
+     {
+      "t_stop": 33.3,
+      "x": 1.124,
+      "y": 11.957,
+      "heading": 358.3,
+      "lines": 49,
+      "gap": 0
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "8-5",
+   "order": 41,
+   "chapter": 8,
+   "title": "GNSS → カメラ → LiDAR",
+   "type": "boss",
+   "lang": "python",
+   "minutes": 20,
+   "checkpoint": true,
+   "carry_from": null,
+   "story": "船橋の誘導試験の本番形式。30 m 先のコーンへ。GNSS で近くまで → カメラで探して近づく → LiDAR でタッチ。カメラはときどき見のがし、遠くのオレンジの看板をコーンと見まちがえることもある。地図のゴールの座標がずれている日もあるよ。（チェックポイント面・本番テストあり）",
+   "learn": {
+    "python": [
+     "関数に分けて組み立てる（go_to・find_cone・approach・touch）",
+     "return で「うまくいったか」を返し、if で次を決める"
+    ],
+    "robot": [
+     "センサのバトンリレー: GNSS（遠く）→ カメラ（方向）→ LiDAR（最後の距離）",
+     "見まちがい対策: 2 回続けて見えたら本物",
+     "本番テスト: 条件を変えて 10 回。1 回うまくいっても、本番で失敗したら意味がない"
+    ]
+   },
+   "new": [],
+   "new_split": {
+    "command": [],
+    "syntax": []
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "now",
+    "lidar",
+    "heading",
+    "odometer",
+    "encoder",
+    "gnss",
+    "camera"
+   ],
+   "worlds": [
+    {
+     "name": "50°・30 m",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 22.9813,
+        "y": 19.2836,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 200,
+      "motor": {
+       "left": 1.0,
+       "right": 0.96
+      },
+      "slope": {
+       "deg": 1,
+       "down": 120
+      },
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "sensor": {
+       "gnss_sigma": 1.5,
+       "gnss_tau": 300,
+       "gnss_white": 0.5,
+       "cam_miss": 0.08,
+       "cam_false": 0.01,
+       "gnss_latency": 0.3,
+       "gnss_ttff": 1.0
+      }
+     },
+     "inject": {
+      "GOAL_LAT": 35.7263688,
+      "GOAL_LON": 140.0573663
+     },
+     "judge": {}
+    },
+    {
+     "name": "170°・27 m",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 4.6885,
+        "y": -26.5898,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 200,
+      "motor": {
+       "left": 1.0,
+       "right": 1.03
+      },
+      "slope": {
+       "deg": 1,
+       "down": 120
+      },
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "sensor": {
+       "gnss_sigma": 1.5,
+       "gnss_tau": 300,
+       "gnss_white": 0.5,
+       "cam_miss": 0.08,
+       "cam_false": 0.01,
+       "gnss_latency": 0.3,
+       "gnss_ttff": 1.0
+      }
+     },
+     "inject": {
+      "GOAL_LAT": 35.72595534,
+      "GOAL_LON": 140.05716388
+     },
+     "judge": {}
+    },
+    {
+     "name": "280°・33 m",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": -32.4987,
+        "y": 5.7304,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 200,
+      "motor": {
+       "left": 1.0,
+       "right": 0.98
+      },
+      "slope": {
+       "deg": 1,
+       "down": 120
+      },
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "sensor": {
+       "gnss_sigma": 1.5,
+       "gnss_tau": 300,
+       "gnss_white": 0.5,
+       "cam_miss": 0.08,
+       "cam_false": 0.01,
+       "gnss_latency": 0.3,
+       "gnss_ttff": 1.0
+      }
+     },
+     "inject": {
+      "GOAL_LAT": 35.72624665,
+      "GOAL_LON": 140.05675239
+     },
+     "judge": {}
+    }
+   ],
+   "test": {
+    "worlds": [
+     {
+      "name": "テスト1",
+      "world": {
+       "venue": "船橋キャンパス 滑走路の隣の芝生",
+       "venue_key": "funabashi",
+       "origin": {
+        "lat": 35.726195,
+        "lon": 140.057112
+       },
+       "start": {
+        "x": 0,
+        "y": 0,
+        "heading": 0
+       },
+       "objects": [
+        {
+         "id": "cone",
+         "type": "cone",
+         "x": 5.5405,
+         "y": -33.0152,
+         "r": 0.19
+        }
+       ],
+       "time_limit": 200,
+       "motor": {
+        "left": 1.0,
+        "right": 1.0215730198968798
+       },
+       "slope": {
+        "deg": 1,
+        "down": 120
+       },
+       "api_off": [
+        "distance_to_cone"
+       ],
+       "sensor": {
+        "gnss_sigma": 1.5,
+        "gnss_tau": 300,
+        "gnss_white": 0.5,
+        "cam_miss": 0.08,
+        "cam_false": 0.01,
+        "gnss_latency": 0.3,
+        "gnss_ttff": 1.0
+       }
+      },
+      "inject": {
+       "GOAL_LAT": 35.72589743,
+       "GOAL_LON": 140.05717331
+      },
+      "judge": {}
+     },
+     {
+      "name": "テスト2",
+      "world": {
+       "venue": "船橋キャンパス 滑走路の隣の芝生",
+       "venue_key": "funabashi",
+       "origin": {
+        "lat": 35.726195,
+        "lon": 140.057112
+       },
+       "start": {
+        "x": 0,
+        "y": 0,
+        "heading": 0
+       },
+       "objects": [
+        {
+         "id": "cone",
+         "type": "cone",
+         "x": 31.3943,
+         "y": -2.1539,
+         "r": 0.19
+        }
+       ],
+       "time_limit": 200,
+       "motor": {
+        "left": 1.0,
+        "right": 1.0046713092017248
+       },
+       "slope": {
+        "deg": 1,
+        "down": 120
+       },
+       "api_off": [
+        "distance_to_cone"
+       ],
+       "sensor": {
+        "gnss_sigma": 1.5,
+        "gnss_tau": 300,
+        "gnss_white": 0.5,
+        "cam_miss": 0.08,
+        "cam_false": 0.5,
+        "cam_false_dir": 68.1,
+        "gnss_latency": 0.3,
+        "gnss_ttff": 1.0
+       }
+      },
+      "inject": {
+       "GOAL_LAT": 35.72622954,
+       "GOAL_LON": 140.05746394
+      },
+      "judge": {}
+     },
+     {
+      "name": "テスト3",
+      "world": {
+       "venue": "船橋キャンパス 滑走路の隣の芝生",
+       "venue_key": "funabashi",
+       "origin": {
+        "lat": 35.726195,
+        "lon": 140.057112
+       },
+       "start": {
+        "x": 0,
+        "y": 0,
+        "heading": 0
+       },
+       "objects": [
+        {
+         "id": "cone",
+         "type": "cone",
+         "x": 4.0898,
+         "y": -25.2218,
+         "r": 0.19
+        }
+       ],
+       "time_limit": 200,
+       "motor": {
+        "left": 1.0,
+        "right": 0.951056243103993
+       },
+       "slope": {
+        "deg": 1,
+        "down": 120
+       },
+       "api_off": [
+        "distance_to_cone"
+       ],
+       "sensor": {
+        "gnss_sigma": 1.5,
+        "gnss_tau": 300,
+        "gnss_white": 0.5,
+        "cam_miss": 0.08,
+        "cam_false": 0.01,
+        "gnss_latency": 0.3,
+        "gnss_ttff": 1.0
+       }
+      },
+      "inject": {
+       "GOAL_LAT": 35.72596767,
+       "GOAL_LON": 140.05715725
+      },
+      "judge": {}
+     },
+     {
+      "name": "テスト4",
+      "world": {
+       "venue": "船橋キャンパス 滑走路の隣の芝生",
+       "venue_key": "funabashi",
+       "origin": {
+        "lat": 35.726195,
+        "lon": 140.057112
+       },
+       "start": {
+        "x": 0,
+        "y": 0,
+        "heading": 0
+       },
+       "objects": [
+        {
+         "id": "cone",
+         "type": "cone",
+         "x": 24.3938,
+         "y": -16.8977,
+         "r": 0.19
+        }
+       ],
+       "time_limit": 200,
+       "motor": {
+        "left": 1.0,
+        "right": 1.024766043959257
+       },
+       "slope": {
+        "deg": 1,
+        "down": 120
+       },
+       "api_off": [
+        "distance_to_cone"
+       ],
+       "sensor": {
+        "gnss_sigma": 1.5,
+        "gnss_tau": 300,
+        "gnss_white": 0.5,
+        "cam_miss": 0.08,
+        "cam_false": 0.5,
+        "cam_false_dir": 98.3,
+        "gnss_latency": 0.3,
+        "gnss_ttff": 1.0
+       }
+      },
+      "inject": {
+       "GOAL_LAT": 35.72608715,
+       "GOAL_LON": 140.05741973
+      },
+      "judge": {}
+     },
+     {
+      "name": "テスト5",
+      "world": {
+       "venue": "船橋キャンパス 滑走路の隣の芝生",
+       "venue_key": "funabashi",
+       "origin": {
+        "lat": 35.726195,
+        "lon": 140.057112
+       },
+       "start": {
+        "x": 0,
+        "y": 0,
+        "heading": 0
+       },
+       "objects": [
+        {
+         "id": "cone",
+         "type": "cone",
+         "x": 21.109,
+         "y": -19.4854,
+         "r": 0.19
+        }
+       ],
+       "time_limit": 200,
+       "motor": {
+        "left": 1.0,
+        "right": 1.000643060421482
+       },
+       "slope": {
+        "deg": 1,
+        "down": 120
+       },
+       "api_off": [
+        "distance_to_cone"
+       ],
+       "sensor": {
+        "gnss_sigma": 1.5,
+        "gnss_tau": 300,
+        "gnss_white": 0.5,
+        "cam_miss": 0.08,
+        "cam_false": 0.01,
+        "gnss_latency": 0.3,
+        "gnss_ttff": 1.0
+       }
+      },
+      "inject": {
+       "GOAL_LAT": 35.72601938,
+       "GOAL_LON": 140.05734558
+      },
+      "judge": {}
+     },
+     {
+      "name": "テスト6",
+      "world": {
+       "venue": "船橋キャンパス 滑走路の隣の芝生",
+       "venue_key": "funabashi",
+       "origin": {
+        "lat": 35.726195,
+        "lon": 140.057112
+       },
+       "start": {
+        "x": 0,
+        "y": 0,
+        "heading": 0
+       },
+       "objects": [
+        {
+         "id": "cone",
+         "type": "cone",
+         "x": 15.5439,
+         "y": 30.6707,
+         "r": 0.19
+        }
+       ],
+       "time_limit": 200,
+       "motor": {
+        "left": 1.0,
+        "right": 0.9839082842729667
+       },
+       "slope": {
+        "deg": 1,
+        "down": 120
+       },
+       "api_off": [
+        "distance_to_cone"
+       ],
+       "sensor": {
+        "gnss_sigma": 1.5,
+        "gnss_tau": 300,
+        "gnss_white": 0.5,
+        "cam_miss": 0.08,
+        "cam_false": 0.5,
+        "cam_false_dir": 2.0,
+        "gnss_latency": 0.3,
+        "gnss_ttff": 1.0
+       }
+      },
+      "inject": {
+       "GOAL_LAT": 35.72649588,
+       "GOAL_LON": 140.05722478
+      },
+      "judge": {}
+     },
+     {
+      "name": "テスト7",
+      "world": {
+       "venue": "船橋キャンパス 滑走路の隣の芝生",
+       "venue_key": "funabashi",
+       "origin": {
+        "lat": 35.726195,
+        "lon": 140.057112
+       },
+       "start": {
+        "x": 0,
+        "y": 0,
+        "heading": 0
+       },
+       "objects": [
+        {
+         "id": "cone",
+         "type": "cone",
+         "x": 6.9352,
+         "y": -28.2675,
+         "r": 0.19
+        }
+       ],
+       "time_limit": 200,
+       "motor": {
+        "left": 1.0,
+        "right": 1.0407823187529224
+       },
+       "slope": {
+        "deg": 1,
+        "down": 120
+       },
+       "api_off": [
+        "distance_to_cone"
+       ],
+       "sensor": {
+        "gnss_sigma": 1.5,
+        "gnss_tau": 300,
+        "gnss_white": 0.5,
+        "cam_miss": 0.08,
+        "cam_false": 0.01,
+        "gnss_latency": 0.3,
+        "gnss_ttff": 1.0
+       }
+      },
+      "inject": {
+       "GOAL_LAT": 35.72594022,
+       "GOAL_LON": 140.05718874
+      },
+      "judge": {}
+     },
+     {
+      "name": "テスト8",
+      "world": {
+       "venue": "船橋キャンパス 滑走路の隣の芝生",
+       "venue_key": "funabashi",
+       "origin": {
+        "lat": 35.726195,
+        "lon": 140.057112
+       },
+       "start": {
+        "x": 0,
+        "y": 0,
+        "heading": 0
+       },
+       "objects": [
+        {
+         "id": "cone",
+         "type": "cone",
+         "x": -19.7911,
+         "y": -27.2021,
+         "r": 0.19
+        }
+       ],
+       "time_limit": 200,
+       "motor": {
+        "left": 1.0,
+        "right": 0.997440335609354
+       },
+       "slope": {
+        "deg": 1,
+        "down": 120
+       },
+       "api_off": [
+        "distance_to_cone"
+       ],
+       "sensor": {
+        "gnss_sigma": 1.5,
+        "gnss_tau": 300,
+        "gnss_white": 0.5,
+        "cam_miss": 0.08,
+        "cam_false": 0.5,
+        "cam_false_dir": 190.9,
+        "gnss_latency": 0.3,
+        "gnss_ttff": 1.0
+       }
+      },
+      "inject": {
+       "GOAL_LAT": 35.72591801,
+       "GOAL_LON": 140.05694669
+      },
+      "judge": {}
+     },
+     {
+      "name": "テスト9",
+      "world": {
+       "venue": "船橋キャンパス 滑走路の隣の芝生",
+       "venue_key": "funabashi",
+       "origin": {
+        "lat": 35.726195,
+        "lon": 140.057112
+       },
+       "start": {
+        "x": 0,
+        "y": 0,
+        "heading": 0
+       },
+       "objects": [
+        {
+         "id": "cone",
+         "type": "cone",
+         "x": -16.973,
+         "y": 26.9867,
+         "r": 0.19
+        }
+       ],
+       "time_limit": 200,
+       "motor": {
+        "left": 1.0,
+        "right": 1.0228588163162868
+       },
+       "slope": {
+        "deg": 1,
+        "down": 120
+       },
+       "api_off": [
+        "distance_to_cone"
+       ],
+       "sensor": {
+        "gnss_sigma": 1.5,
+        "gnss_tau": 300,
+        "gnss_white": 0.5,
+        "cam_miss": 0.08,
+        "cam_false": 0.01,
+        "gnss_latency": 0.3,
+        "gnss_ttff": 1.0
+       }
+      },
+      "inject": {
+       "GOAL_LAT": 35.72643823,
+       "GOAL_LON": 140.05692419
+      },
+      "judge": {}
+     },
+     {
+      "name": "テスト10",
+      "world": {
+       "venue": "船橋キャンパス 滑走路の隣の芝生",
+       "venue_key": "funabashi",
+       "origin": {
+        "lat": 35.726195,
+        "lon": 140.057112
+       },
+       "start": {
+        "x": 0,
+        "y": 0,
+        "heading": 0
+       },
+       "objects": [
+        {
+         "id": "cone",
+         "type": "cone",
+         "x": -25.3522,
+         "y": -14.7235,
+         "r": 0.19
+        }
+       ],
+       "time_limit": 200,
+       "motor": {
+        "left": 1.0,
+        "right": 1.0133816019435968
+       },
+       "slope": {
+        "deg": 1,
+        "down": 120
+       },
+       "api_off": [
+        "distance_to_cone"
+       ],
+       "sensor": {
+        "gnss_sigma": 1.5,
+        "gnss_tau": 300,
+        "gnss_white": 0.5,
+        "cam_miss": 0.08,
+        "cam_false": 0.01,
+        "gnss_latency": 0.3,
+        "gnss_ttff": 1.0
+       }
+      },
+      "inject": {
+       "GOAL_LAT": 35.7260623,
+       "GOAL_LON": 140.05683147
+      },
+      "judge": {}
+     }
+    ]
+   },
+   "clear": [
+    {
+     "expr": "stopped and gap('cone') <= 1.0 and hit_speed('cone') <= 0.3",
+     "label": "すべての世界で、コーンの 1 m 以内で止まる",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "gap('cone') <= 0.3 and hit_speed('cone') <= 0.3",
+     "label": "すべての世界で 30 cm 以内",
+     "need": "all",
+     "tip": "タッチの前に止まってまん中に入れ、向きを保って近づこう",
+     "measure": "gap('cone')",
+     "better": "low",
+     "unit": "cm"
+    },
+    {
+     "expr": "gap('cone') <= 0.3 and hit_speed('cone') <= 0.3",
+     "label": "本番テスト 10 回のうち 9 回以上で 30 cm 以内",
+     "need": [
+      "test",
+      9
+     ],
+     "tip": "本番テストで失敗した回を再生して、どの段で失敗したか見よう",
+     "measure": "gap('cone')",
+     "better": "low",
+     "unit": "cm"
+    }
+   ],
+   "steps": [
+    {
+     "label": "GNSS でコーンの近くまで行く",
+     "expr": "min_gap('cone') <= 6"
+    },
+    {
+     "label": "カメラでコーンを探す",
+     "expr": "calls('camera') >= 1 and min_gap('cone') <= 6"
+    },
+    {
+     "label": "カメラで 1.6 m まで近づく",
+     "expr": "min_gap('cone') <= 1.6"
+    },
+    {
+     "label": "LiDAR でタッチして止まる",
+     "expr": "stopped and gap('cone') <= 0.3"
+    }
+   ],
+   "show": {
+    "expr": "gap('cone')",
+    "text": "コーンの {cm} cm 手前で止まった",
+    "world": "first_failed"
+   },
+   "starter": "import math\nLAT0 = 35.726195     # スタート地点の緯度\nLON0 = 140.057112    # スタート地点の経度\n\ndef to_xy(lat, lon):\n    x = (lon - LON0) * 111320 * math.cos(math.radians(LAT0))   # 東へ何 m\n    y = (lat - LAT0) * 110950                                  # 北へ何 m\n    return x, y\n\ndef angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\ndef go_to(gx, gy, stop_dist):\n    while True:\n        g = gnss()\n        if not g.valid:\n            stop()\n            wait(0.1)\n            continue\n        x, y = to_xy(g.lat, g.lon)\n        dx = gx - x\n        dy = gy - y\n        if math.hypot(dx, dy) < stop_dist:\n            break\n        bearing = math.degrees(math.atan2(dx, dy))\n        e = angle_diff(bearing, heading())\n        turn = max(-0.3, min(0.3, 0.01 * e))\n        motor(0.7 + turn, 0.7 - turn)\n    stop()\n\ndef turn_small(deg):          # 少しだけ回る（0.1 の強さで 1 秒に約 78°）\n    if deg > 0:\n        motor(0.1, -0.1)\n    else:\n        motor(-0.1, 0.1)\n    wait(abs(deg) / 77.8)\n    stop()\n    wait(0.3)\n\n# GNSS で 5 m まで → カメラで探す・近づく → LiDAR でタッチ\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "7 章の go_to で 5 m まで。そのあと 8-1 の探し方、8-3 の近づき方、8-4 のタッチをつなぐ。",
+    "近づく途中で見失ったら、探すところからやり直す（while True で find → approach をくり返す）。",
+    "見まちがい対策: 見えたらもう 1 枚写して、角度が近ければ本物。"
+   ],
+   "solution": "import math\nLAT0 = 35.726195     # スタート地点の緯度\nLON0 = 140.057112    # スタート地点の経度\n\ndef to_xy(lat, lon):\n    x = (lon - LON0) * 111320 * math.cos(math.radians(LAT0))   # 東へ何 m\n    y = (lat - LAT0) * 110950                                  # 北へ何 m\n    return x, y\n\ndef angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\ndef go_to(gx, gy, stop_dist):\n    while True:\n        g = gnss()\n        if not g.valid:\n            stop()\n            wait(0.1)\n            continue\n        x, y = to_xy(g.lat, g.lon)\n        dx = gx - x\n        dy = gy - y\n        if math.hypot(dx, dy) < stop_dist:\n            break\n        bearing = math.degrees(math.atan2(dx, dy))\n        e = angle_diff(bearing, heading())\n        turn = max(-0.3, min(0.3, 0.01 * e))\n        motor(0.7 + turn, 0.7 - turn)\n    stop()\n\ndef turn_small(deg):          # 少しだけ回る（0.1 の強さで 1 秒に約 78°）\n    if deg > 0:\n        motor(0.1, -0.1)\n    else:\n        motor(-0.1, 0.1)\n    wait(abs(deg) / 77.8)\n    stop()\n    wait(0.3)\n\ndef find_cone():\n    # 止まって見る。2 回続けて見えたら本物（見まちがい対策）\n    for i in range(12):\n        c = camera()\n        if c.found:\n            c2 = camera()\n            if c2.found and abs(c2.angle - c.angle) < 8:\n                return c2\n        turn_small(40)\n    return None\n\ndef approach():\n    lost = 0\n    while True:\n        c = camera()\n        if c.found and c.size > 0.04:\n            lost = 0\n            if c.size > 0.5:\n                return True\n            turn = 0.0015 * c.angle\n            motor(0.4 + turn, 0.4 - turn)\n        else:\n            lost = lost + 1\n            if lost >= 3:\n                stop()\n                return False\n\ndef touch():\n    stop()\n    wait(0.3)\n    c = camera()\n    if c.found:\n        turn_small(c.angle)\n    target = heading()\n    start = odometer()           # 見張り: 1.5 m 進んでもふれなければやめる（光がコーンの横を通った時）\n    while abs(odometer() - start) < 1.5:\n        d = lidar()\n        if d is not None and d < 0.06:\n            break\n        if d is not None and d < 0.6:\n            base = 0.12\n        else:\n            base = 0.2              # LiDAR が値を返さない間もゆっくり\n        e = angle_diff(target, heading())\n        motor(base + 0.02 * e, base - 0.02 * e)\n    wait(0.4)\n    stop()\n\n# 1. GNSS でコーンの近く（5 m）まで\ngx, gy = to_xy(GOAL_LAT, GOAL_LON)\nwhile not gnss().valid:\n    wait(0.1)\ngo_to(gx, gy, 5.0)\n# 2. カメラで探して近づく（見失ったら探し直す）\nwhile True:\n    c = find_cone()\n    if c is None:\n        break\n    turn_small(c.angle)\n    if approach():\n        break\n# 3. LiDAR でタッチ\ntouch()\n",
+   "solution_labels": [
+    "GNSS でコーンの近く（5 m）まで",
+    "カメラで探して近づく（見失ったら探し直す）",
+    "LiDAR でタッチ"
+   ],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "GNSS だけ",
+     "code": "import math\nLAT0 = 35.726195     # スタート地点の緯度\nLON0 = 140.057112    # スタート地点の経度\n\ndef to_xy(lat, lon):\n    x = (lon - LON0) * 111320 * math.cos(math.radians(LAT0))   # 東へ何 m\n    y = (lat - LAT0) * 110950                                  # 北へ何 m\n    return x, y\n\ndef angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\ndef go_to(gx, gy, stop_dist):\n    while True:\n        g = gnss()\n        if not g.valid:\n            stop()\n            wait(0.1)\n            continue\n        x, y = to_xy(g.lat, g.lon)\n        dx = gx - x\n        dy = gy - y\n        if math.hypot(dx, dy) < stop_dist:\n            break\n        bearing = math.degrees(math.atan2(dx, dy))\n        e = angle_diff(bearing, heading())\n        turn = max(-0.3, min(0.3, 0.01 * e))\n        motor(0.7 + turn, 0.7 - turn)\n    stop()\n\ngx, gy = to_xy(GOAL_LAT, GOAL_LON)\nwhile not gnss().valid:\n    wait(0.1)\ngo_to(gx, gy, 1.0)\n",
+     "say": "GNSS だけだと 1〜3 m ずれる。最後はカメラと LiDAR に交代しよう。",
+     "expect": "fail",
+     "rule": null,
+     "when": "moved > 3 and not has('camera()')"
+    }
+   ],
+   "senpai_clear": "種コンで勝つための部品は、もう全部そろった。",
+   "explain": {
+    "goal": "stop_at_cone",
+    "goalRadius": 1.0,
+    "expectTurn": null,
+    "target": "cone"
+   },
+   "hud": [
+    "time",
+    "gap",
+    "speed",
+    "lidar",
+    "heading",
+    "gnss_err"
+   ],
+   "graphs": [
+    "speed",
+    "heading",
+    "lidar",
+    "gnss_err"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow",
+    "lidar",
+    "cameraFov",
+    "gnss",
+    "truth"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 52.82,
+      "x": 22.828,
+      "y": 19.014,
+      "heading": 9.7,
+      "lines": 90,
+      "gap": 0
+     },
+     {
+      "t_stop": 50.68,
+      "x": 4.701,
+      "y": -26.28,
+      "heading": 177.2,
+      "lines": 90,
+      "gap": 0
+     },
+     {
+      "t_stop": 60.96,
+      "x": -32.202,
+      "y": 5.642,
+      "heading": 273.1,
+      "lines": 90,
+      "gap": 0
+     }
+    ],
+    "sim": "w1"
+   }
+  }
+ ]
+}

@@ -1,0 +1,2059 @@
+{
+ "chapter": 7,
+ "levels": [
+  {
+   "id": "7-1",
+   "order": 31,
+   "chapter": 7,
+   "title": "緯度と経度をメートルに",
+   "type": "blanks",
+   "lang": "python",
+   "minutes": 10,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "GNSS は位置を緯度・経度（度）で教えてくれる。でもローバーが知りたいのは「東へ何 m・北へ何 m」。変換する関数 to_xy の空欄と、止まる条件を埋めて、東へ 8 m の旗で止まろう。きょうは練習のため、GNSS のずれが小さい日を選んだよ。",
+   "learn": {
+    "python": [
+     "g = gnss() で受け取ったものは、g.lat・g.lon・g.valid のように「.」で中身を読む",
+     "return x, y で 2 つの値を返し、x, y = to_xy(...) で受け取る",
+     "math.cos(math.radians(角度)): 度をラジアンに直してから cos"
+    ],
+    "robot": [
+     "緯度 1° ＝ 北へ約 110950 m、経度 1° ＝ 東へ 111320 * cos(緯度) m（北ほど細くなる）",
+     "GNSS は 1 秒に 1 回しか新しい位置が来ない。しかも 0.3 秒前の位置",
+     "g.valid が False のあいだは位置がまだ無い（電源を入れてすぐなど）"
+    ]
+   },
+   "new": [
+    "gnss",
+    "math.cos",
+    "math.radians"
+   ],
+   "new_reason": "gnss と、緯度・経度を m に直す式（math.cos と math.radians）は、1 つの式の中で一緒に使うので、まとめて出す。",
+   "new_split": {
+    "command": [
+     "gnss"
+    ],
+    "syntax": [
+     "math.cos",
+     "math.radians"
+    ]
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "now",
+    "lidar",
+    "heading",
+    "odometer",
+    "encoder",
+    "gnss"
+   ],
+   "worlds": [
+    {
+     "name": "世界1",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 90
+      },
+      "objects": [
+       {
+        "id": "F",
+        "type": "flag",
+        "x": 8,
+        "y": 0,
+        "label": "東へ 8 m の旗"
+       }
+      ],
+      "time_limit": 30,
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "sensor": {
+       "gnss_sigma": 0.15,
+       "gnss_tau": 120,
+       "gnss_white": 0.1,
+       "gnss_latency": 0.3,
+       "gnss_ttff": 1.0
+      }
+     },
+     "inject": {},
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "stopped and dist('F') <= 1.0 and x_end >= 7.4",
+     "label": "旗の手前 60 cm から先 1 m までの間で止まる",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "dist('F') <= 0.7",
+     "label": "旗の 70 cm 以内",
+     "need": "all",
+     "tip": "旗の手前で止まったら止める数を大きく、行きすぎたら少し小さく。GNSS は 1 秒に 1 回・0.3 秒おくれて来るよ",
+     "tips": {
+      "short": "旗の手前で止まったね。止める距離の数を少し大きくしよう。GNSS は 1 秒に 1 回・0.3 秒おくれて来るよ",
+      "over": "旗を行きすぎたね。止める距離の数を少し小さくしよう。GNSS は 0.3 秒おくれて来るので、速いほど行きすぎるよ"
+     },
+     "measure": "dist('F')",
+     "better": "low",
+     "unit": "cm"
+    },
+    {
+     "expr": "dist('F') <= 0.5 and t_stop <= 10",
+     "label": "10 秒以内に旗の 50 cm 以内（遅れを計算で補う）",
+     "need": "all",
+     "tip": "クリアすると鍵が外せる。g.t と g.speed で今の位置を計算しよう",
+     "measure": "dist('F')",
+     "better": "low",
+     "unit": "cm"
+    }
+   ],
+   "steps": [],
+   "show": {
+    "expr": "dist('F')",
+    "text": "目標まで {cm} cm",
+    "world": "first_failed"
+   },
+   "starter": "import math\nLAT0 = 35.726195     # スタート地点の緯度\nLON0 = 140.057112    # スタート地点の経度\n\ndef to_xy(lat, lon):\n    y = (lat - LAT0) * 110950        # 北へ何 m\n    x = ___                          # 東へ何 m: 経度の差 × 111320 × cos(緯度)\n    return x, y\n\nwhile not gnss().valid:              # 電源を入れてすぐは、まだ測位できていない\n    wait(0.1)\nmotor(0.5, 0.5)\nwhile True:\n    g = gnss()\n    x, y = to_xy(g.lat, g.lon)\n    if ___:                          # 東へ 8 m 来たら\n        break\n    wait(0.05)\nstop()\nprint(\"GNSS では\", x, y)\n",
+   "locked": [
+    [
+     1,
+     6
+    ],
+    [
+     8,
+     15
+    ],
+    [
+     17,
+     20
+    ]
+   ],
+   "blanks": [
+    {
+     "line": 7,
+     "col": 8,
+     "label": "x の式"
+    },
+    {
+     "line": 16,
+     "col": 7,
+     "label": "止まる条件"
+    }
+   ],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "x = (lon - LON0) * 111320 * math.cos(math.radians(LAT0))",
+    "止まる条件は x >= 8。でも GNSS は 1 秒に 1 回で遅れもあるから、走りすぎる。少し手前（7.6）で止めよう。",
+    "★3: g.t は測った時刻、g.speed は速さ。今の位置 ≒ x + g.speed * (now() - g.t)。これが 7.85 をこえたら止める。"
+   ],
+   "solution": "import math\nLAT0 = 35.726195     # スタート地点の緯度\nLON0 = 140.057112    # スタート地点の経度\n\n# 1. 緯度・経度を m に直す\ndef to_xy(lat, lon):\n    x = (lon - LON0) * 111320 * math.cos(math.radians(LAT0))   # 東へ何 m\n    y = (lat - LAT0) * 110950                                  # 北へ何 m\n    return x, y\n\n# 2. 測位できるまで待つ\nwhile not gnss().valid:\n    wait(0.1)\n# 3. 遅れの分を足して、8 m で止まる\nmotor(1.0, 1.0)\nwhile True:\n    g = gnss()\n    x, y = to_xy(g.lat, g.lon)\n    x_now = x + g.speed * (now() - g.t)    # 測った時刻から今までに進んだぶんを足す\n    if x_now >= 7.85:\n        break\n    wait(0.02)\nstop()\nprint(\"GNSS では\", x, y)\n",
+   "solution_labels": [
+    "緯度・経度を m に直す",
+    "測位できるまで待つ",
+    "遅れの分を足して、8 m で止まる"
+   ],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "valid を待たない",
+     "code": "import math\nLAT0 = 35.726195     # スタート地点の緯度\nLON0 = 140.057112    # スタート地点の経度\n\ndef to_xy(lat, lon):\n    x = (lon - LON0) * 111320 * math.cos(math.radians(LAT0))   # 東へ何 m\n    y = (lat - LAT0) * 110950                                  # 北へ何 m\n    return x, y\n\nmotor(0.5, 0.5)\nwhile True:\n    g = gnss()\n    x, y = to_xy(g.lat, g.lon)\n    if x >= 7.6:\n        break\n    wait(0.05)\nstop()\n",
+     "say": "電源を入れてすぐは valid が False で、緯度・経度は None。valid になるまで待とう。",
+     "expect": "any",
+     "rule": "NONE_VALUE",
+     "when": "card('NONE_VALUE')",
+     "fix": "電源を入れてすぐは valid が False で、lat・lon は None。while not gnss().valid: wait(0.1) で測れるまで待とう。",
+     "example": {
+      "bad": "g = gnss()\nx, y = to_xy(g.lat, g.lon)",
+      "good": "while not gnss().valid:\n    wait(0.1)\ng = gnss()\nx, y = to_xy(g.lat, g.lon)"
+     }
+    },
+    {
+     "name": "cos を忘れた",
+     "code": "import math\nLAT0 = 35.726195\nLON0 = 140.057112\ndef to_xy(lat, lon):\n    return (lon - LON0) * 111320, (lat - LAT0) * 110950\nwhile not gnss().valid:\n    wait(0.1)\nmotor(0.5, 0.5)\nwhile True:\n    g = gnss()\n    x, y = to_xy(g.lat, g.lon)\n    if x >= 7.6:\n        break\n    wait(0.05)\nstop()\n",
+     "say": "経度 1° の長さは、北へ行くほど短くなる（船橋だと赤道の 81%）。cos(緯度) を掛けよう。",
+     "expect": "fail",
+     "rule": "B_WAIT_SHORT",
+     "when": "not has('cos')"
+    }
+   ],
+   "senpai_clear": "緯度・経度 → m。この関数は、先輩たちの本物の機体のプログラムでも、同じ式で使っているよ。",
+   "explain": {
+    "goal": "stop_at_cone",
+    "goalRadius": 1.0,
+    "expectTurn": null,
+    "target": "F"
+   },
+   "hud": [
+    "time",
+    "speed",
+    "lidar",
+    "heading",
+    "gnss_err"
+   ],
+   "graphs": [
+    "speed",
+    "heading",
+    "lidar",
+    "gnss_err"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow",
+    "lidar",
+    "gnss",
+    "truth"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 8.98,
+      "x": 7.891,
+      "y": 0,
+      "heading": 90,
+      "lines": 19
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "7-2",
+   "order": 32,
+   "chapter": 7,
+   "title": "ゴールの方向を計算",
+   "type": "make",
+   "lang": "python",
+   "minutes": 12,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "15 m 先のコーンの緯度・経度（GOAL_LAT, GOAL_LON）が分かっている（世界ごとにちがう）。止まったまま GNSS で何回か測って、コーンの方位と距離を計算し、そっちを向いてまっすぐ走ろう。",
+   "learn": {
+    "python": [
+     "math.atan2(東, 北) で方位（ラジアン）。math.degrees で度に。% 360 で 0〜360 に",
+     "math.hypot(東, 北) で距離",
+     "止まって 3 回測って平均（足して 3 で割る）"
+    ],
+    "robot": [
+     "方位は北が 0°、時計回りに 東 90°・南 180°・西 270°（真上から見た時計の針と同じ向き）",
+     "方位 = atan2(東, 北)。東 3 m・北 3 m なら 45°、東 3 m・北 -3 m（南）なら 135°。数学の角度（東が 0°・反時計回り）とちがうので、東が先",
+     "平均すると、ばらつきは小さくなる。でもゆっくり動くずれ（かたより）は残る"
+    ]
+   },
+   "new": [
+    "math.atan2",
+    "math.degrees",
+    "math.hypot"
+   ],
+   "new_reason": "atan2・degrees・hypot は「2 点から方位と距離を出す」1 つの計算の部品なので、まとめて出す。",
+   "new_split": {
+    "command": [],
+    "syntax": [
+     "math.atan2",
+     "math.degrees",
+     "math.hypot"
+    ]
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "now",
+    "lidar",
+    "heading",
+    "odometer",
+    "encoder",
+    "gnss"
+   ],
+   "worlds": [
+    {
+     "name": "方位 40°",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 9.8411,
+        "y": 11.7281,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 60,
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "sensor": {
+       "gnss_sigma": 0.8,
+       "gnss_tau": 300,
+       "gnss_white": 0.5,
+       "gnss_latency": 0.3,
+       "gnss_ttff": 1.0
+      }
+     },
+     "inject": {
+      "GOAL_LAT": 35.72630071,
+      "GOAL_LON": 140.0572209
+     },
+     "judge": {
+      "BEARING": 40
+     }
+    },
+    {
+     "name": "方位 135°",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 10.8258,
+        "y": -10.8258,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 60,
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "sensor": {
+       "gnss_sigma": 0.8,
+       "gnss_tau": 300,
+       "gnss_white": 0.5,
+       "gnss_latency": 0.3,
+       "gnss_ttff": 1.0
+      }
+     },
+     "inject": {
+      "GOAL_LAT": 35.72609743,
+      "GOAL_LON": 140.05723179
+     },
+     "judge": {
+      "BEARING": 135
+     }
+    },
+    {
+     "name": "方位 290°",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": -14.3867,
+        "y": 5.2363,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 60,
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "sensor": {
+       "gnss_sigma": 0.8,
+       "gnss_tau": 300,
+       "gnss_white": 0.5,
+       "gnss_latency": 0.3,
+       "gnss_ttff": 1.0
+      }
+     },
+     "inject": {
+      "GOAL_LAT": 35.7262422,
+      "GOAL_LON": 140.0569528
+     },
+     "judge": {
+      "BEARING": 290
+     }
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "stopped and gap('cone') <= 3.0",
+     "label": "すべての世界で、コーンの 3 m 以内で止まる",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "printed_number_near(BEARING, 10)",
+     "label": "すべての世界で、コーンの方位を print（10° 以内）",
+     "need": "all",
+     "no_measure": "方位の計算と print の書き方で決まる（GNSS の運では決まらない）",
+     "tip": "方位は math.atan2(東, 北) を度に直して % 360。計算したら print しよう"
+    },
+    {
+     "expr": "t_stop <= 40",
+     "label": "すべての世界で 40 秒以内",
+     "need": "all",
+     "tip": "待つ時間や、走る速さに、むだはないかな？",
+     "measure": "t_stop",
+     "better": "low",
+     "unit": "秒"
+    }
+   ],
+   "steps": [
+    {
+     "label": "GNSS が使えるまで待つ",
+     "expr": "calls('gnss') >= 1"
+    },
+    {
+     "label": "止まったまま 3 回測る",
+     "expr": "calls('gnss') >= 4"
+    },
+    {
+     "label": "コーンの方位を計算して print する",
+     "expr": "printed_number_near(BEARING, 10)"
+    },
+    {
+     "label": "そっちへ走って、3 m 以内で止まる",
+     "expr": "stopped and gap('cone') <= 3.0"
+    }
+   ],
+   "show": {
+    "expr": "gap('cone')",
+    "text": "コーンの {cm} cm 手前で止まった",
+    "world": "first_failed"
+   },
+   "starter": "import math\nLAT0 = 35.726195     # スタート地点の緯度\nLON0 = 140.057112    # スタート地点の経度\n\ndef to_xy(lat, lon):\n    x = (lon - LON0) * 111320 * math.cos(math.radians(LAT0))   # 東へ何 m\n    y = (lat - LAT0) * 110950                                  # 北へ何 m\n    return x, y\n\ndef angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\ndef turn_to(target):\n    while True:\n        e = angle_diff(target, heading())\n        if abs(e) < 9:\n            break\n        if abs(e) > 30:\n            p = 0.25\n        else:\n            p = 0.1\n        if e > 0:\n            motor(p, -p)\n        else:\n            motor(-p, p)\n    stop()\n    wait(0.3)\n\n# 1. GNSS が使えるまで待つ\n# 2. 止まったまま 3 回測って平均\n# 3. コーンの方位と距離を計算\n# 4. そっちを向いて（turn_to）、odometer で距離ぶん走る\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "自分の位置 (x0, y0) とゴール (gx, gy) を to_xy で m に。差 dx = gx - x0、dy = gy - y0。",
+    "方位 = math.degrees(math.atan2(dx, dy)) % 360、距離 = math.hypot(dx, dy)。print で出して確かめよう。",
+    "turn_to(方位) → start = odometer() → 距離ぶん 6 章の P 制御で走る。前に LiDAR で 0.35 m より近い物があれば止まる。"
+   ],
+   "solution": "import math\nLAT0 = 35.726195     # スタート地点の緯度\nLON0 = 140.057112    # スタート地点の経度\n\ndef to_xy(lat, lon):\n    x = (lon - LON0) * 111320 * math.cos(math.radians(LAT0))   # 東へ何 m\n    y = (lat - LAT0) * 110950                                  # 北へ何 m\n    return x, y\n\ndef angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\ndef turn_to(target):\n    while True:\n        e = angle_diff(target, heading())\n        if abs(e) < 9:\n            break\n        if abs(e) > 30:\n            p = 0.25\n        else:\n            p = 0.1\n        if e > 0:\n            motor(p, -p)\n        else:\n            motor(-p, p)\n    stop()\n    wait(0.3)\n\n# 1. GNSS が使えるまで待つ\nwhile not gnss().valid:\n    wait(0.1)\n# 2. 止まったまま 3 回測って平均\nxs = 0\nys = 0\nfor i in range(3):\n    g = gnss()\n    x, y = to_xy(g.lat, g.lon)\n    xs = xs + x\n    ys = ys + y\n    wait(1.0)\nx0 = xs / 3\ny0 = ys / 3\n# 3. コーンの方位と距離を計算\ngx, gy = to_xy(GOAL_LAT, GOAL_LON)\ndx = gx - x0\ndy = gy - y0\nbearing = math.degrees(math.atan2(dx, dy)) % 360\ndist = math.hypot(dx, dy)\nprint(\"方位\", round(bearing), \"度  距離\", round(dist, 1), \"m\")\n# 4. そっちを向いて（turn_to）、odometer で距離ぶん走る\nturn_to(bearing)\nstart = odometer()\nwhile odometer() - start < dist - 0.3:\n    d = lidar()\n    if d is not None and d < 0.35:    # コーンが前にあれば、LiDAR で止まる\n        break\n    e = angle_diff(bearing, heading())\n    motor(0.7 + 0.03 * e, 0.7 - 0.03 * e)\nstop()\n",
+   "solution_labels": [
+    "GNSS が使えるまで待つ",
+    "止まったまま 3 回測って平均",
+    "コーンの方位と距離を計算",
+    "そっちを向いて（turn_to）、odometer で距離ぶん走る"
+   ],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "atan2 の順番が逆",
+     "code": "import math\nLAT0 = 35.726195     # スタート地点の緯度\nLON0 = 140.057112    # スタート地点の経度\n\ndef to_xy(lat, lon):\n    x = (lon - LON0) * 111320 * math.cos(math.radians(LAT0))   # 東へ何 m\n    y = (lat - LAT0) * 110950                                  # 北へ何 m\n    return x, y\n\ndef angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\ndef turn_to(target):\n    while True:\n        e = angle_diff(target, heading())\n        if abs(e) < 9:\n            break\n        if abs(e) > 30:\n            p = 0.25\n        else:\n            p = 0.1\n        if e > 0:\n            motor(p, -p)\n        else:\n            motor(-p, p)\n    stop()\n    wait(0.3)\n\nwhile not gnss().valid:\n    wait(0.1)\ng = gnss()\nx0, y0 = to_xy(g.lat, g.lon)\ngx, gy = to_xy(GOAL_LAT, GOAL_LON)\nbearing = math.degrees(math.atan2(gy - y0, gx - x0)) % 360\ndist = math.hypot(gx - x0, gy - y0)\nturn_to(bearing)\nstart = odometer()\nwhile odometer() - start < dist - 0.6:\n    motor(0.7, 0.7)\nstop()\n",
+     "say": "ローバーの方位は「北から時計回り」。だから atan2(東, 北) の順に書くよ。",
+     "expect": "fail",
+     "rule": null,
+     "when": "re('atan2\\(\\s*[^,]*y[^,]*,')"
+    }
+   ],
+   "senpai_clear": "方位と距離が計算できれば、見えないゴールにも向かえる。これが「航法」だよ。",
+   "explain": {
+    "goal": "stop_at_cone",
+    "goalRadius": 3.0,
+    "expectTurn": null,
+    "target": "cone"
+   },
+   "hud": [
+    "time",
+    "gap",
+    "speed",
+    "lidar",
+    "heading",
+    "gnss_err"
+   ],
+   "graphs": [
+    "speed",
+    "heading",
+    "lidar",
+    "gnss_err"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow",
+    "lidar",
+    "gnss",
+    "truth"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 24.64,
+      "x": 9.486,
+      "y": 11.343,
+      "heading": 38.8,
+      "lines": 51,
+      "gap": 0.214
+     },
+     {
+      "t_stop": 26.48,
+      "x": 10.345,
+      "y": -12.003,
+      "heading": 139.5,
+      "lines": 51,
+      "gap": 0.962
+     },
+     {
+      "t_stop": 24.8,
+      "x": -13.834,
+      "y": 5.244,
+      "heading": 292.3,
+      "lines": 51,
+      "gap": 0.242
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "7-3",
+   "order": 33,
+   "chapter": 7,
+   "title": "走りながら向きを直す",
+   "type": "make",
+   "lang": "python",
+   "minutes": 12,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "7-2 は「最初に 1 回だけ計算」だった。40 m も走ると、少しのずれが大きくなる。走りながら GNSS で何度も方位を計算し直して、コーンへ向かおう（誘導ループ）。",
+   "learn": {
+    "python": [
+     "while True の中で「測る → 計算 → 動く」をくり返す",
+     "max(下, min(上, 値)) で値を上下の範囲に収める"
+    ],
+    "robot": [
+     "誘導ループ: GNSS で方位を出し、heading() とのずれを P 制御で直す",
+     "GNSS には 1〜2 m のずれがある。止まる距離をそれより小さくしても、本当のコーンには近づけない"
+    ]
+   },
+   "new": [
+    "max",
+    "min"
+   ],
+   "new_split": {
+    "command": [],
+    "syntax": [
+     "max",
+     "min"
+    ]
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "now",
+    "lidar",
+    "heading",
+    "odometer",
+    "encoder",
+    "gnss"
+   ],
+   "worlds": [
+    {
+     "name": "方位 60°",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 34.9095,
+        "y": 20.155,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 120,
+      "motor": {
+       "left": 1.0,
+       "right": 0.96
+      },
+      "slope": {
+       "deg": 1,
+       "down": 90
+      },
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "sensor": {
+       "gnss_sigma": 1.2,
+       "gnss_tau": 300,
+       "gnss_white": 0.5,
+       "gnss_latency": 0.3,
+       "gnss_ttff": 1.0
+      }
+     },
+     "inject": {
+      "GOAL_LAT": 35.72637666,
+      "GOAL_LON": 140.05749829
+     },
+     "judge": {}
+    },
+    {
+     "name": "方位 200°",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": -13.7868,
+        "y": -37.879,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 120,
+      "motor": {
+       "left": 1.0,
+       "right": 0.96
+      },
+      "slope": {
+       "deg": 1,
+       "down": 90
+      },
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "sensor": {
+       "gnss_sigma": 1.2,
+       "gnss_tau": 300,
+       "gnss_white": 0.5,
+       "gnss_latency": 0.3,
+       "gnss_ttff": 1.0
+      }
+     },
+     "inject": {
+      "GOAL_LAT": 35.72585359,
+      "GOAL_LON": 140.05695944
+     },
+     "judge": {}
+    },
+    {
+     "name": "方位 320°",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": -25.9108,
+        "y": 30.8793,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 120,
+      "motor": {
+       "left": 1.0,
+       "right": 0.96
+      },
+      "slope": {
+       "deg": 1,
+       "down": 90
+      },
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "sensor": {
+       "gnss_sigma": 1.2,
+       "gnss_tau": 300,
+       "gnss_white": 0.5,
+       "gnss_latency": 0.3,
+       "gnss_ttff": 1.0
+      }
+     },
+     "inject": {
+      "GOAL_LAT": 35.72647332,
+      "GOAL_LON": 140.05682529
+     },
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "stopped and gap('cone') <= 5",
+     "label": "すべての世界で、コーンの 5 m 以内で止まる",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "travel <= 46",
+     "label": "すべての世界で、道のり 46 m 以内（うろうろしない）",
+     "need": "all",
+     "measure": "travel",
+     "better": "low",
+     "unit": "m",
+     "tip": "止まる距離を GNSS のずれより小さくすると、ゴールのまわりを回り続けるよ"
+    },
+    {
+     "expr": "t_stop <= 75",
+     "label": "すべての世界で 75 秒以内",
+     "need": "all",
+     "tip": "曲がる強さの上限や、走る速さを見直そう",
+     "measure": "t_stop",
+     "better": "low",
+     "unit": "秒"
+    }
+   ],
+   "steps": [
+    {
+     "label": "GNSS が使えるまで待つ",
+     "expr": "calls('gnss') >= 1"
+    },
+    {
+     "label": "コーンへ走りだす",
+     "expr": "travel >= 5"
+    },
+    {
+     "label": "コーンの 10 m 以内まで近づく",
+     "expr": "min_gap('cone') <= 10"
+    },
+    {
+     "label": "コーンの 5 m 以内で止まる",
+     "expr": "stopped and gap('cone') <= 5"
+    }
+   ],
+   "show": {
+    "expr": "gap('cone')",
+    "text": "コーンの {cm} cm 手前で止まった",
+    "world": "first_failed"
+   },
+   "starter": "import math\nLAT0 = 35.726195     # スタート地点の緯度\nLON0 = 140.057112    # スタート地点の経度\n\ndef to_xy(lat, lon):\n    x = (lon - LON0) * 111320 * math.cos(math.radians(LAT0))   # 東へ何 m\n    y = (lat - LAT0) * 110950                                  # 北へ何 m\n    return x, y\n\ndef angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\ngx, gy = to_xy(GOAL_LAT, GOAL_LON)\nwhile not gnss().valid:\n    wait(0.1)\nwhile True:\n    g = gnss()\n    x, y = to_xy(g.lat, g.lon)\n    # ゴールまでの距離が 1.5 m より近ければ break\n    # 方位を計算して、heading() とのずれで左右の速さを変える\nstop()\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "dx = gx - x、dy = gy - y、dist = math.hypot(dx, dy)。if dist < 1.5: break。",
+    "bearing = math.degrees(math.atan2(dx, dy))、e = angle_diff(bearing, heading())、turn = 0.01 * e。",
+    "turn は ±0.3 に収める: turn = max(-0.3, min(0.3, 0.01 * e))。motor(0.7 + turn, 0.7 - turn)。"
+   ],
+   "solution": "import math\nLAT0 = 35.726195     # スタート地点の緯度\nLON0 = 140.057112    # スタート地点の経度\n\n# 1. 道具（m に直す・角度の差）\ndef to_xy(lat, lon):\n    x = (lon - LON0) * 111320 * math.cos(math.radians(LAT0))   # 東へ何 m\n    y = (lat - LAT0) * 110950                                  # 北へ何 m\n    return x, y\n\ndef angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\n# 2. 誘導ループ: 測る → 計算 → 動く\ndef go_to(gx, gy, stop_dist):\n    while True:\n        g = gnss()\n        if not g.valid:\n            stop()\n            wait(0.1)\n            continue\n        x, y = to_xy(g.lat, g.lon)\n        dx = gx - x\n        dy = gy - y\n        if math.hypot(dx, dy) < stop_dist:\n            break\n        bearing = math.degrees(math.atan2(dx, dy))\n        e = angle_diff(bearing, heading())\n        turn = max(-0.3, min(0.3, 0.01 * e))\n        motor(0.7 + turn, 0.7 - turn)\n    stop()\n\n# 3. ゴールを m に直し、GNSS を待って向かう\ngx, gy = to_xy(GOAL_LAT, GOAL_LON)\nwhile not gnss().valid:\n    wait(0.1)\ngo_to(gx, gy, 1.5)\n",
+   "solution_labels": [
+    "道具（m に直す・角度の差）",
+    "誘導ループ: 測る → 計算 → 動く",
+    "ゴールを m に直し、GNSS を待って向かう"
+   ],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "止まる距離が小さすぎ",
+     "code": "import math\nLAT0 = 35.726195     # スタート地点の緯度\nLON0 = 140.057112    # スタート地点の経度\n\ndef to_xy(lat, lon):\n    x = (lon - LON0) * 111320 * math.cos(math.radians(LAT0))   # 東へ何 m\n    y = (lat - LAT0) * 110950                                  # 北へ何 m\n    return x, y\n\ndef angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\ndef go_to(gx, gy, stop_dist):\n    while True:\n        g = gnss()\n        if not g.valid:\n            stop()\n            wait(0.1)\n            continue\n        x, y = to_xy(g.lat, g.lon)\n        dx = gx - x\n        dy = gy - y\n        if math.hypot(dx, dy) < stop_dist:\n            break\n        bearing = math.degrees(math.atan2(dx, dy))\n        e = angle_diff(bearing, heading())\n        turn = max(-0.3, min(0.3, 0.01 * e))\n        motor(0.7 + turn, 0.7 - turn)\n    stop()\n\ngx, gy = to_xy(GOAL_LAT, GOAL_LON)\nwhile not gnss().valid:\n    wait(0.1)\ngo_to(gx, gy, 0.2)\n",
+     "say": "GNSS のずれより小さい距離では止まれない。ゴールのまわりをうろうろしちゃう。7-5 でじっくり見よう。",
+     "expect": "any",
+     "rule": null,
+     "when": "re('go_to\\([^)]*,\\s*0\\.[0-4]\\s*\\)')"
+    }
+   ],
+   "senpai_clear": "走りながら直すと、坂やモーターの差があっても着ける。本物の誘導もこの形。",
+   "explain": {
+    "goal": "stop_at_cone",
+    "goalRadius": 5.0,
+    "expectTurn": null,
+    "target": "cone"
+   },
+   "hud": [
+    "time",
+    "gap",
+    "speed",
+    "lidar",
+    "heading",
+    "gnss_err"
+   ],
+   "graphs": [
+    "speed",
+    "heading",
+    "lidar",
+    "gnss_err"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow",
+    "lidar",
+    "gnss",
+    "truth"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 54.74,
+      "x": 33.628,
+      "y": 21.253,
+      "heading": 28.1,
+      "lines": 30,
+      "gap": 1.377
+     },
+     {
+      "t_stop": 52.74,
+      "x": -12.703,
+      "y": -34.657,
+      "heading": 187.4,
+      "lines": 30,
+      "gap": 3.089
+     },
+     {
+      "t_stop": 58.74,
+      "x": -26.89,
+      "y": 30.466,
+      "heading": 337.4,
+      "lines": 30,
+      "gap": 0.753
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "7-4",
+   "order": 34,
+   "chapter": 7,
+   "title": "コンパスが使えない日",
+   "type": "fix",
+   "lang": "python",
+   "minutes": 10,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "地磁気センサの線が切れて、heading() が None しか返さない！ 去年の先輩が GNSS の「進む向き」（g.course）で走るように書き換えたけど、ぐるぐる回ってゴールに着かない…。",
+   "learn": {
+    "python": [
+     "数を 1 つ変えると動きががらりと変わる（ゲインの調整。ゲイン = ずれに掛ける数）"
+    ],
+    "robot": [
+     "g.course は GNSS が出す「進んでいる向き」。止まっているときや遅いときはでたらめ",
+     "GNSS の向きは 1 秒に 1 回・遅れて来る。強く曲げると、情報が来る前に行きすぎて円を描く",
+     "遅れのあるセンサには、小さいゲイン＋曲がる強さの上限。本物の機体のシミュレータでも、曲げる強さを大きくすると同じように回り続ける"
+    ]
+   },
+   "new": [
+    "g.course",
+    "g.speed"
+   ],
+   "new_split": {
+    "command": [],
+    "syntax": [
+     "g.course",
+     "g.speed"
+    ]
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "now",
+    "lidar",
+    "heading",
+    "odometer",
+    "encoder",
+    "gnss"
+   ],
+   "worlds": [
+    {
+     "name": "方位 30°",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 15.155,
+        "y": 26.2492,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 120,
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "sensor": {
+       "gnss_sigma": 1.0,
+       "gnss_tau": 300,
+       "gnss_white": 0.4,
+       "heading_broken": true,
+       "gnss_latency": 0.3,
+       "gnss_ttff": 1.0
+      }
+     },
+     "inject": {
+      "GOAL_LAT": 35.72643159,
+      "GOAL_LON": 140.0572797
+     },
+     "judge": {}
+    },
+    {
+     "name": "方位 150°",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 15.155,
+        "y": -26.2492,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 120,
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "sensor": {
+       "gnss_sigma": 1.0,
+       "gnss_tau": 300,
+       "gnss_white": 0.4,
+       "heading_broken": true,
+       "gnss_latency": 0.3,
+       "gnss_ttff": 1.0
+      }
+     },
+     "inject": {
+      "GOAL_LAT": 35.72595841,
+      "GOAL_LON": 140.0572797
+     },
+     "judge": {}
+    },
+    {
+     "name": "方位 260°",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": -29.8495,
+        "y": -5.2633,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 120,
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "sensor": {
+       "gnss_sigma": 1.0,
+       "gnss_tau": 300,
+       "gnss_white": 0.4,
+       "heading_broken": true,
+       "gnss_latency": 0.3,
+       "gnss_ttff": 1.0
+      }
+     },
+     "inject": {
+      "GOAL_LAT": 35.72614756,
+      "GOAL_LON": 140.0567817
+     },
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "stopped and gap('cone') <= 5",
+     "label": "すべての世界で、コーンの 5 m 以内で止まる",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "turn_total <= 400",
+     "label": "すべての世界で、回った角度の合計 400° 以内",
+     "need": "all",
+     "measure": "turn_total",
+     "better": "low",
+     "unit": "°",
+     "tip": "遅れのあるセンサには、小さいゲインと、曲がる強さの上限だよ"
+    },
+    {
+     "expr": "t_stop <= 80",
+     "label": "すべての世界で 80 秒以内",
+     "need": "all",
+     "tip": "ふらふらせずにまっすぐ走れば、早く着くよ",
+     "measure": "t_stop",
+     "better": "low",
+     "unit": "秒"
+    }
+   ],
+   "steps": [
+    {
+     "label": "GNSS の向きで走りだす",
+     "expr": "travel >= 5"
+    },
+    {
+     "label": "コーンの 15 m 以内まで近づく",
+     "expr": "min_gap('cone') <= 15"
+    },
+    {
+     "label": "コーンの 5 m 以内まで近づく",
+     "expr": "min_gap('cone') <= 5"
+    },
+    {
+     "label": "止まる",
+     "expr": "stopped and gap('cone') <= 5"
+    }
+   ],
+   "show": {
+    "expr": "gap('cone')",
+    "text": "コーンの {cm} cm 手前で止まった",
+    "world": "first_failed"
+   },
+   "starter": "import math\nLAT0 = 35.726195     # スタート地点の緯度\nLON0 = 140.057112    # スタート地点の経度\n\ndef to_xy(lat, lon):\n    x = (lon - LON0) * 111320 * math.cos(math.radians(LAT0))   # 東へ何 m\n    y = (lat - LAT0) * 110950                                  # 北へ何 m\n    return x, y\n\ndef angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\nK = 0.03          # 曲がる強さ（ずれ 1° あたり）\ngx, gy = to_xy(GOAL_LAT, GOAL_LON)\nwhile not gnss().valid:\n    wait(0.1)\nwhile True:\n    g = gnss()\n    x, y = to_xy(g.lat, g.lon)\n    dx = gx - x\n    dy = gy - y\n    if math.hypot(dx, dy) < 2.5:\n        break\n    bearing = math.degrees(math.atan2(dx, dy))\n    e = angle_diff(bearing, g.course)    # heading() の代わりに、GNSS の進む向き\n    turn = K * e\n    motor(0.8 + turn, 0.8 - turn)\n    wait(0.05)\nstop()\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "K = 0.03 だと、ずれ 30° で左右の差が 1.8 も出て、その場で回ってしまう。",
+    "K をずっと小さく（0.001）。turn に上限（±0.06）をつける。",
+    "遅いとき（g.speed < 0.3）の course は信じない: そのときは e = 0 でまっすぐ。"
+   ],
+   "solution": "import math\nLAT0 = 35.726195     # スタート地点の緯度\nLON0 = 140.057112    # スタート地点の経度\n\ndef to_xy(lat, lon):\n    x = (lon - LON0) * 111320 * math.cos(math.radians(LAT0))   # 東へ何 m\n    y = (lat - LAT0) * 110950                                  # 北へ何 m\n    return x, y\n\ndef angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\n# 1. 強さと、その上限を決める\nK = 0.001         # 曲がる強さ（ずれ 1° あたり）。GNSS は遅れるので小さく\nTURN_MAX = 0.06   # 曲がる強さの上限\n# 2. GNSS の進む向きで直しながら走る\ngx, gy = to_xy(GOAL_LAT, GOAL_LON)\nwhile not gnss().valid:\n    wait(0.1)\nwhile True:\n    g = gnss()\n    x, y = to_xy(g.lat, g.lon)\n    dx = gx - x\n    dy = gy - y\n    if math.hypot(dx, dy) < 2.5:\n        break\n    bearing = math.degrees(math.atan2(dx, dy))\n    if g.speed > 0.3:                    # 動いているときだけ、進む向きは当てになる\n        e = angle_diff(bearing, g.course)\n    else:\n        e = 0\n    turn = max(-TURN_MAX, min(TURN_MAX, K * e))\n    motor(0.8 + turn, 0.8 - turn)\n    wait(0.05)\nstop()\n",
+   "solution_labels": [
+    "強さと、その上限を決める",
+    "GNSS の進む向きで直しながら走る"
+   ],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "上限だけつけた",
+     "code": "import math\nLAT0 = 35.726195     # スタート地点の緯度\nLON0 = 140.057112    # スタート地点の経度\n\ndef to_xy(lat, lon):\n    x = (lon - LON0) * 111320 * math.cos(math.radians(LAT0))   # 東へ何 m\n    y = (lat - LAT0) * 110950                                  # 北へ何 m\n    return x, y\n\ndef angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\nK = 0.03          # 曲がる強さ（ずれ 1° あたり）\ngx, gy = to_xy(GOAL_LAT, GOAL_LON)\nwhile not gnss().valid:\n    wait(0.1)\nwhile True:\n    g = gnss()\n    x, y = to_xy(g.lat, g.lon)\n    dx = gx - x\n    dy = gy - y\n    if math.hypot(dx, dy) < 2.5:\n        break\n    bearing = math.degrees(math.atan2(dx, dy))\n    e = angle_diff(bearing, g.course)    # heading() の代わりに、GNSS の進む向き\n    turn = max(-0.06, min(0.06, K * e))\n    motor(0.8 + turn, 0.8 - turn)\n    wait(0.05)\nstop()\n",
+     "say": "上限だけだと、ずれが小さくてもいつも ±0.06 で曲がって、行ったり来たり。K も小さくしよう。",
+     "expect": "any",
+     "rule": "B_OSCILLATION",
+     "when": "re('max\\(\\s*-0\\.0[0-9]')"
+    }
+   ],
+   "senpai_clear": "「遅れのあるセンサには、ゆっくり直す」。これは制御のいちばん大事な教訓の 1 つ。",
+   "explain": {
+    "goal": "stop_at_cone",
+    "goalRadius": 5.0,
+    "expectTurn": null,
+    "target": "cone"
+   },
+   "hud": [
+    "time",
+    "gap",
+    "speed",
+    "lidar",
+    "heading",
+    "gnss_err"
+   ],
+   "graphs": [
+    "speed",
+    "heading",
+    "lidar",
+    "gnss_err"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow",
+    "lidar",
+    "gnss",
+    "truth"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 32.78,
+      "x": 13.129,
+      "y": 23.668,
+      "heading": 33,
+      "lines": 30,
+      "gap": 2.971
+     },
+     {
+      "t_stop": 41.82,
+      "x": 13.991,
+      "y": -27.6,
+      "heading": 142.8,
+      "lines": 30,
+      "gap": 1.473
+     },
+     {
+      "t_stop": 38.8,
+      "x": -29.666,
+      "y": -6.781,
+      "heading": 253.2,
+      "lines": 30,
+      "gap": 1.219
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "7-5",
+   "order": 35,
+   "chapter": 7,
+   "title": "GNSS だけでは届かない",
+   "type": "predict",
+   "lang": "python",
+   "minutes": 6,
+   "checkpoint": false,
+   "carry_from": null,
+   "story": "7-3 のプログラムで、止まる距離（STOP_DIST）を 0.3 m にしたら、コーンのすぐ前で止まれるかな？ この日の GNSS は 2〜3 m ずれていて、地図から読んだゴールの座標（GOAL_LAT・GOAL_LON）も 3 m 近くずれている。予想してから実行しよう。",
+   "learn": {
+    "python": [],
+    "robot": [
+     "GNSS は「ゴールの座標」と「自分の位置」の両方にずれがある。ずれより近くには GNSS だけでは行けない",
+     "だから本番の最後の数 m は、カメラと LiDAR に交代する（8 章）"
+    ]
+   },
+   "new": [],
+   "new_split": {
+    "command": [],
+    "syntax": []
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "now",
+    "lidar",
+    "heading",
+    "odometer",
+    "encoder",
+    "gnss"
+   ],
+   "worlds": [
+    {
+     "name": "この日",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 21.4324,
+        "y": 21.4324,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 90,
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "sensor": {
+       "gnss_sigma": 2.0,
+       "gnss_tau": 600,
+       "gnss_white": 0.6,
+       "gnss_latency": 0.3,
+       "gnss_ttff": 1.0
+      }
+     },
+     "inject": {
+      "GOAL_LAT": 35.7264062,
+      "GOAL_LON": 140.05732703
+     },
+     "judge": {}
+    }
+   ],
+   "test": {
+    "worlds": [
+     {
+      "name": "テスト1",
+      "world": {
+       "venue": "船橋キャンパス 滑走路の隣の芝生",
+       "venue_key": "funabashi",
+       "origin": {
+        "lat": 35.726195,
+        "lon": 140.057112
+       },
+       "start": {
+        "x": 0,
+        "y": 0,
+        "heading": 0
+       },
+       "objects": [
+        {
+         "id": "cone",
+         "type": "cone",
+         "x": 3.8136,
+         "y": 30.0691,
+         "r": 0.19
+        }
+       ],
+       "time_limit": 90,
+       "api_off": [
+        "distance_to_cone"
+       ],
+       "sensor": {
+        "gnss_sigma": 2.0,
+        "gnss_tau": 600,
+        "gnss_white": 0.6,
+        "gnss_latency": 0.3,
+        "gnss_ttff": 1.0
+       }
+      },
+      "inject": {
+       "GOAL_LAT": 35.72646602,
+       "GOAL_LON": 140.0571542
+      },
+      "judge": {}
+     },
+     {
+      "name": "テスト2",
+      "world": {
+       "venue": "船橋キャンパス 滑走路の隣の芝生",
+       "venue_key": "funabashi",
+       "origin": {
+        "lat": 35.726195,
+        "lon": 140.057112
+       },
+       "start": {
+        "x": 0,
+        "y": 0,
+        "heading": 0
+       },
+       "objects": [
+        {
+         "id": "cone",
+         "type": "cone",
+         "x": 16.1003,
+         "y": -25.6803,
+         "r": 0.19
+        }
+       ],
+       "time_limit": 90,
+       "api_off": [
+        "distance_to_cone"
+       ],
+       "sensor": {
+        "gnss_sigma": 2.0,
+        "gnss_tau": 600,
+        "gnss_white": 0.6,
+        "gnss_latency": 0.3,
+        "gnss_ttff": 1.0
+       }
+      },
+      "inject": {
+       "GOAL_LAT": 35.72596354,
+       "GOAL_LON": 140.05729016
+      },
+      "judge": {}
+     },
+     {
+      "name": "テスト3",
+      "world": {
+       "venue": "船橋キャンパス 滑走路の隣の芝生",
+       "venue_key": "funabashi",
+       "origin": {
+        "lat": 35.726195,
+        "lon": 140.057112
+       },
+       "start": {
+        "x": 0,
+        "y": 0,
+        "heading": 0
+       },
+       "objects": [
+        {
+         "id": "cone",
+         "type": "cone",
+         "x": -28.0749,
+         "y": -11.4236,
+         "r": 0.19
+        }
+       ],
+       "time_limit": 90,
+       "api_off": [
+        "distance_to_cone"
+       ],
+       "sensor": {
+        "gnss_sigma": 2.0,
+        "gnss_tau": 600,
+        "gnss_white": 0.6,
+        "gnss_latency": 0.3,
+        "gnss_ttff": 1.0
+       }
+      },
+      "inject": {
+       "GOAL_LAT": 35.72609204,
+       "GOAL_LON": 140.05680134
+      },
+      "judge": {}
+     },
+     {
+      "name": "テスト4",
+      "world": {
+       "venue": "船橋キャンパス 滑走路の隣の芝生",
+       "venue_key": "funabashi",
+       "origin": {
+        "lat": 35.726195,
+        "lon": 140.057112
+       },
+       "start": {
+        "x": 0,
+        "y": 0,
+        "heading": 0
+       },
+       "objects": [
+        {
+         "id": "cone",
+         "type": "cone",
+         "x": 19.2248,
+         "y": 23.4329,
+         "r": 0.19
+        }
+       ],
+       "time_limit": 90,
+       "api_off": [
+        "distance_to_cone"
+       ],
+       "sensor": {
+        "gnss_sigma": 2.0,
+        "gnss_tau": 600,
+        "gnss_white": 0.6,
+        "gnss_latency": 0.3,
+        "gnss_ttff": 1.0
+       }
+      },
+      "inject": {
+       "GOAL_LAT": 35.7264062,
+       "GOAL_LON": 140.05732473
+      },
+      "judge": {}
+     },
+     {
+      "name": "テスト5",
+      "world": {
+       "venue": "船橋キャンパス 滑走路の隣の芝生",
+       "venue_key": "funabashi",
+       "origin": {
+        "lat": 35.726195,
+        "lon": 140.057112
+       },
+       "start": {
+        "x": 0,
+        "y": 0,
+        "heading": 0
+       },
+       "objects": [
+        {
+         "id": "cone",
+         "type": "cone",
+         "x": 11.8057,
+         "y": 27.9163,
+         "r": 0.19
+        }
+       ],
+       "time_limit": 90,
+       "api_off": [
+        "distance_to_cone"
+       ],
+       "sensor": {
+        "gnss_sigma": 2.0,
+        "gnss_tau": 600,
+        "gnss_white": 0.6,
+        "gnss_latency": 0.3,
+        "gnss_ttff": 1.0
+       }
+      },
+      "inject": {
+       "GOAL_LAT": 35.72644661,
+       "GOAL_LON": 140.05724264
+      },
+      "judge": {}
+     }
+    ]
+   },
+   "clear": [
+    {
+     "expr": "True",
+     "label": "予想を選んでから実行する",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "prediction_ok",
+     "label": "予想が当たる",
+     "need": "all",
+     "tip": "GNSS のずれ（2〜3 m）と、止まる距離（0.3 m）をくらべてみよう",
+     "no_measure": "予想が当たったかどうかで決まる（数では測れない）"
+    },
+    {
+     "expr": "stopped and t_stop <= 45",
+     "label": "STOP_DIST を直し本番テスト 5 回で 45 秒以内",
+     "need": [
+      "test",
+      5
+     ],
+     "tip": "止まる距離をずれくらいにすると、うろうろせずに止まれるよ",
+     "measure": "t_stop",
+     "better": "low",
+     "unit": "秒"
+    }
+   ],
+   "steps": [
+    {
+     "label": "予想を選んで実行する",
+     "expr": "ok or timeup"
+    },
+    {
+     "label": "GNSS でゴールへ走る",
+     "expr": "travel >= 10"
+    },
+    {
+     "label": "45 秒以内に止まる",
+     "expr": "stopped and t_stop <= 45"
+    }
+   ],
+   "show": {
+    "expr": "gap('cone')",
+    "text": "コーンまで {cm} cm",
+    "world": "first_failed"
+   },
+   "starter": "import math\nLAT0 = 35.726195     # スタート地点の緯度\nLON0 = 140.057112    # スタート地点の経度\n\ndef to_xy(lat, lon):\n    x = (lon - LON0) * 111320 * math.cos(math.radians(LAT0))   # 東へ何 m\n    y = (lat - LAT0) * 110950                                  # 北へ何 m\n    return x, y\n\ndef angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\ndef go_to(gx, gy, stop_dist):\n    while True:\n        g = gnss()\n        if not g.valid:\n            stop()\n            wait(0.1)\n            continue\n        x, y = to_xy(g.lat, g.lon)\n        dx = gx - x\n        dy = gy - y\n        if math.hypot(dx, dy) < stop_dist:\n            break\n        bearing = math.degrees(math.atan2(dx, dy))\n        e = angle_diff(bearing, heading())\n        turn = max(-0.3, min(0.3, 0.01 * e))\n        motor(0.7 + turn, 0.7 - turn)\n    stop()\n\nSTOP_DIST = 0.3     # ゴールまでこれより近づいたら止まる（m）\ngx, gy = to_xy(GOAL_LAT, GOAL_LON)\nwhile not gnss().valid:\n    wait(0.1)\ngo_to(gx, gy, STOP_DIST)\nprint(\"着いた！\")\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [
+    {
+     "q": "STOP_DIST = 0.3 で実行すると、どうなる？",
+     "choices": [
+      "コーンの 30 cm 手前でぴったり止まる",
+      "コーンから数 m 離れた所で止まるか、止まれずにうろうろする（コーンには届かない）",
+      "まっすぐ走って、どこまでも行ってしまう"
+     ],
+     "answer": 1,
+     "why": "GNSS の位置が 2〜3 m ずれているので、ローバーは「GNSS の中のゴール」に向かう。そこは本物のコーンから離れている。しかも 1 秒に 1 回の位置では 0.3 m 以内にぴたりと入りにくく、行きすぎては戻ることもある。",
+     "check": "not (stopped and gap('cone') <= 0.5 and not touched('cone'))"
+    }
+   ],
+   "predict_card": null,
+   "hints": [
+    "GNSS のずれは 2〜3 m。",
+    "ずれより小さい距離をねらっても、ゴールのまわりで時間を使うだけ。",
+    "STOP_DIST = 2.5 くらいにすると早く止まれる。どちらにしても本物のコーンからは数 m 離れる → 8 章へ。"
+   ],
+   "solution": "import math\nLAT0 = 35.726195     # スタート地点の緯度\nLON0 = 140.057112    # スタート地点の経度\n\ndef to_xy(lat, lon):\n    x = (lon - LON0) * 111320 * math.cos(math.radians(LAT0))   # 東へ何 m\n    y = (lat - LAT0) * 110950                                  # 北へ何 m\n    return x, y\n\ndef angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\n# 1. 誘導ループ（7-3 と同じ）\ndef go_to(gx, gy, stop_dist):\n    while True:\n        g = gnss()\n        if not g.valid:\n            stop()\n            wait(0.1)\n            continue\n        x, y = to_xy(g.lat, g.lon)\n        dx = gx - x\n        dy = gy - y\n        if math.hypot(dx, dy) < stop_dist:\n            break\n        bearing = math.degrees(math.atan2(dx, dy))\n        e = angle_diff(bearing, heading())\n        turn = max(-0.3, min(0.3, 0.01 * e))\n        motor(0.7 + turn, 0.7 - turn)\n    stop()\n\n# 2. 止まる距離を決めて、ゴールへ\nSTOP_DIST = 2.5     # ゴールまでこれより近づいたら止まる（m）\ngx, gy = to_xy(GOAL_LAT, GOAL_LON)\nwhile not gnss().valid:\n    wait(0.1)\ngo_to(gx, gy, STOP_DIST)\nprint(\"着いた！\")\n",
+   "solution_labels": [
+    "誘導ループ（7-3 と同じ）",
+    "止まる距離を決めて、ゴールへ"
+   ],
+   "py_equiv": null,
+   "mistakes": [],
+   "senpai_clear": "GNSS の限界を知ることが大事。ここから先はカメラの出番だ。",
+   "explain": {
+    "goal": "free",
+    "goalRadius": 1.0,
+    "expectTurn": null,
+    "target": "cone"
+   },
+   "hud": [
+    "time",
+    "gap",
+    "speed",
+    "lidar",
+    "heading",
+    "gnss_err"
+   ],
+   "graphs": [
+    "speed",
+    "heading",
+    "lidar",
+    "gnss_err"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow",
+    "lidar",
+    "gnss",
+    "truth"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 40.76,
+      "x": 19.341,
+      "y": 22.557,
+      "heading": 7.6,
+      "lines": 32,
+      "gap": 2.064
+     }
+    ],
+    "sim": "w1"
+   }
+  },
+  {
+   "id": "7-6",
+   "order": 36,
+   "chapter": 7,
+   "title": "中継点めぐり（池をよけて）",
+   "type": "boss",
+   "lang": "python",
+   "minutes": 15,
+   "checkpoint": true,
+   "carry_from": null,
+   "story": "キャンパスの奥のコーンへ。まっすぐ行くと池に落ちる！ 池をよける中継点の緯度・経度のリスト WAYPOINTS を順にめぐって、最後にゴールへ（世界ごとに池と中継点がちがう）。（チェックポイント面）",
+   "learn": {
+    "python": [
+     "リストの中の (緯度, 経度) を for で順に取り出す",
+     "関数 go_to を何度も使う"
+    ],
+    "robot": [
+     "中継点（ウェイポイント）で道を決めるのは、本物の自律走行の基本"
+    ]
+   },
+   "new": [],
+   "new_split": {
+    "command": [],
+    "syntax": []
+   },
+   "equipped": [
+    "print",
+    "motor",
+    "stop",
+    "wait",
+    "now",
+    "lidar",
+    "heading",
+    "odometer",
+    "encoder",
+    "gnss"
+   ],
+   "worlds": [
+    {
+     "name": "池 1",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "pond",
+        "type": "area",
+        "kind": "pond",
+        "circle": [
+         0,
+         20,
+         4
+        ]
+       },
+       {
+        "id": "wp1",
+        "type": "flag",
+        "x": -9,
+        "y": 12,
+        "label": "中継点 1"
+       },
+       {
+        "id": "wp2",
+        "type": "flag",
+        "x": -9,
+        "y": 28,
+        "label": "中継点 2"
+       },
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 0,
+        "y": 38,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 150,
+      "motor": {
+       "left": 1.0,
+       "right": 0.97
+      },
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "sensor": {
+       "gnss_sigma": 1.0,
+       "gnss_tau": 300,
+       "gnss_white": 0.5,
+       "gnss_latency": 0.3,
+       "gnss_ttff": 1.0
+      }
+     },
+     "inject": {
+      "GOAL_LAT": 35.7265375,
+      "GOAL_LON": 140.057112,
+      "WAYPOINTS": [
+       [
+        35.72630316,
+        140.05701241
+       ],
+       [
+        35.72644737,
+        140.05701241
+       ]
+      ]
+     },
+     "judge": {}
+    },
+    {
+     "name": "池 2",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "pond",
+        "type": "area",
+        "kind": "pond",
+        "circle": [
+         0,
+         20,
+         4
+        ]
+       },
+       {
+        "id": "wp1",
+        "type": "flag",
+        "x": 9,
+        "y": 14,
+        "label": "中継点 1"
+       },
+       {
+        "id": "wp2",
+        "type": "flag",
+        "x": 9,
+        "y": 30,
+        "label": "中継点 2"
+       },
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": 2,
+        "y": 40,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 150,
+      "motor": {
+       "left": 1.0,
+       "right": 0.97
+      },
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "sensor": {
+       "gnss_sigma": 1.0,
+       "gnss_tau": 300,
+       "gnss_white": 0.5,
+       "gnss_latency": 0.3,
+       "gnss_ttff": 1.0
+      }
+     },
+     "inject": {
+      "GOAL_LAT": 35.72655552,
+      "GOAL_LON": 140.05713413,
+      "WAYPOINTS": [
+       [
+        35.72632118,
+        140.05721159
+       ],
+       [
+        35.72646539,
+        140.05721159
+       ]
+      ]
+     },
+     "judge": {}
+    },
+    {
+     "name": "池 3",
+     "world": {
+      "venue": "船橋キャンパス 滑走路の隣の芝生",
+      "venue_key": "funabashi",
+      "origin": {
+       "lat": 35.726195,
+       "lon": 140.057112
+      },
+      "start": {
+       "x": 0,
+       "y": 0,
+       "heading": 0
+      },
+      "objects": [
+       {
+        "id": "pond",
+        "type": "area",
+        "kind": "pond",
+        "circle": [
+         -5,
+         22,
+         4.5
+        ]
+       },
+       {
+        "id": "wp1",
+        "type": "flag",
+        "x": 5,
+        "y": 15,
+        "label": "中継点 1"
+       },
+       {
+        "id": "wp2",
+        "type": "flag",
+        "x": 4.5,
+        "y": 30,
+        "label": "中継点 2"
+       },
+       {
+        "id": "cone",
+        "type": "cone",
+        "x": -2,
+        "y": 42,
+        "r": 0.19
+       }
+      ],
+      "time_limit": 150,
+      "motor": {
+       "left": 1.0,
+       "right": 0.97
+      },
+      "api_off": [
+       "distance_to_cone"
+      ],
+      "sensor": {
+       "gnss_sigma": 1.0,
+       "gnss_tau": 300,
+       "gnss_white": 0.5,
+       "gnss_latency": 0.3,
+       "gnss_ttff": 1.0
+      }
+     },
+     "inject": {
+      "GOAL_LAT": 35.72657355,
+      "GOAL_LON": 140.05708987,
+      "WAYPOINTS": [
+       [
+        35.7263302,
+        140.05716733
+       ],
+       [
+        35.72646539,
+        140.05716179
+       ]
+      ]
+     },
+     "judge": {}
+    }
+   ],
+   "test": null,
+   "clear": [
+    {
+     "expr": "visited_in_order(['wp1', 'wp2'], 5.0) and not entered('pond') and stopped and gap('cone') <= 5",
+     "label": "すべての世界で、池をよけ中継点を通りコーンの 5 m 以内",
+     "need": "all"
+    }
+   ],
+   "stars": [
+    {
+     "expr": "gap('cone') <= 3.5",
+     "label": "すべての世界で 3.5 m 以内",
+     "need": "all",
+     "tip": "ゴールで止まる距離を少し小さくしてみよう（小さすぎるとうろうろ）",
+     "measure": "gap('cone')",
+     "better": "low",
+     "unit": "cm"
+    },
+    {
+     "expr": "t_stop <= 100",
+     "label": "すべての世界で 100 秒以内",
+     "need": "all",
+     "tip": "中継点で毎回止まらずに、そのまま次へ向かってみよう",
+     "measure": "t_stop",
+     "better": "low",
+     "unit": "秒"
+    }
+   ],
+   "steps": [
+    {
+     "label": "中継点 1 を通る",
+     "expr": "visited('wp1', 5.0)"
+    },
+    {
+     "label": "中継点 2 を通る",
+     "expr": "visited_in_order(['wp1', 'wp2'], 5.0)"
+    },
+    {
+     "label": "池に入らずにゴールへ向かう",
+     "expr": "not entered('pond') and min_gap('cone') <= 10"
+    },
+    {
+     "label": "コーンの 5 m 以内で止まる",
+     "expr": "stopped and gap('cone') <= 5"
+    }
+   ],
+   "show": {
+    "expr": "gap('cone')",
+    "text": "コーンの {cm} cm 手前で止まった",
+    "world": "first_failed"
+   },
+   "starter": "import math\nLAT0 = 35.726195     # スタート地点の緯度\nLON0 = 140.057112    # スタート地点の経度\n\ndef to_xy(lat, lon):\n    x = (lon - LON0) * 111320 * math.cos(math.radians(LAT0))   # 東へ何 m\n    y = (lat - LAT0) * 110950                                  # 北へ何 m\n    return x, y\n\ndef angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\n# WAYPOINTS = [(緯度, 経度), (緯度, 経度)] と GOAL_LAT, GOAL_LON が入っている\nprint(WAYPOINTS)\n",
+   "locked": [],
+   "blanks": [],
+   "parsons": null,
+   "predict": [],
+   "predict_card": null,
+   "hints": [
+    "7-3 の誘導ループを関数 go_to(gx, gy, stop_dist) にしよう。",
+    "for lat, lon in WAYPOINTS: で中継点を順に。中継点は近く（2 m）まで行けば OK。",
+    "for lat, lon in WAYPOINTS: wx, wy = to_xy(lat, lon) → go_to(wx, wy, 2.0)。最後に go_to(ゴール, 1.5)。"
+   ],
+   "solution": "import math\nLAT0 = 35.726195     # スタート地点の緯度\nLON0 = 140.057112    # スタート地点の経度\n\n# 1. 道具（m に直す・角度の差・誘導ループ）\ndef to_xy(lat, lon):\n    x = (lon - LON0) * 111320 * math.cos(math.radians(LAT0))   # 東へ何 m\n    y = (lat - LAT0) * 110950                                  # 北へ何 m\n    return x, y\n\ndef angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\ndef go_to(gx, gy, stop_dist):\n    while True:\n        g = gnss()\n        if not g.valid:\n            stop()\n            wait(0.1)\n            continue\n        x, y = to_xy(g.lat, g.lon)\n        dx = gx - x\n        dy = gy - y\n        if math.hypot(dx, dy) < stop_dist:\n            break\n        bearing = math.degrees(math.atan2(dx, dy))\n        e = angle_diff(bearing, heading())\n        turn = max(-0.3, min(0.3, 0.01 * e))\n        motor(0.7 + turn, 0.7 - turn)\n    stop()\n\nwhile not gnss().valid:\n    wait(0.1)\n# 2. 中継点を順にめぐる\nfor lat, lon in WAYPOINTS:\n    wx, wy = to_xy(lat, lon)\n    go_to(wx, wy, 2.0)\n# 3. 最後にゴールへ\ngx, gy = to_xy(GOAL_LAT, GOAL_LON)\ngo_to(gx, gy, 1.5)\n",
+   "solution_labels": [
+    "道具（m に直す・角度の差・誘導ループ）",
+    "中継点を順にめぐる",
+    "最後にゴールへ"
+   ],
+   "py_equiv": null,
+   "mistakes": [
+    {
+     "name": "中継点を使わない",
+     "code": "import math\nLAT0 = 35.726195     # スタート地点の緯度\nLON0 = 140.057112    # スタート地点の経度\n\ndef to_xy(lat, lon):\n    x = (lon - LON0) * 111320 * math.cos(math.radians(LAT0))   # 東へ何 m\n    y = (lat - LAT0) * 110950                                  # 北へ何 m\n    return x, y\n\ndef angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\ndef go_to(gx, gy, stop_dist):\n    while True:\n        g = gnss()\n        if not g.valid:\n            stop()\n            wait(0.1)\n            continue\n        x, y = to_xy(g.lat, g.lon)\n        dx = gx - x\n        dy = gy - y\n        if math.hypot(dx, dy) < stop_dist:\n            break\n        bearing = math.degrees(math.atan2(dx, dy))\n        e = angle_diff(bearing, heading())\n        turn = max(-0.3, min(0.3, 0.01 * e))\n        motor(0.7 + turn, 0.7 - turn)\n    stop()\n\nwhile not gnss().valid:\n    wait(0.1)\ngx, gy = to_xy(GOAL_LAT, GOAL_LON)\ngo_to(gx, gy, 1.5)\n",
+     "say": "池に落ちた！ まっすぐ行くと池の上を通る。中継点を順にめぐろう。",
+     "expect": "fail",
+     "rule": "B_POND",
+     "when": "pond or (moved > 3 and not has('WAYPOINTS'))"
+    }
+   ],
+   "senpai_clear": "地図の上で道を決めて走れるようになった。",
+   "explain": {
+    "goal": "stop_at_cone",
+    "goalRadius": 5.0,
+    "expectTurn": null,
+    "target": "cone"
+   },
+   "hud": [
+    "time",
+    "gap",
+    "speed",
+    "lidar",
+    "heading",
+    "gnss_err"
+   ],
+   "graphs": [
+    "speed",
+    "heading",
+    "lidar",
+    "gnss_err"
+   ],
+   "overlays": [
+    "trail",
+    "ghost",
+    "arrow",
+    "lidar",
+    "gnss",
+    "truth"
+   ],
+   "limits": null,
+   "tail_s": 3.0,
+   "reference": {
+    "clear": true,
+    "stars": [
+     true,
+     true
+    ],
+    "worlds": [
+     {
+      "t_stop": 54.76,
+      "x": 1.115,
+      "y": 35.854,
+      "heading": 26.2,
+      "lines": 33,
+      "gap": 2.108
+     },
+     {
+      "t_stop": 58.76,
+      "x": 1.249,
+      "y": 39.207,
+      "heading": 316.6,
+      "lines": 33,
+      "gap": 0.782
+     },
+     {
+      "t_stop": 59.76,
+      "x": -1.144,
+      "y": 41.641,
+      "heading": 326.8,
+      "lines": 33,
+      "gap": 0.618
+     }
+    ],
+    "sim": "w1"
+   }
+  }
+ ]
+}

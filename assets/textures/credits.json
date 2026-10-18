@@ -1,0 +1,93 @@
+{
+  "$comment": "持ち主 W5。assets/textures の出典とライセンス（クレジットの画面が読む。SPEC 12 章「法と表示」）。",
+  "textures": [
+    {
+      "file": "grass.jpg",
+      "what": "芝（色むらのある短い芝。葉の筋つき）",
+      "size": [
+        1024,
+        1024
+      ],
+      "source": "ROVER CODE の制作（tests/replay_make_textures.py で手続き生成）",
+      "license": "CC0 1.0",
+      "bytes": 281830
+    },
+    {
+      "file": "sand.jpg",
+      "what": "砂（細かい粒）",
+      "size": [
+        1024,
+        1024
+      ],
+      "source": "ROVER CODE の制作（tests/replay_make_textures.py で手続き生成）",
+      "license": "CC0 1.0",
+      "bytes": 211167
+    },
+    {
+      "file": "dune.jpg",
+      "what": "砂丘の砂（風紋つき）",
+      "size": [
+        1024,
+        1024
+      ],
+      "source": "ROVER CODE の制作（tests/replay_make_textures.py で手続き生成）",
+      "license": "CC0 1.0",
+      "bytes": 217233
+    },
+    {
+      "file": "soil.jpg",
+      "what": "土（小石とまばらな草）",
+      "size": [
+        1024,
+        1024
+      ],
+      "source": "ROVER CODE の制作（tests/replay_make_textures.py で手続き生成）",
+      "license": "CC0 1.0",
+      "bytes": 190555
+    },
+    {
+      "file": "pavement.jpg",
+      "what": "アスファルト",
+      "size": [
+        1024,
+        1024
+      ],
+      "source": "ROVER CODE の制作（tests/replay_make_textures.py で手続き生成）",
+      "license": "CC0 1.0",
+      "bytes": 279999
+    },
+    {
+      "file": "concrete.jpg",
+      "what": "コンクリート（2 m ごとの目地）",
+      "size": [
+        1024,
+        1024
+      ],
+      "source": "ROVER CODE の制作（tests/replay_make_textures.py で手続き生成）",
+      "license": "CC0 1.0",
+      "bytes": 130967
+    },
+    {
+      "file": "leaves.jpg",
+      "what": "生け垣の葉",
+      "size": [
+        512,
+        512
+      ],
+      "source": "ROVER CODE の制作（tests/replay_make_textures.py で手続き生成）",
+      "license": "CC0 1.0",
+      "bytes": 65386
+    },
+    {
+      "file": "macro.jpg",
+      "what": "地面の大きな明暗のむら（灰色。タイルのくり返しを消す）",
+      "size": [
+        512,
+        512
+      ],
+      "source": "ROVER CODE の制作（tests/replay_make_textures.py で手続き生成）",
+      "license": "CC0 1.0",
+      "bytes": 22588
+    }
+  ]
+}
