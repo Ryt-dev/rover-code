@@ -131,6 +131,11 @@ export async function boot() {
   store.on('owner', () => { toast(t('toast.owner')); document.body.classList.remove('readonly'); });
   store.on('quota', () => toast(t('toast.quota'), { action: { label: t('button.export'), run: () => exportRecord() } }));
   store.on('trimmed', () => toast(t('toast.quota_trimmed')));
+
+  // 売る版: 新しい版の Service Worker に入れ替わったら、読み込み直しを勧める（tools/build.mjs の boot）
+  const onUpdated = () => toast(t('toast.updated'), { ms: 15000, action: { label: t('button.reload'), run: () => location.reload() } });
+  if (globalThis.ROVERCODE_UPDATED) onUpdated();
+  addEventListener('rc-sw-updated', onUpdated);
   store.on('nostorage', () => toast(t('toast.cannot_save')));
   store.on('external', () => refreshHeader());
   store.on('change', () => refreshHeader());

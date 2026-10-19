@@ -50,7 +50,16 @@
 <script>/* 売る版（tools/build.mjs）: ライブラリは vendor/ から。Service Worker でオフラインでも遊べる */
 globalThis.ROVERCODE_CM_BASE = 'vendor/codemirror/';
 globalThis.ROVERCODE_BUILD = {"version":"1.0.0"};
-if ('serviceWorker' in navigator && location.protocol !== 'file:') addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+  // 新しい版の Service Worker が入れ替わったら知らせる（前の版で開いていた時だけ）。main.js が「読み込み直す」を出す。
+  const hadController = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!hadController) return;
+    globalThis.ROVERCODE_UPDATED = true;
+    dispatchEvent(new Event('rc-sw-updated'));
+  });
+  addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
 </script>
 <script type="importmap">{ "imports": { "three": "./vendor/three/three.module.js" } }</script>
 </head>
