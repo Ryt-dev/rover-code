@@ -100,7 +100,7 @@
      "expr": "attempt == 1",
      "label": "1 回目の実行でクリア",
      "need": "all",
-     "tip": "ほかの面を 1 つクリアしてから戻ると、もう一度ねらえるよ",
+     "tip": "実行の前に、for や if の下に入る行を上から指でなぞって確かめよう",
      "no_measure": "1 回目の実行でクリアしたかどうかで決まる（数では測れない）"
     },
     {
@@ -119,12 +119,12 @@
     "text": "コーンの {cm} cm 手前で止まった",
     "world": "first_failed"
    },
-   "starter": "forward(3.03)\ndef right():\n    motor(0.6, 0.6)\nleft()\ndef forward(sec):\n    stop()\nforward(3.03)\n    wait(sec)\n    motor(0.25, -0.25)\n    wait(0.463)\n    stop()\ndef left():\n    motor(-0.25, 0.25)\nright()\n    wait(0.463)\n    stop()\nforward(3.03)\n",
+   "starter": "forward(3.03)\ndef right():\n    motor(0.6, 0.6)\nleft()\ndef forward(sec):\n    stop()\nforward(3.03)\n    wait(sec)\n    motor(0.25, -0.25)\n    wait(0.46)\n    stop()\ndef left():\n    motor(-0.25, 0.25)\nright()\n    wait(0.46)\n    stop()\nforward(3.03)\n",
    "locked": [],
    "blanks": [],
    "parsons": {
     "fixed_lines": 0,
-    "answer": "def forward(sec):\n    motor(0.6, 0.6)\n    wait(sec)\n    stop()\n\ndef right():\n    motor(0.25, -0.25)\n    wait(0.463)\n    stop()\n\ndef left():\n    motor(-0.25, 0.25)\n    wait(0.463)\n    stop()\n\nforward(3.03)\nright()\nforward(3.03)\nleft()\nforward(3.03)\n",
+    "answer": "def forward(sec):\n    motor(0.6, 0.6)\n    wait(sec)\n    stop()\n\ndef right():\n    motor(0.25, -0.25)\n    wait(0.46)\n    stop()\n\ndef left():\n    motor(-0.25, 0.25)\n    wait(0.46)\n    stop()\n\nforward(3.03)\nright()\nforward(3.03)\nleft()\nforward(3.03)\n",
     "distractors": []
    },
    "predict": [],
@@ -132,9 +132,9 @@
    "hints": [
     "def のまとまりを 3 つ作る（forward・right・left）。それぞれの中身は字下げ。",
     "def は呼ぶより上に書く。下の 5 行（forward → right → forward → left → forward）が道順。",
-    "速さ 0.8 なら 2 m は 2 ÷ 0.88 ＝ 2.27 秒。forward の中を motor(0.8, 0.8) に、呼ぶ数を 2.27 に。"
+    "強さ 0.8 なら 2 m は 2 ÷ 0.88 ＝ 2.27 秒。forward の中を motor(0.8, 0.8) に、呼ぶ数を 2.27 に。"
    ],
-   "solution": "# 1. 走る・右・左の命令を作る\ndef forward(sec):\n    motor(0.8, 0.8)\n    wait(sec)\n    stop()\n\ndef right():\n    motor(0.25, -0.25)\n    wait(0.463)\n    stop()\n\ndef left():\n    motor(-0.25, 0.25)\n    wait(0.463)\n    stop()\n\n# 2. 道順どおりに呼ぶ\nforward(2.27)\nright()\nforward(2.27)\nleft()\nforward(2.27)\n",
+   "solution": "# 1. 走る・右・左の命令を作る\ndef forward(sec):\n    motor(0.8, 0.8)\n    wait(sec)\n    stop()\n\ndef right():\n    motor(0.25, -0.25)\n    wait(0.46)\n    stop()\n\ndef left():\n    motor(-0.25, 0.25)\n    wait(0.46)\n    stop()\n\n# 2. 道順どおりに呼ぶ\nforward(2.27)\nright()\nforward(2.27)\nleft()\nforward(2.27)\n",
    "solution_labels": [
     "走る・右・左の命令を作る",
     "道順どおりに呼ぶ"
@@ -184,11 +184,11 @@
     "worlds": [
      {
       "t_stop": 8.2,
-      "x": 2.044,
-      "y": 4.019,
-      "heading": 0.4,
+      "x": 2.03,
+      "y": 4.046,
+      "heading": 0,
       "lines": 17,
-      "gap": 0.073
+      "gap": 0.048
      }
     ],
     "sim": "w1"
@@ -319,7 +319,7 @@
     "text": "コーンの {cm} cm 手前で止まった",
     "world": "first_failed"
    },
-   "starter": "def go(m):\n    motor(0.6, 0.6)\n    wait(m / 0.66)\n    stop()\n\ndef turn(deg):\n    # deg がプラスなら右、マイナスなら左\n    if ___:\n        motor(0.25, -0.25)\n    else:\n        motor(-0.25, 0.25)\n    wait(___ / 194.5)\n    stop()\n\nturn(45)\ngo(1.5)\nturn(-90)\ngo(1.5)\nturn(135)\ngo(2.0)\nturn(-120)\ngo(1.5)\n",
+   "starter": "def go(m):\n    motor(0.6, 0.6)\n    wait(m / 0.66)\n    stop()\n\ndef turn(deg):\n    # deg がプラスなら右、マイナスなら左\n    if ___:\n        motor(0.25, -0.25)\n    else:\n        motor(-0.25, 0.25)\n    wait(___ / 195)\n    stop()\n\nturn(45)\ngo(1.5)\nturn(-90)\ngo(1.5)\nturn(135)\ngo(2.0)\nturn(-120)\ngo(1.5)\n",
    "locked": [
     [
      1,
@@ -354,7 +354,7 @@
     "回る時間はマイナスにできない。角度の大きさは abs(deg)。",
     "return を使うなら: def secs(m): return m / 0.66 を作って、go の中で wait(secs(m))。"
    ],
-   "solution": "# 1. 時間を計算する関数\ndef secs(m):\n    return m / 0.66\n\n# 2. 走る関数\ndef go(m):\n    motor(0.6, 0.6)\n    wait(secs(m))\n    stop()\n\n# 3. 回る関数\ndef turn(deg):\n    if deg > 0:\n        motor(0.25, -0.25)\n    else:\n        motor(-0.25, 0.25)\n    wait(abs(deg) / 194.5)\n    stop()\n\n# 4. 旗をめぐってコーンへ\nturn(45)\ngo(1.5)\nturn(-90)\ngo(1.5)\nturn(135)\ngo(2.0)\nturn(-120)\ngo(1.5)\n",
+   "solution": "# 1. 時間を計算する関数\ndef secs(m):\n    return m / 0.66\n\n# 2. 走る関数\ndef go(m):\n    motor(0.6, 0.6)\n    wait(secs(m))\n    stop()\n\n# 3. 回る関数\ndef turn(deg):\n    if deg > 0:\n        motor(0.25, -0.25)\n    else:\n        motor(-0.25, 0.25)\n    wait(abs(deg) / 195)\n    stop()\n\n# 4. 旗をめぐってコーンへ\nturn(45)\ngo(1.5)\nturn(-90)\ngo(1.5)\nturn(135)\ngo(2.0)\nturn(-120)\ngo(1.5)\n",
    "solution_labels": [
     "時間を計算する関数",
     "走る関数",
@@ -365,11 +365,11 @@
    "mistakes": [
     {
      "name": "abs を忘れた",
-     "code": "def go(m):\n    motor(0.6, 0.6)\n    wait(m / 0.66)\n    stop()\n\ndef turn(deg):\n    if deg > 0:\n        motor(0.25, -0.25)\n    else:\n        motor(-0.25, 0.25)\n    wait(deg / 194.5)\n    stop()\n\nturn(45)\ngo(1.5)\nturn(-90)\ngo(1.5)\n",
+     "code": "def go(m):\n    motor(0.6, 0.6)\n    wait(m / 0.66)\n    stop()\n\ndef turn(deg):\n    if deg > 0:\n        motor(0.25, -0.25)\n    else:\n        motor(-0.25, 0.25)\n    wait(deg / 195)\n    stop()\n\nturn(45)\ngo(1.5)\nturn(-90)\ngo(1.5)\n",
      "say": "deg がマイナスだと、wait の秒数がマイナスになってエラー。abs(deg) で大きさだけにしよう。",
      "expect": "fail",
      "rule": "API_WAIT_NEGATIVE",
-     "fix": "deg がマイナス（左）だと時間もマイナスになる。回る時間は角度の大きさで: wait(abs(deg) / 194.5)",
+     "fix": "deg がマイナス（左）だと時間もマイナスになる。回る時間は角度の大きさで: wait(abs(deg) / 195)",
      "example": {
       "bad": "wait(deg / 194.5)",
       "good": "wait(abs(deg) / 194.5)"
@@ -411,11 +411,11 @@
     "worlds": [
      {
       "t_stop": 12.28,
-      "x": 1.276,
-      "y": 3.491,
-      "heading": 330.4,
+      "x": 1.246,
+      "y": 3.507,
+      "heading": 329.7,
       "lines": 21,
-      "gap": 0.057
+      "gap": 0.025
      }
     ],
     "sim": "w1"
@@ -566,7 +566,7 @@
     "text": "{s} 秒で終わった",
     "world": "first_failed"
    },
-   "starter": "def go(m):\n    motor(0.6, 0.6)\n    wait(m / 0.66)\n    stop()\n\ndef turn(deg):\n    if deg > 0:\n        motor(0.25, -0.25)\n    else:\n        motor(-0.25, 0.25)\n    wait(abs(deg) / 194.5)\n    stop()\n\nROUTE = [\n    (0, 1.5),      # (回る角度, 進む m)\n    (90, 2.0),\n    # ← メモの続きを書こう\n]\nfor a, m in ROUTE:\n    turn(a)\n    go(m)\n",
+   "starter": "def go(m):\n    motor(0.6, 0.6)\n    wait(m / 0.66)\n    stop()\n\ndef turn(deg):\n    if deg > 0:\n        motor(0.25, -0.25)\n    else:\n        motor(-0.25, 0.25)\n    wait(abs(deg) / 195)\n    stop()\n\nROUTE = [\n    (0, 1.5),      # (回る角度, 進む m)\n    (90, 2.0),\n    # ← メモの続きを書こう\n]\nfor a, m in ROUTE:\n    turn(a)\n    go(m)\n",
    "locked": [],
    "blanks": [],
    "parsons": null,
@@ -577,7 +577,7 @@
     "turn(0) は回らないだけ。最後の旗は (-45, 1.414)。",
     "スタートに戻るには、最後の旗（東 4.5 m・北 1.5 m）から西を向いて 4.5 m、南を向いて 1.5 m。(-135, 4.5), (-90, 1.5) を足す。"
    ],
-   "solution": "# 1. 走る・回る道具\ndef go(m):\n    motor(0.6, 0.6)\n    wait(m / 0.66)\n    stop()\n\ndef turn(deg):\n    if deg > 0:\n        motor(0.25, -0.25)\n    else:\n        motor(-0.25, 0.25)\n    wait(abs(deg) / 194.5)\n    stop()\n\n# 2. 道順をリストに書く\nROUTE = [\n    (0, 1.5),\n    (90, 2.0),\n    (90, 1.0),\n    (-90, 1.5),\n    (-45, 1.414),\n    (-135, 4.5),\n    (-90, 1.5),\n]\n# 3. リストの順に走る\nfor a, m in ROUTE:\n    turn(a)\n    go(m)\n",
+   "solution": "# 1. 走る・回る道具\ndef go(m):\n    motor(0.6, 0.6)\n    wait(m / 0.66)\n    stop()\n\ndef turn(deg):\n    if deg > 0:\n        motor(0.25, -0.25)\n    else:\n        motor(-0.25, 0.25)\n    wait(abs(deg) / 195)\n    stop()\n\n# 2. 道順をリストに書く\nROUTE = [\n    (0, 1.5),\n    (90, 2.0),\n    (90, 1.0),\n    (-90, 1.5),\n    (-45, 1.414),\n    (-135, 4.5),\n    (-90, 1.5),\n]\n# 3. リストの順に走る\nfor a, m in ROUTE:\n    turn(a)\n    go(m)\n",
    "solution_labels": [
     "走る・回る道具",
     "道順をリストに書く",
@@ -587,7 +587,7 @@
    "mistakes": [
     {
      "name": "カンマを忘れた",
-     "code": "def go(m):\n    motor(0.6, 0.6)\n    wait(m / 0.66)\n    stop()\n\ndef turn(deg):\n    if deg > 0:\n        motor(0.25, -0.25)\n    else:\n        motor(-0.25, 0.25)\n    wait(abs(deg) / 194.5)\n    stop()\n\nROUTE = [\n    (0, 1.5)\n    (90, 2.0),\n]\nfor a, m in ROUTE:\n    turn(a)\n    go(m)\n",
+     "code": "def go(m):\n    motor(0.6, 0.6)\n    wait(m / 0.66)\n    stop()\n\ndef turn(deg):\n    if deg > 0:\n        motor(0.25, -0.25)\n    else:\n        motor(-0.25, 0.25)\n    wait(abs(deg) / 195)\n    stop()\n\nROUTE = [\n    (0, 1.5)\n    (90, 2.0),\n]\nfor a, m in ROUTE:\n    turn(a)\n    go(m)\n",
      "say": "リストの組と組の間には , が要るよ。( ) の後ろを確かめて。",
      "expect": "fail",
      "rule": "ITEMS_COMMA_MISSING",
@@ -627,9 +627,9 @@
     "worlds": [
      {
       "t_stop": 23.52,
-      "x": 0.01,
-      "y": 0.014,
-      "heading": 180.7,
+      "x": 0.007,
+      "y": 0.027,
+      "heading": 181,
       "lines": 23
      }
     ],
@@ -646,7 +646,7 @@
    "minutes": 12,
    "checkpoint": true,
    "carry_from": null,
-   "story": "部室の荷物を配達しよう。ROUTE に道順のリストが入っている（世界ごとにちがう）。最後の組の長さは、コーンの「中心」まで。そのまま走るとコーンにぶつかるよ。関数とリストで、どの道順でも走れるプログラムを。（チェックポイント面）",
+   "story": "部室の荷物を配達しよう。ROUTE に道順のリストが入っている（世界ごとにちがう）。最後の組の長さは、コーンの「中心」まで。そのまま走るとコーンにぶつかるよ。関数とリストで、どの道順でも走れるプログラムを。",
    "learn": {
     "python": [
      "def・if・abs・for・リストを全部使う",
@@ -655,7 +655,7 @@
     ],
     "robot": [
      "同じプログラムで、ちがう道順を走る",
-     "コーンの中心までの長さから、半径 19 cm・機体 12 cm・すべりの分を引いて手前で止まる"
+     "コーンの中心までの長さから、半径 19 cm・ローバーの半径 12 cm・すべりの分を引いて手前で止まる"
     ]
    },
    "new": [],
@@ -949,7 +949,7 @@
      "expr": "t_stop <= 9.5 and gap('cone') <= 0.15 and not touched('cone')",
      "label": "すべての世界で 9.5 秒以内に 15 cm 以内",
      "need": "all",
-     "tip": "速さを 1.0 にすると 1 秒に 1.1 m。時間の計算と、すべる分も直そう",
+     "tip": "強さを 1.0 にすると 1 秒に 1.1 m。時間の計算と、すべる分も直そう",
      "measure": "t_stop",
      "better": "low",
      "unit": "秒"
@@ -970,9 +970,9 @@
    "hints": [
     "ROUTE の最後の組の長さはコーンの中心まで。全部そのまま走ると、コーンにぶつかる。",
     "for i in range(len(ROUTE)): → a, m = ROUTE[i] と書くと、i で何番目かが分かる。最後は i == len(ROUTE) - 1。",
-    "最後だけ m を 0.4 m ほど短くする（半径 0.19＋機体 0.12＋すべり）。★3 は速さ 1.0（m / 1.1 秒）で、すべりも少し大きくなる。"
+    "最後だけ m を 0.45 m ほど短くする（コーンの半径 0.19＋ローバーの半径 0.12＋すべり）。★3 は強さ 1.0（m / 1.1 秒）で、すべりも少し大きくなる。"
    ],
-   "solution": "# 1. 走る・回る道具\ndef go(m):\n    motor(1.0, 1.0)\n    wait(m / 1.1)\n    stop()\n\ndef turn(deg):\n    if deg > 0:\n        motor(0.25, -0.25)\n    else:\n        motor(-0.25, 0.25)\n    wait(abs(deg) / 194.5)\n    stop()\n\n# 2. ROUTE の順に走る（最後の組だけ手前で止まる）\nfor i in range(len(ROUTE)):\n    a, m = ROUTE[i]\n    if i == len(ROUTE) - 1:\n        m = m - 0.45    # 最後はコーンの中心まで。半径・機体・すべりの分だけ手前\n    turn(a)\n    go(m)\n",
+   "solution": "# 1. 走る・回る道具\ndef go(m):\n    motor(1.0, 1.0)\n    wait(m / 1.1)\n    stop()\n\ndef turn(deg):\n    if deg > 0:\n        motor(0.25, -0.25)\n    else:\n        motor(-0.25, 0.25)\n    wait(abs(deg) / 195)\n    stop()\n\n# 2. ROUTE の順に走る（最後の組だけ手前で止まる）\nfor i in range(len(ROUTE)):\n    a, m = ROUTE[i]\n    if i == len(ROUTE) - 1:\n        m = m - 0.45    # 最後はコーンの中心まで。半径・機体・すべりの分だけ手前\n    turn(a)\n    go(m)\n",
    "solution_labels": [
     "走る・回る道具",
     "ROUTE の順に走る（最後の組だけ手前で止まる）"
@@ -981,7 +981,7 @@
    "mistakes": [
     {
      "name": "右にしか回らない turn",
-     "code": "def go(m):\n    motor(0.6, 0.6)\n    wait(m / 0.66)\n    stop()\n\ndef turn(deg):\n    motor(0.25, -0.25)\n    wait(abs(deg) / 194.5)\n    stop()\n\nfor a, m in ROUTE:\n    turn(a)\n    go(m)\n",
+     "code": "def go(m):\n    motor(0.6, 0.6)\n    wait(m / 0.66)\n    stop()\n\ndef turn(deg):\n    motor(0.25, -0.25)\n    wait(abs(deg) / 195)\n    stop()\n\nfor a, m in ROUTE:\n    turn(a)\n    go(m)\n",
      "say": "マイナスの角度は左だよ。turn の中で if を使って、左右を分けよう。",
      "expect": "fail",
      "rule": null,
@@ -992,7 +992,7 @@
      "say": "最後の組の長さはコーンの中心まで。最後の 1 組だけ、手前で止まるように短くしよう。",
      "expect": "fail",
      "rule": "B_OVERSHOOT",
-     "code": "# 1. 走る・回る道具\ndef go(m):\n    motor(1.0, 1.0)\n    wait(m / 1.1)\n    stop()\n\ndef turn(deg):\n    if deg > 0:\n        motor(0.25, -0.25)\n    else:\n        motor(-0.25, 0.25)\n    wait(abs(deg) / 194.5)\n    stop()\n\n# 2. ROUTE の順に走る（最後の組だけ手前で止まる）\nfor i in range(len(ROUTE)):\n    a, m = ROUTE[i]\n    turn(a)\n    go(m)\n",
+     "code": "# 1. 走る・回る道具\ndef go(m):\n    motor(1.0, 1.0)\n    wait(m / 1.1)\n    stop()\n\ndef turn(deg):\n    if deg > 0:\n        motor(0.25, -0.25)\n    else:\n        motor(-0.25, 0.25)\n    wait(abs(deg) / 195)\n    stop()\n\n# 2. ROUTE の順に走る（最後の組だけ手前で止まる）\nfor i in range(len(ROUTE)):\n    a, m = ROUTE[i]\n    turn(a)\n    go(m)\n",
      "when": "hit"
     }
    ],
@@ -1031,27 +1031,27 @@
     "worlds": [
      {
       "t_stop": 6.42,
-      "x": 2.067,
-      "y": 3.586,
-      "heading": 44.7,
+      "x": 2.085,
+      "y": 3.584,
+      "heading": 45.1,
       "lines": 17,
-      "gap": 0.074
+      "gap": 0.063
      },
      {
       "t_stop": 6.32,
       "x": -0.571,
-      "y": 3.337,
+      "y": 3.35,
       "heading": 359.6,
       "lines": 17,
-      "gap": 0.091
+      "gap": 0.079
      },
      {
       "t_stop": 8.76,
       "x": 1.26,
-      "y": 2.43,
+      "y": 2.428,
       "heading": 0,
       "lines": 17,
-      "gap": 0.057
+      "gap": 0.059
      }
     ],
     "sim": "w1"

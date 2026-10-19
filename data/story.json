@@ -1,5 +1,5 @@
 {
-  "$comment": "持ち主 W4（レベルと内容）。章の間の場面（SPEC 3.10）。after_chapter の章のボスをクリアした後に出す 10 場面・各 2〜3 枚、1 枚 1〜3 行。形 scenes: [{after_chapter, title, art（会場の絵のキー）, slides: [{img, lines: [{who: senpai | rover | you, text}]}]}]。ローバーの名前は文中で {rover}（11.2）。",
+  "$comment": "持ち主 W4（レベルと内容）。章の間の場面（SPEC 3.10）。after_chapter の章のボスをクリアした後に出す 10 場面・各 2〜3 枚、1 枚 1〜3 行。形 scenes: [{after_chapter（または before_level: その面の前に出す。ブラッシュアップで足した 10-3 の前の場面）, title, art（会場の絵のキー）, slides: [{img, lines: [{who: senpai | rover | you, text}]}]}]。ローバーの名前は文中で {rover}（11.2）。",
   "scenes": [
     {
       "after_chapter": 1,
@@ -127,7 +127,7 @@
             },
             {
               "who": "senpai",
-              "text": "もちろん。名前はわかりやすくね。「ぐるぐる 2」みたいなのは困るから。"
+              "text": "もちろん。名前は分かりやすくね。「ぐるぐる 2」みたいなのは困るから。"
             }
           ]
         }
@@ -176,7 +176,7 @@
           "lines": [
             {
               "who": "senpai",
-              "text": "GNSS を付けたよ。宇宙の衛星から、今いる緯度と経度がわかる。"
+              "text": "GNSS を付けたよ。宇宙の衛星から、今いる緯度と経度が分かる。"
             },
             {
               "who": "you",
@@ -273,7 +273,7 @@
           "lines": [
             {
               "who": "senpai",
-              "text": "大会では、パラシュートで毎秒 5 m 以下で降りて、着地してから走り出す。"
+              "text": "大会では、パラシュート（パラ）で毎秒 5 m 以下で降りて、着地してから走り出す。"
             },
             {
               "who": "senpai",
@@ -339,30 +339,88 @@
               "text": "いいね。部のみんなが見てるよ。"
             }
           ]
+        },
+        {
+          "img": null,
+          "art": "takezaki_b",
+          "lines": [
+            {
+              "who": "senpai",
+              "text": "本番の前夜。宿で、最後にもう一度本番テストを回しておこう。"
+            },
+            {
+              "who": "you",
+              "text": "去年は LiDAR のレンズが外れて、コーンの 2 m 前で止まったんですよね。"
+            },
+            {
+              "who": "senpai",
+              "text": "うん。でも今年のプログラムは、壊れても止まらない。明日はそれを見せる日だよ。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "before_level": "10-3",
+      "title": "後日、鳥取へ",
+      "art": "lunar",
+      "slides": [
+        {
+          "img": null,
+          "art": "ship",
+          "lines": [
+            {
+              "who": "senpai",
+              "text": "帰りの船だよ。{rover}は、種子島の 2 つの会場で、自分のプログラムだけでコーンまで行ったね。"
+            },
+            {
+              "who": "rover",
+              "text": "ぼく、ちょっと砂だらけだけど、元気だよ。船はゆれるね。"
+            }
+          ]
+        },
+        {
+          "img": null,
+          "art": "lunar",
+          "lines": [
+            {
+              "who": "senpai",
+              "text": "後日、鳥取砂丘へ。月面に似せたフィールド「ルナテラス」で、TRC 風の自律走行に挑戦だよ。"
+            },
+            {
+              "who": "you",
+              "text": "地面が全部やわらかい砂……。斜面もありますね。"
+            },
+            {
+              "who": "senpai",
+              "text": "AR マーカーをめぐってからゴールへ。新しい命令 marker() は、ずかんで調べてね。"
+            }
+          ]
         }
       ]
     },
     {
       "after_chapter": 10,
-      "title": "帰りの船で",
-      "art": "takezaki_a",
+      "title": "砂丘の帰り道",
+      "art": "lunar",
       "slides": [
         {
           "img": null,
+          "art": "lunar",
           "lines": [
             {
               "who": "senpai",
-              "text": "おつかれさま。{rover}は、自分のプログラムだけでコーンまで行ったね。"
+              "text": "おつかれさま。{rover}は、種子島でも鳥取でも、自分のプログラムだけで走りきったね。"
             },
             {
               "who": "rover",
-              "text": "ぼく、ちょっと砂だらけだけど、元気だよ。"
+              "text": "砂の上は大変だったけど、ぼく、止まらなかったよ。"
             }
-          ],
-          "art": "ship"
+          ]
         },
         {
           "img": null,
+          "art": "lunar",
           "lines": [
             {
               "who": "senpai",
@@ -370,10 +428,9 @@
             },
             {
               "who": "senpai",
-              "text": "書いたコードは、SIL に書き出せば本物の機体の練習にも使えるよ。"
+              "text": "書いたコードは、SIL に書き出せば本物の機体の練習にも使えるよ（marker() はまだ使えないけどね）。"
             }
-          ],
-          "art": "ship"
+          ]
         }
       ]
     }

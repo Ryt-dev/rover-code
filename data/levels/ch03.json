@@ -134,11 +134,11 @@
    "predict": [],
    "predict_card": null,
    "hints": [
-    "1.5 m は 0.6 の速さで 1.5 ÷ 0.66 ＝ 2.27 秒。右へ 90° は motor(0.25, -0.25) で 0.463 秒。",
+    "1.5 m は強さ 0.6 で 1.5 ÷ 0.66 ＝ 2.27 秒。右へ 90° は motor(0.25, -0.25) で 0.46 秒。",
     "for の下の行は全部、頭に空白 4 つ。pass は消してね（中身が空のときだけ使う「何もしない」）。",
-    "for i in range(4): の下に motor(0.6, 0.6) / wait(2.27) / stop() / motor(0.25, -0.25) / wait(0.463) / stop()"
+    "for i in range(4): の下に motor(0.6, 0.6) / wait(2.27) / stop() / motor(0.25, -0.25) / wait(0.46) / stop()"
    ],
-   "solution": "for i in range(4):\n    # 1. 1.5 m 走る\n    motor(0.6, 0.6)\n    wait(2.27)\n    stop()\n    # 2. 右へ 90°\n    motor(0.25, -0.25)\n    wait(0.463)\n    stop()\n",
+   "solution": "for i in range(4):\n    # 1. 1.5 m 走る\n    motor(0.6, 0.6)\n    wait(2.27)\n    stop()\n    # 2. 右へ 90°\n    motor(0.25, -0.25)\n    wait(0.46)\n    stop()\n",
    "solution_labels": [
     "1.5 m 走る",
     "右へ 90°"
@@ -191,10 +191,10 @@
     ],
     "worlds": [
      {
-      "t_stop": 10.9,
-      "x": 0.012,
-      "y": 0.004,
-      "heading": 0.2,
+      "t_stop": 10.88,
+      "x": 0.043,
+      "y": -0.026,
+      "heading": 357.8,
       "lines": 7
      }
     ],
@@ -215,7 +215,8 @@
    "learn": {
     "python": [
      "for i in range(数): の i には、くり返すたびにちがう数が入る",
-     "i を計算に使える: motor(0.2 * i, 0.2 * i)"
+     "i を計算に使える: motor(0.2 * i, 0.2 * i)",
+     "range(1, 5) は 1, 2, 3, 4。始まりの数も書ける（終わりの数 5 は入らない）"
     ],
     "robot": [
      "速さを少しずつ上げる（加速）"
@@ -321,7 +322,7 @@
     {
      "q": "最初の 1 秒、ローバーは？",
      "choices": [
-      "0.2 の速さで進む",
+      "強さ 0.2 で進む",
       "止まったまま",
       "後ろに下がる"
      ],
@@ -334,7 +335,7 @@
    "hints": [
     "i は 0 から始まる。",
     "range(4) だと速さは 0, 0.2, 0.4, 0.6。",
-    "range(1, 5) にすると速さ 0.2, 0.4, 0.6, 0.8 → 0.22＋0.44＋0.66＋0.88 ＝ 2.2 m"
+    "range(1, 5) にすると強さ 0.2, 0.4, 0.6, 0.8 → 0.22＋0.44＋0.66＋0.88 ＝ 2.2 m"
    ],
    "solution": "for i in range(1, 5):\n    print(i)\n    motor(0.2 * i, 0.2 * i)\n    wait(1)\nstop()\n",
    "solution_labels": [],
@@ -509,14 +510,14 @@
      "expr": "attempt == 1",
      "label": "1 回目の実行でクリア",
      "need": "all",
-     "tip": "ほかの面を 1 つクリアしてから戻ると、もう一度ねらえるよ",
+     "tip": "実行の前に、for や if の下に入る行を上から指でなぞって確かめよう",
      "no_measure": "1 回目の実行でクリアしたかどうかで決まる（数では測れない）"
     },
     {
      "expr": "t_stop <= 18.5 and y_end >= 10.8 and bumps == 0",
-     "label": "速さ 0.8 で（時間も直して）18.5 秒以内に抜ける",
+     "label": "強さ 0.8 で（時間も直して）18.5 秒以内に抜ける",
      "need": "all",
-     "tip": "速さを 0.8 にしたら、走る時間も計算し直そう",
+     "tip": "強さを 0.8 にしたら、走る時間も計算し直そう",
      "measure": "t_stop",
      "better": "low",
      "unit": "秒"
@@ -541,7 +542,7 @@
    "hints": [
     "くり返す 1 回分は「右へ回る → 2 m → 左へ回る → 2 m」。",
     "右へ回る: motor(0.25, -0.25) と wait(0.308)。2 m: motor(0.6, 0.6) と wait(3.03)。stop() はくり返しの外（最後）。",
-    "for i in range(3): の下に、右・前・左・前 の順で 8 行。速さ 0.8 なら 2 m は 2 ÷ 0.88 ＝ 2.27 秒、1 m は 1.14 秒。"
+    "for i in range(3): の下に、右・前・左・前 の順で 8 行。★3 は強さ 0.8: 2 m は 2 ÷ 0.88 ＝ 2.27 秒、1 m は 1.14 秒（先輩の答えはこちら）。"
    ],
    "solution": "# 1. 左へ 30° 向いて 1 m\nmotor(-0.25, 0.25)\nwait(0.154)\nmotor(0.8, 0.8)\nwait(1.14)\n# 2. 右・前・左・前を 3 回\nfor i in range(3):\n    motor(0.25, -0.25)\n    wait(0.308)\n    motor(0.8, 0.8)\n    wait(2.27)\n    motor(-0.25, 0.25)\n    wait(0.308)\n    motor(0.8, 0.8)\n    wait(2.27)\nstop()\n",
    "solution_labels": [
@@ -723,7 +724,7 @@
     "text": "スタートまで {cm} cm",
     "world": "first_failed"
    },
-   "starter": "for i in range(4):\n    motor(0.6, 0.6)\n    wait(3.03)\nmotor(0.25, -0.25)\nwait(0.463)\nstop()\n",
+   "starter": "for i in range(4):\n    motor(0.6, 0.6)\n    wait(3.03)\nmotor(0.25, -0.25)\nwait(0.46)\nstop()\n",
    "locked": [],
    "blanks": [],
    "parsons": null,
@@ -734,7 +735,7 @@
     "回る行もくり返しの中に入れたい。",
     "下の 3 行の頭にも空白 4 つを入れる。"
    ],
-   "solution": "for i in range(4):\n    # 1. まっすぐ走る\n    motor(0.6, 0.6)\n    wait(3.03)\n    # 2. 右へ 90°\n    motor(0.25, -0.25)\n    wait(0.463)\n    stop()\n",
+   "solution": "for i in range(4):\n    # 1. まっすぐ走る\n    motor(0.6, 0.6)\n    wait(3.03)\n    # 2. 右へ 90°\n    motor(0.25, -0.25)\n    wait(0.46)\n    stop()\n",
    "solution_labels": [
     "まっすぐ走る",
     "右へ 90°"
@@ -743,7 +744,7 @@
    "mistakes": [
     {
      "name": "stop だけ外",
-     "code": "for i in range(4):\n    motor(0.6, 0.6)\n    wait(3.03)\n    motor(0.25, -0.25)\n    wait(0.463)\nstop()\n",
+     "code": "for i in range(4):\n    motor(0.6, 0.6)\n    wait(3.03)\n    motor(0.25, -0.25)\n    wait(0.46)\nstop()\n",
      "say": "それでも OK！ 回ったあとすぐ次の「走る」に移るから、角が少しふくらむけどね。",
      "expect": "pass",
      "rule": null,
@@ -779,10 +780,10 @@
     ],
     "worlds": [
      {
-      "t_stop": 13.94,
-      "x": 0.011,
-      "y": 0.005,
-      "heading": 0.2,
+      "t_stop": 13.92,
+      "x": 0.053,
+      "y": -0.035,
+      "heading": 357.8,
       "lines": 6
      }
     ],
@@ -799,7 +800,7 @@
    "minutes": 9,
    "checkpoint": true,
    "carry_from": null,
-   "story": "芝生のどこかに部品（ねじ）を落とした！ うずまきに広がって探そう。辺の長さを 0.5 m から 0.4 m ずつのばして、右へ曲がるのを 6 回。最後の角に部品があるはず。（ボス面: クリアするまでヒントは 2 つまで）",
+   "story": "芝生のどこかに部品（ねじ）を落とした！ うずまきに広がって探そう。辺を 6 本走る（長さは 0.5 m から 0.4 m ずつのばし、1 本ごとに右へ 90°）。6 本目を走り終えた所に部品があるはず。",
    "learn": {
     "python": [
      "ループの変数 i は 0, 1, 2… と 1 ずつ増える。これを計算に使える"
@@ -930,7 +931,7 @@
     "1 回目 0.5 m、2 回目 0.9 m…。0.5 に「0.4 の i 倍」を足すと？ 時間は 長さ ÷ 0.66。",
     "for i in range(6): → motor(0.6, 0.6) → wait((0.5 + 0.4 * i) / 0.66) → stop() → 右へ 90° → stop()"
    ],
-   "solution": "for i in range(6):\n    # 1. 辺の長さ（0.5 + 0.4 * i）だけ走る\n    motor(0.6, 0.6)\n    wait((0.5 + 0.4 * i) / 0.66)\n    stop()\n    # 2. 右へ 90°\n    motor(0.25, -0.25)\n    wait(0.463)\n    stop()\n",
+   "solution": "for i in range(6):\n    # 1. 辺の長さ（0.5 + 0.4 * i）だけ走る\n    motor(0.6, 0.6)\n    wait((0.5 + 0.4 * i) / 0.66)\n    stop()\n    # 2. 右へ 90°\n    motor(0.25, -0.25)\n    wait(0.46)\n    stop()\n",
    "solution_labels": [
     "辺の長さ（0.5 + 0.4 * i）だけ走る",
     "右へ 90°"
@@ -939,7 +940,7 @@
    "mistakes": [
     {
      "name": "長さが変わらない",
-     "code": "for i in range(6):\n    motor(0.6, 0.6)\n    wait(0.5 / 0.66)\n    stop()\n    motor(0.25, -0.25)\n    wait(0.463)\n    stop()\n",
+     "code": "for i in range(6):\n    motor(0.6, 0.6)\n    wait(0.5 / 0.66)\n    stop()\n    motor(0.25, -0.25)\n    wait(0.46)\n    stop()\n",
      "say": "同じ長さだと、同じ所をぐるぐる回るだけ。i を使って長さを変えよう。",
      "expect": "fail",
      "rule": null,
@@ -974,10 +975,10 @@
     ],
     "worlds": [
      {
-      "t_stop": 16.38,
-      "x": 1.715,
-      "y": 1.289,
-      "heading": 180.3,
+      "t_stop": 16.36,
+      "x": 1.655,
+      "y": 1.372,
+      "heading": 176.8,
       "lines": 7
      }
     ],

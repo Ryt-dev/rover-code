@@ -19,7 +19,7 @@
     ],
     "robot": [
      "LiDAR は、光を当てて前にある物までの距離（m）を測るセンサ。測るたびに ±2 cm ほどばらつく",
-     "LiDAR は機体の前の面から測る。コーンまでのすき間より 4 cm ほど長く出る",
+     "LiDAR はローバーの前の面から測る。コーンまでのすき間より 4 cm ほど長く出る",
      "本物の機体には distance_to_cone() は無い。この章からは使えない"
     ]
    },
@@ -203,7 +203,7 @@
    "predict_card": null,
    "hints": [
     "2 章と同じ: 時間 ＝ 距離 ÷ 速さ。距離は d。",
-    "ぶつからないよう 10 cm 手前を狙う: (d - 0.1)。0.6 の速さは 1 秒に 0.66 m。",
+    "ぶつからないよう 10 cm 手前を狙う: (d - 0.1)。強さ 0.6 は 1 秒に 0.66 m。",
     "motor(0.6, 0.6) → wait((d - 0.1) / 0.66) → stop()"
    ],
    "solution": "d = lidar()\nprint(\"前の物まで\", d, \"m\")\nmotor(0.6, 0.6)\nwait((d - 0.1) / 0.66)\nstop()\n",
@@ -310,7 +310,7 @@
     "python": [
      "if 条件: の下は、条件が合うときだけ実行",
      "else: の下は、合わないときに実行",
-     "比べる: < > <= >= ==（同じ）!=（ちがう）",
+     "くらべる: < > <= >= ==（同じ）!=（ちがう）",
      "d is None で「何も無い（値が無い）」かを調べる。or は「どちらか」"
     ],
     "robot": [
@@ -547,7 +547,7 @@
      "expr": "attempt == 1",
      "label": "1 回目の実行でクリア",
      "need": "all",
-     "tip": "ほかの面を 1 つクリアしてから戻ると、もう一度ねらえるよ",
+     "tip": "実行の前に、for や if の下に入る行を上から指でなぞって確かめよう",
      "no_measure": "1 回目の実行でクリアしたかどうかで決まる（数では測れない）"
     },
     {
@@ -566,12 +566,12 @@
     "text": "北へ {m} m 進んだ",
     "world": "first_failed"
    },
-   "starter": "d = lidar()\nmotor(0.8, 0.8)\nwait(6.8)\nmotor(-0.25, 0.25)\nif d is None or d > 6:\nwait(0.463)\nelse:\nmotor(0.25, -0.25)\nwait(1.82)\nwait(0.463)\nmotor(0.8, 0.8)\nmotor(0.6, 0.6)\nwait(6.8)\nstop()\n",
+   "starter": "d = lidar()\nmotor(0.8, 0.8)\nwait(6.8)\nmotor(-0.25, 0.25)\nif d is None or d > 6:\nwait(0.46)\nelse:\nmotor(0.25, -0.25)\nwait(1.82)\nwait(0.46)\nmotor(0.8, 0.8)\nmotor(0.6, 0.6)\nwait(6.8)\nstop()\n",
    "locked": [],
    "blanks": [],
    "parsons": {
     "fixed_lines": 0,
-    "answer": "d = lidar()\nif d is None or d > 6:\n    motor(0.8, 0.8)\n    wait(6.8)\nelse:\n    motor(0.25, -0.25)\n    wait(0.463)\n    motor(0.6, 0.6)\n    wait(1.82)\n    motor(-0.25, 0.25)\n    wait(0.463)\n    motor(0.8, 0.8)\n    wait(6.8)\nstop()\n",
+    "answer": "d = lidar()\nif d is None or d > 6:\n    motor(0.8, 0.8)\n    wait(6.8)\nelse:\n    motor(0.25, -0.25)\n    wait(0.46)\n    motor(0.6, 0.6)\n    wait(1.82)\n    motor(-0.25, 0.25)\n    wait(0.46)\n    motor(0.8, 0.8)\n    wait(6.8)\nstop()\n",
     "distractors": []
    },
    "predict": [],
@@ -581,7 +581,7 @@
     "あいている: そのまま北へ。ふさがっている: 右へ 90° → 東へ 1.2 m → 左へ 90° → 北へ。stop() は if の外（最後）。",
     "速くするなら、東へ行く行を motor(0.8, 0.8) と wait(1.36) に、北へ行く wait を 6.0 に。"
    ],
-   "solution": "# 1. 前を測る\nd = lidar()\n# 2. あいていれば北へ\nif d is None or d > 6:\n    motor(0.8, 0.8)\n    wait(6.0)\n# 3. ふさがっていれば右の通路を回る\nelse:\n    motor(0.25, -0.25)\n    wait(0.463)\n    motor(0.8, 0.8)\n    wait(1.36)\n    motor(-0.25, 0.25)\n    wait(0.463)\n    motor(0.8, 0.8)\n    wait(6.0)\nstop()\n",
+   "solution": "# 1. 前を測る\nd = lidar()\n# 2. あいていれば北へ\nif d is None or d > 6:\n    motor(0.8, 0.8)\n    wait(6.0)\n# 3. ふさがっていれば右の通路を回る\nelse:\n    motor(0.25, -0.25)\n    wait(0.46)\n    motor(0.8, 0.8)\n    wait(1.36)\n    motor(-0.25, 0.25)\n    wait(0.46)\n    motor(0.8, 0.8)\n    wait(6.0)\nstop()\n",
    "solution_labels": [
     "前を測る",
     "あいていれば北へ",
@@ -591,12 +591,12 @@
    "mistakes": [
     {
      "name": "None を調べない",
-     "code": "d = lidar()\nif d > 6:\n    motor(0.8, 0.8)\n    wait(6.8)\nelse:\n    motor(0.25, -0.25)\n    wait(0.463)\n    motor(0.6, 0.6)\n    wait(1.82)\n    motor(-0.25, 0.25)\n    wait(0.463)\n    motor(0.8, 0.8)\n    wait(6.8)\nstop()\n",
-     "say": "前に何も無いと lidar() は None。None と 6 は比べられない。d is None or を付けよう。",
+     "code": "d = lidar()\nif d > 6:\n    motor(0.8, 0.8)\n    wait(6.8)\nelse:\n    motor(0.25, -0.25)\n    wait(0.46)\n    motor(0.6, 0.6)\n    wait(1.82)\n    motor(-0.25, 0.25)\n    wait(0.46)\n    motor(0.8, 0.8)\n    wait(6.8)\nstop()\n",
+     "say": "前に何も無いと lidar() は None。None と 6 はくらべられない。d is None or を付けよう。",
      "expect": "fail",
      "rule": "NONE_LIDAR",
      "when": "card('NONE_LIDAR')",
-     "fix": "比べる前に None かどうか確かめよう。この面は「何も無い（None）か 6 m より遠い」ならまっすぐ: if d is None or d > 6:",
+     "fix": "くらべる前に None かどうか確かめよう。この面は「何も無い（None）か 6 m より遠い」ならまっすぐ: if d is None or d > 6:",
      "example": {
       "bad": "d = lidar()\nif d > 6:\n    motor(0.8, 0.8)",
       "good": "d = lidar()\nif d is None or d > 6:\n    motor(0.8, 0.8)"
@@ -635,9 +635,9 @@
     "worlds": [
      {
       "t_stop": 8.76,
-      "x": 1.174,
-      "y": 5.321,
-      "heading": 359.6,
+      "x": 1.21,
+      "y": 5.329,
+      "heading": 0,
       "lines": 14
      },
      {
@@ -649,9 +649,9 @@
      },
      {
       "t_stop": 8.76,
-      "x": 1.174,
-      "y": 5.321,
-      "heading": 359.6,
+      "x": 1.21,
+      "y": 5.329,
+      "heading": 0,
       "lines": 14
      }
     ],
@@ -672,7 +672,8 @@
    "learn": {
     "python": [
      "while 条件: の下は、条件が合っているあいだ何度もくり返す",
-     "くり返すたびに lidar() を読み直す"
+     "くり返すたびに lidar() を読み直す",
+     "while True: はずっとくり返す。中で break を通ると、くり返しからぬける（同じ動きを if lidar() <= 0.25: break でも書ける）"
     ],
     "robot": [
      "測る → 動く → 測る… のくり返し（フィードバック）",
@@ -681,12 +682,16 @@
     ]
    },
    "new": [
-    "while"
+    "while",
+    "while True",
+    "break"
    ],
    "new_split": {
     "command": [],
     "syntax": [
-     "while"
+     "while",
+     "while True",
+     "break"
     ]
    },
    "equipped": [
@@ -833,10 +838,10 @@
    "predict_card": null,
    "hints": [
     "while lidar() > 0.25: と書くと「0.25 m より遠いあいだ」くり返す。中身は wait(0.02) でいい。",
-    "速さ 0.7 なら 9 m を 12 秒ほどで行ける。速いと止まるまでに 9 cm すべるから、0.25 m で止め始めよう。",
+    "強さ 0.7 なら 9 m を 12 秒ほどで行ける。速いと止まるまでに 9 cm すべるから、0.25 m で止め始めよう。",
     "motor(0.7, 0.7) → while lidar() > 0.25: wait(0.02) → stop()"
    ],
-   "solution": "SPEED = 0.7\nmotor(SPEED, SPEED)\nwhile lidar() > 0.25:\n    wait(0.02)\nstop()\n",
+   "solution": "SPEED = 0.7\nmotor(SPEED, SPEED)\nwhile lidar() > 0.25:\n    wait(0.02)\nstop()\n# 同じことを while True: と break で書くと:\n# motor(SPEED, SPEED)\n# while True:\n#     if lidar() <= 0.25:\n#         break\n#     wait(0.02)\n# stop()\n",
    "solution_labels": [],
    "py_equiv": null,
    "mistakes": [
@@ -915,7 +920,8 @@
      }
     ],
     "sim": "w1"
-   }
+   },
+   "new_reason": "while には「条件のあいだ続ける」と「ずっと続けて、break でぬける」の 2 つの書き方がある。同じ動きを 2 通りで書いてくらべるので、まとめて出す。"
   },
   {
    "id": "4-4",
@@ -931,8 +937,8 @@
    "learn": {
     "python": [
      "if・elif・else: 上から順に調べ、最初に合ったところだけ実行",
-     "while True: と break: ずっとくり返し、break でぬける",
-     "is not None と and で「値があって、しかも近い」"
+     "is not None と and で「値があって、しかも近い」。None をくらべる前に、まず None か調べる",
+     "4-3 の while True: と break で、測りながら速さを切りかえる"
     ],
     "robot": [
      "近いほどゆっくり（速さを距離で切りかえる）。これが 6 章の P 制御の芽",
@@ -941,17 +947,13 @@
     ]
    },
    "new": [
-    "elif",
-    "while True",
-    "break"
+    "elif"
    ],
-   "new_reason": "elif・while True・break は「ずっと測って、合ったところでぬける」1 つの形として一緒に使うので、まとめて出す。",
+   "new_reason": null,
    "new_split": {
     "command": [],
     "syntax": [
-     "elif",
-     "while True",
-     "break"
+     "elif"
     ]
    },
    "equipped": [
@@ -1117,7 +1119,7 @@
    "mistakes": [
     {
      "name": "全速のまま",
-     "code": "motor(1.0, 1.0)\nwhile True:\n    d = lidar()\n    if d is not None and d < 0.12:\n        break\nstop()\n",
+     "code": "motor(1.0, 1.0)\nwhile True:\n    d = lidar()\n    if d is not None and d < 0.07:\n        break\nstop()\n",
      "say": "全速のまま止めると、すべってコーンにぶつかるよ。近づいたら速さを落とそう。",
      "expect": "fail",
      "rule": "B_OVERSHOOT",
@@ -1125,8 +1127,8 @@
     },
     {
      "name": "elif の順番が逆",
-     "code": "while True:\n    d = lidar()\n    if d is None or d > 0.12:\n        motor(1.0, 1.0)\n    elif d > 0.4:\n        motor(0.4, 0.4)\n    else:\n        break\nstop()\n",
-     "say": "elif は上から調べて、最初に合った所だけ動く。広い条件（d > 0.12）を先に書くと、下は使われないよ。",
+     "code": "while True:\n    d = lidar()\n    if d is None or d > 0.07:\n        motor(1.0, 1.0)\n    elif d > 0.4:\n        motor(0.4, 0.4)\n    else:\n        break\nstop()\n",
+     "say": "elif は上から調べて、最初に合った所だけ動く。広い条件（d > 0.07）を先に書くと、下は使われないよ。",
      "expect": "fail",
      "rule": "B_OVERSHOOT",
      "when": "has('elif') and (hit or gap < 0.05)"
@@ -1137,8 +1139,8 @@
      "expect": "fail",
      "when": "card('NONE_LIDAR')",
      "code": "motor(0.8, 0.8)\nwhile lidar() > 0.4:\n    wait(0.02)\nstop()\n",
-     "say": "遠すぎると lidar() は None。None と 0.4 は比べられないよ。d is None or を付けよう。",
-     "fix": "比べる前に None かどうか確かめよう。遠い（None）あいだは走り続ける: d = lidar() → if d is None or d > 1.5: で速く走る",
+     "say": "遠すぎると lidar() は None。None と 0.4 はくらべられない。d is None or を付けよう。",
+     "fix": "くらべる前に None かどうか確かめよう。遠い（None）あいだは走り続ける: d = lidar() → if d is None or d > 1.5: で速く走る",
      "example": {
       "bad": "while lidar() > 0.4:\n    wait(0.02)",
       "good": "while True:\n    d = lidar()\n    if d is not None and d < 0.4:\n        break"
@@ -1215,14 +1217,15 @@
    "minutes": 12,
    "checkpoint": true,
    "carry_from": null,
-   "story": "建物の裏の通路は、右に左にカクカク曲がっている。どっちに曲がるかは世界ごとにちがう。壁の手前で止まって、右を見て、あいていれば右・ふさがっていれば左へ。4 本目の通路の奥にコーンがある。（ボス面: クリアするまでヒントは 2 つまで）",
+   "story": "建物の裏の通路は、右に左にカクカク曲がっている。どっちに曲がるかは世界ごとにちがう。壁の手前で止まって、右を見て、あいていれば右・ふさがっていれば左へ。4 本目の通路の奥にコーンがある。",
    "learn": {
     "python": [
      "for・while・if を組み合わせる",
      "for の i で「最後の 1 本だけちがうこと」をする: if i < 3:"
     ],
     "robot": [
-     "LiDAR は前しか見えない。横を見たいときは、その場で回って測る"
+     "LiDAR は前しか見えない。横を見たいときは、その場で回って測る",
+     "本物の機体では、くり返しの中に wait(0.02) などを入れる（何もしないくり返しは、マイコンの力を使いきってしまう）"
     ]
    },
    "new": [],
@@ -1647,7 +1650,7 @@
     "for i in range(4): の中で、i < 3 のときだけ曲がる。右を見て lidar() が 1.0 より近ければ「ふさがっている」。",
     "for i in range(4): → near を if で決める → motor(0.6, 0.6) と while True で near まで → stop() → if i < 3: 右へ 90°・測る・近ければ左へ 180°"
    ],
-   "solution": "# 1. 4 本の通路を順に\nfor i in range(4):\n    if i < 3:\n        near = 0.45\n    else:\n        near = 0.2\n    # 2. 壁かコーンの手前まで走る\n    motor(0.6, 0.6)\n    while True:\n        d = lidar()\n        if d is not None and d < near:\n            break\n    stop()\n    wait(0.3)\n    # 3. 右を見て、ふさがっていれば左へ\n    if i < 3:\n        motor(0.25, -0.25)\n        wait(0.463)\n        stop()\n        wait(0.3)\n        d = lidar()\n        if d is not None and d < 1.0:\n            motor(-0.25, 0.25)\n            wait(0.926)\n            stop()\n            wait(0.3)\n",
+   "solution": "# 1. 4 本の通路を順に\nfor i in range(4):\n    if i < 3:\n        near = 0.45\n    else:\n        near = 0.2\n    # 2. 壁かコーンの手前まで走る\n    motor(0.6, 0.6)\n    while True:\n        d = lidar()\n        if d is not None and d < near:\n            break\n        wait(0.02)\n    stop()\n    wait(0.3)\n    # 3. 右を見て、ふさがっていれば左へ\n    if i < 3:\n        motor(0.25, -0.25)\n        wait(0.46)\n        stop()\n        wait(0.3)\n        d = lidar()\n        if d is not None and d < 1.0:\n            motor(-0.25, 0.25)\n            wait(0.92)\n            stop()\n            wait(0.3)\n",
    "solution_labels": [
     "4 本の通路を順に",
     "壁かコーンの手前まで走る",
@@ -1657,7 +1660,7 @@
    "mistakes": [
     {
      "name": "右にしか曲がらない",
-     "code": "for i in range(4):\n    motor(0.6, 0.6)\n    while True:\n        d = lidar()\n        if d is not None and d < 0.35:\n            break\n    stop()\n    wait(0.3)\n    motor(0.25, -0.25)\n    wait(0.463)\n    stop()\n    wait(0.3)\n",
+     "code": "for i in range(4):\n    motor(0.6, 0.6)\n    while True:\n        d = lidar()\n        if d is not None and d < 0.35:\n            break\n    stop()\n    wait(0.3)\n    motor(0.25, -0.25)\n    wait(0.46)\n    stop()\n    wait(0.3)\n",
      "say": "右がふさがっている角もあるよ。曲がったあとに測って、近ければ反対へ回ろう。",
      "expect": "fail",
      "rule": null,
@@ -1697,28 +1700,28 @@
     ],
     "worlds": [
      {
-      "t_stop": 20.12,
-      "x": 5.092,
-      "y": 4.988,
-      "heading": 89.9,
-      "lines": 23,
-      "gap": 0.098
+      "t_stop": 20.28,
+      "x": 5.144,
+      "y": 5.089,
+      "heading": 89.5,
+      "lines": 24,
+      "gap": 0.057
      },
      {
       "t_stop": 20.34,
-      "x": -0.89,
-      "y": 5.017,
-      "heading": 89.9,
-      "lines": 23,
-      "gap": 0.08
+      "x": -0.87,
+      "y": 5.033,
+      "heading": 89.5,
+      "lines": 24,
+      "gap": 0.061
      },
      {
       "t_stop": 21.1,
-      "x": 4.113,
-      "y": 1.48,
-      "heading": 89.9,
-      "lines": 23,
-      "gap": 0.077
+      "x": 4.12,
+      "y": 1.481,
+      "heading": 89.5,
+      "lines": 24,
+      "gap": 0.071
      }
     ],
     "sim": "w1"

@@ -70,6 +70,18 @@ export function createRoverModel(THREE, opts = {}) {
   const pivot = new THREE.Group();
   pivot.position.y = D.wheelR;
   group.add(pivot);
+  // 上から見た形の影（車輪 2 つと胴の形。影の無い「軽い」や上からのカメラでも地面に置いてあると分かる。ブラッシュアップ 12）
+  {
+    const sh = new THREE.Shape();
+    const hw = D.track / 2 + D.wheelW * 0.7, hl = D.wheelR * 1.25, r = 0.03;
+    sh.moveTo(-hw + r, -hl); sh.lineTo(hw - r, -hl); sh.quadraticCurveTo(hw, -hl, hw, -hl + r); sh.lineTo(hw, hl - r); sh.quadraticCurveTo(hw, hl, hw - r, hl);
+    sh.lineTo(-hw + r, hl); sh.quadraticCurveTo(-hw, hl, -hw, hl - r); sh.lineTo(-hw, -hl + r); sh.quadraticCurveTo(-hw, -hl, -hw + r, -hl);
+    const blob = new THREE.Mesh(own(new THREE.ShapeGeometry(sh, 3)),
+      own(new THREE.MeshBasicMaterial({ color: 0x1d2410, transparent: true, opacity: 0.26, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 })));
+    blob.rotation.x = -Math.PI / 2; blob.position.set(0.012, 0.003, 0.018); blob.renderOrder = 2; blob.name = 'rover-shadow';
+    blob.userData.noOcclude = true; blob.castShadow = false; blob.receiveShadow = false;
+    group.add(blob);
+  }
   const body = new THREE.Group();   // 車軸の中心が原点
   pivot.add(body);
 

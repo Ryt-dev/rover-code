@@ -11,7 +11,7 @@
 import { esc } from '../ui/strings.js';
 import { icon } from '../ui/icons.js';
 
-const CATS = ['command', 'sensor', 'idea', 'error', 'venue'];
+const CATS = ['command', 'syntax', 'sensor', 'idea', 'error', 'venue'];
 
 /**
  * @param {HTMLElement} root @param {object} app @param {string|null} param 開く項目の id（例 "motor"）

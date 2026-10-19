@@ -16,14 +16,14 @@
 .view .canvas-slot { position: absolute; inset: 0; }
 .view canvas.replay-canvas { display: block; width: 100%; height: 100%; touch-action: none; outline: none; }
 .view .placeholder { position: absolute; left: 50%; top: 58%; transform: translate(-50%, -50%);
-  font-size: 13px; color: #3d4f2a; background: #fffdf8cc; border: 1px solid var(--line); border-radius: 10px; padding: 6px 12px; }
+  font-size: var(--fs-13); color: #3d4f2a; background: #fffdf8cc; border: 1px solid var(--line); border-radius: var(--r-2); padding: 6px 12px; }
 
 .hud { position: absolute; left: 14px; top: 12px; display: flex; gap: 8px; flex-wrap: wrap; max-width: calc(100% - 260px); pointer-events: none; }
-.chip { background: #fffdf8e6; border: 1px solid #d9d2c3; border-radius: 18px; padding: 5px 12px; font-size: 13px; color: #23313a; white-space: nowrap; }
+.chip { background: #fffdf8e6; border: 1px solid #d9d2c3; border-radius: var(--r-4); padding: 5px 12px; font-size: var(--fs-13); color: #23313a; white-space: nowrap; }
 .chip b { font-family: var(--font-code); font-weight: 700; font-variant-numeric: tabular-nums; }
 
 .camsw { position: absolute; right: 14px; top: 12px; display: flex; gap: 4px; }
-.camsw button, .worldsw button { background: #fffdf8e6; border: 1px solid #d9d2c3; border-radius: 8px; padding: 4px 10px; font-size: 12px;
+.camsw button, .worldsw button { background: #fffdf8e6; border: 1px solid #d9d2c3; border-radius: var(--r-2); padding: 4px 10px; font-size: var(--fs-12);
   color: #23313a; cursor: pointer; font-family: var(--font-ui); min-height: 30px; }
 .camsw button[aria-pressed="true"], .worldsw button[aria-pressed="true"] { background: #23313a; color: #fffdf8; border-color: #23313a; }
 .camsw button:focus-visible, .worldsw button:focus-visible, .timeline :focus-visible, .graphs button:focus-visible {
@@ -37,52 +37,52 @@
 /* 地面の札（「24 cm」）: クリーム色の紙の札。光らせない。
    3D の上の紙の札・名札・ボタンは、夕方の色でも地がクリーム色のままなので字は濃い色に固定する（直し係 4。--ink は夕方で明るくなる） */
 .ov-label { position: absolute; left: 0; top: 0; pointer-events: none; background: #fffdf8f2; color: #23313a;
-  border: 1px solid #c9bfa9; border-radius: 8px; padding: 2px 8px; font: 700 13px/1.4 var(--font-code); white-space: nowrap;
-  box-shadow: 0 1px 2px rgba(60, 50, 30, .18); }
+  border: 1px solid #c9bfa9; border-radius: var(--r-2); padding: 2px 8px; font: 700 13px/1.4 var(--font-code); white-space: nowrap;
+  box-shadow: var(--shadow-1); }
 .ov-label::after { content: ""; position: absolute; left: 50%; bottom: -5px; width: 8px; height: 8px; margin-left: -4px;
   background: inherit; border-right: 1px solid #c9bfa9; border-bottom: 1px solid #c9bfa9; transform: rotate(45deg); }
 
 /* 右下の凡例（線の形と色で見分ける） */
-.legend { position: absolute; right: 12px; bottom: 12px; background: #fffdf8e6; border: 1px solid #d9d2c3; border-radius: 10px;
-  padding: 5px 9px; font-size: 11.5px; line-height: 1.5; color: #23313a; pointer-events: none; }
+.legend { position: absolute; right: 12px; bottom: 12px; background: #fffdf8e6; border: 1px solid #d9d2c3; border-radius: var(--r-2);
+  padding: 5px 9px; font-size: var(--fs-12); line-height: 1.5; color: #23313a; pointer-events: none; }
 .legend .lg-row { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
 .legend svg { flex: none; }
 
 /* 機体カメラの説明（4:3 の枠の外の帯に） */
-.onboard-cap { position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%); font-size: 12px; color: #e9e4d8;
-  background: #2b2f33cc; border-radius: 6px; padding: 2px 8px; pointer-events: none; white-space: nowrap; }
+.onboard-cap { position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%); font-size: var(--fs-12); color: #e9e4d8;
+  background: #2b2f33cc; border-radius: var(--r-1); padding: 2px 8px; pointer-events: none; white-space: nowrap; }
 
 /* ---- 時間のつまみ（3D の下、56 px） ---- */
 .timeline { height: var(--timeline-h, 56px); display: flex; align-items: center; gap: 8px; padding: 0 14px;
   background: var(--card); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); min-width: 0; }
-.timeline button, .timeline select { border: 1px solid var(--line); background: var(--card); border-radius: 8px; padding: 5px 10px; font-size: 13px;
+.timeline button, .timeline select { border: 1px solid var(--line); background: var(--card); border-radius: var(--r-2); padding: 5px 10px; font-size: var(--fs-13);
   color: var(--ink); font-family: var(--font-ui); cursor: pointer; min-height: 32px; }
-.timeline .tl-play { min-width: 40px; font-size: 14px; }
+.timeline .tl-play { min-width: 40px; font-size: var(--fs-15); }
 .timeline .tl-speed { padding: 4px 6px; }
 .timeline .tl-graph[aria-pressed="true"] { background: var(--ink); color: var(--card); }
 .timeline .track { position: relative; flex: 1; height: 30px; min-width: 60px; }
-.timeline .bands, .timeline canvas.bands { position: absolute; left: 0; right: 0; top: 1px; width: 100%; height: 12px; border-radius: 3px; background: #ece5d6; cursor: pointer; }
+.timeline .bands, .timeline canvas.bands { position: absolute; left: 0; right: 0; top: 1px; width: 100%; height: 12px; border-radius: var(--r-1); background: #ece5d6; cursor: pointer; }
 .timeline input[type="range"] { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; margin: 0; height: 16px; accent-color: var(--grass-btn); cursor: pointer; }
-.timeline .time { font-family: var(--font-code); font-size: 13px; color: var(--sub); min-width: 7.6em; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.timeline .tl-auto { font-size: 11.5px; color: var(--sub); white-space: nowrap; }
-.timeline .curline { display: none; font-family: var(--font-code); font-size: 13px; color: var(--ink); white-space: nowrap; }
+.timeline .time { font-family: var(--font-code); font-size: var(--fs-13); color: var(--sub); min-width: 7.6em; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.timeline .tl-auto { font-size: var(--fs-12); color: var(--sub); white-space: nowrap; }
+.timeline .curline { display: none; font-family: var(--font-code); font-size: var(--fs-13); color: var(--ink); white-space: nowrap; }
 
 /* ---- グラフの窓 ---- */
 .graphs { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-card, 14px); padding: 8px 10px 10px;
-  box-shadow: 0 2px 8px rgba(60, 50, 30, .12); display: flex; flex-direction: column; gap: 6px; max-height: 70vh; overflow: auto; }
-.graphs .gr-head { display: flex; align-items: center; gap: 10px; font-size: 13px; }
-.graphs .gr-note { color: var(--sub); font-size: 12px; flex: 1; }
-.graphs .gr-close { border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 3px 10px; font-size: 12px; cursor: pointer; min-height: 30px; }
-.graphs .gr-cap { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; color: var(--ink); align-items: center; }
+  box-shadow: var(--shadow-1); display: flex; flex-direction: column; gap: 6px; max-height: 70vh; overflow: auto; }
+.graphs .gr-head { display: flex; align-items: center; gap: 10px; font-size: var(--fs-13); }
+.graphs .gr-note { color: var(--sub); font-size: var(--fs-12); flex: 1; }
+.graphs .gr-close { border: 1px solid var(--line); background: #fff; border-radius: var(--r-2); padding: 3px 10px; font-size: var(--fs-12); cursor: pointer; min-height: 30px; }
+.graphs .gr-cap { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: var(--fs-12); color: var(--ink); align-items: center; }
 .graphs .gr-title { font-weight: 700; }
 .graphs .gr-key { display: inline-flex; align-items: center; gap: 4px; color: var(--sub); }
-.graphs .gr-key i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; }
-.graphs canvas { display: block; width: 100%; height: 84px; border-radius: 6px; cursor: pointer; }
+.graphs .gr-key i { display: inline-block; width: 14px; height: 3px; border-radius: var(--r-1); }
+.graphs canvas { display: block; width: 100%; height: 84px; border-radius: var(--r-1); cursor: pointer; }
 
 /* ---- 小さい画面（3.11）: つまみは 44 px で帯なし。行ごとの時は今の行を出す ---- */
 @media (max-width: 599px) {
   .hud { max-width: calc(100% - 24px); top: 8px; left: 8px; gap: 4px; }
-  .chip { font-size: 12px; padding: 3px 8px; }
+  .chip { font-size: var(--fs-12); padding: 3px 8px; }
   .camsw { top: auto; bottom: 10px; right: 10px; }
   .camsw button, .worldsw button { min-height: 44px; min-width: 44px; }
   .worldsw { bottom: 60px; left: 8px; }
@@ -92,9 +92,29 @@
   .timeline .track { height: 44px; }
   .timeline input[type="range"] { top: 0; bottom: 0; height: 44px; }
   .timeline button, .timeline select, .timeline .tl-play { min-height: 44px; min-width: 44px; padding: 4px 8px; }
-  .timeline .time { min-width: 0; font-size: 12px; }
+  .timeline .time { min-width: 0; font-size: var(--fs-12); }
   .timeline .tl-auto, .timeline .tl-graph { display: none; }
   .timeline .curline { display: inline; }
+}
+
+/* ブラッシュアップ 11: 3D の上の札は 1 段の半透明の帯にまとめる（チップは区切り線だけ・カメラの切りかえは帯の右の押しボタン） */
+.view::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 46px; z-index: 3; pointer-events: none;
+  background: linear-gradient(180deg, rgba(251, 248, 240, .80), rgba(251, 248, 240, .64)); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  border-bottom: 1px solid rgba(110, 98, 78, .16); }
+.view .hud { top: 0; left: 14px; min-height: 46px; gap: 4px 0; align-items: center; z-index: 4; }
+.view .hud .chip { background: none; border: 0; border-radius: 0; padding: 0 14px 0 0; margin-right: 14px; font-size: var(--fs-13); color: #5a5446;
+  border-right: 1px solid rgba(110, 98, 78, .22); }
+.view .hud .chip:last-child { border-right: 0; }
+.view .hud .chip b { color: #23313a; margin-left: 4px; }
+.view .camsw { top: 8px; right: 12px; z-index: 4; gap: 0; background: rgba(120, 108, 88, .12); border-radius: var(--r-2); padding: 2px; }
+.view .camsw button { background: transparent; border: 0; border-radius: var(--r-1); min-height: 26px; padding: 3px 12px; color: #4b4a42; }
+.view .camsw button[aria-pressed="true"] { background: #fffdf8; color: #23313a; font-weight: 700; box-shadow: var(--shadow-1); border: 0; }
+@media (max-width: 599px) {
+  .view::before { height: 36px; }
+  .view .hud { min-height: 36px; top: 0; left: 8px; }
+  .view .hud .chip { font-size: var(--fs-12); padding-right: 8px; margin-right: 8px; }
+  .view .camsw { top: auto; bottom: 10px; background: rgba(251, 248, 240, .85); }
+  .view .camsw button { min-height: 44px; min-width: 44px; }
 }
 
 /* 動きを減らす（10.1）: CSS の動きも止める */
@@ -105,5 +125,5 @@
 /* 上から見た時の物の名札（直し B12） */
 .top-tags { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 2; }
 .top-tags[hidden] { display: none; }
-.top-tag { position: absolute; left: 0; top: 0; background: rgba(255, 253, 248, .92); color: #23313a; border: 1px solid #d9d2c3; border-radius: 8px; padding: 1px 6px; font-size: 11.5px; white-space: nowrap; }
+.top-tag { position: absolute; left: 0; top: 0; background: rgba(255, 253, 248, .92); color: #23313a; border: 1px solid #d9d2c3; border-radius: var(--r-2); padding: 1px 6px; font-size: var(--fs-12); white-space: nowrap; }
 .top-tag.tt-cone { border-color: #d9773a; }

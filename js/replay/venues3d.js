@@ -56,7 +56,7 @@ export function surfaceMaterial(THREE, quality, params) {
  * テクスチャの置き場（同じ絵は 1 回だけ読む）。読み込めたら onChange を呼ぶ（もう一度描く）。
  * @param {typeof import('three')} THREE @param {object} renderer @param {{quality?: string, onChange?: () => void}} [opts]
  */
-export function createTextureBank(THREE, renderer, { quality = 'normal', onChange = () => {} } = {}) {
+export function createTextureBank(THREE, renderer, { quality = 'normal', onChange = () => {}, software = false } = {}) {
   const loader = new THREE.TextureLoader();
   const cache = new Map();
   const maxAniso = renderer && renderer.capabilities ? renderer.capabilities.getMaxAnisotropy() : 1;
@@ -92,7 +92,7 @@ export function createTextureBank(THREE, renderer, { quality = 'normal', onChang
     const done = (tex) => {
       material.map = tex;
       material.color.setHex(tint);
-      if (macro) addMacro(material, macroUniform);
+      if (macro) addMacro(material, macroUniform, name === 'grass', quality === 'light');
       material.needsUpdate = true;
       onChange();
     };
@@ -104,7 +104,7 @@ export function createTextureBank(THREE, renderer, { quality = 'normal', onChang
       loader.load(new URL(spec.file, TEX_BASE).href, (tex) => {
         tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
         tex.colorSpace = THREE.SRGBColorSpace;
-        tex.anisotropy = aniso;
+        tex.anisotropy = name === 'grass' && !software ? Math.min(8, maxAniso) : aniso;   // ソフトウェアの描画（GPU なし）では異方性が重いので 1   // 芝は遠くまで見えるので「軽い」でも 8（ブラッシュアップ 1）
         entry.tex = tex;
         for (const cb of entry.cbs) cb(tex);
         entry.cbs = [];
@@ -132,21 +132,41 @@ function mulHex(a, b) {
  * 広い地面でタイルのくり返しが目立たないように、別の大きなむらの絵（macro.jpg）を 100 m と 350 m ほどの大きさで重ねる。
  * 少し黄みがかった所も作る（枯れた芝・乾いた砂のような自然なむら）。
  */
-function addMacro(material, macroUniform) {
+// 芝（ブラッシュアップ 2）: くすんだ黄緑にして、細かい色むら（1 m・30 cm ほど）を重ねる。tile 3 m なので vMapUv × 3 が m
+const GRASS_TONE = `
+  { float gl = dot( sampledDiffuseColor.rgb, vec3( 0.299, 0.587, 0.114 ) );
+    vec3 gc = mix( vec3( gl ), sampledDiffuseColor.rgb, 0.56 ) * vec3( 1.13, 1.06, 0.72 );
+    vec2 gp = vMapUv * 3.0;
+#ifdef RC_GRASS_LIGHT
+    float gn = rcVn( gp * 0.9 );
+#else
+    float gn = rcVn( gp * 0.9 ) * 0.6 + rcVn( gp * 3.1 ) * 0.4;
+    gc = mix( gc, gc * vec3( 1.06, 1.02, 0.86 ), smoothstep( 0.55, 0.85, rcVn( gp * 0.35 ) ) );
+#endif
+    gc *= mix( 0.88, 1.09, gn );
+    float gd = length( vec2( gp.x, -gp.y ) - cameraPosition.xz );
+    gc = mix( gc, vec3( dot( gc, vec3( 0.333 ) ) ) * vec3( 1.05, 1.04, 0.9 ) + gc * 0.3, smoothstep( 6.0, 40.0, gd ) * 0.35 );
+    sampledDiffuseColor.rgb = gc; }`;
+const GRASS_FN = `
+float rcHsh( vec2 p ) { return fract( sin( dot( p, vec2( 127.1, 311.7 ) ) ) * 43758.5453 ); }
+float rcVn( vec2 p ) { vec2 i = floor( p ), f = fract( p ); f = f * f * ( 3.0 - 2.0 * f );
+  return mix( mix( rcHsh( i ), rcHsh( i + vec2( 1.0, 0.0 ) ), f.x ), mix( rcHsh( i + vec2( 0.0, 1.0 ) ), rcHsh( i + vec2( 1.0, 1.0 ) ), f.x ), f.y ); }
+`;
+function addMacro(material, macroUniform, grass = false, light = false) {
   material.onBeforeCompile = (sh) => {
     sh.uniforms.macroMap = macroUniform;
-    sh.fragmentShader = 'uniform sampler2D macroMap;\n' + sh.fragmentShader.replace('#include <map_fragment>', `
+    sh.fragmentShader = 'uniform sampler2D macroMap;\n' + (grass && light ? '#define RC_GRASS_LIGHT\n' : '') + (grass ? GRASS_FN : '') + sh.fragmentShader.replace('#include <map_fragment>', `
 #ifdef USE_MAP
   vec4 sampledDiffuseColor = texture2D( map, vMapUv );
   float mA = texture2D( macroMap, vMapUv * 0.031 ).r;
   float mB = texture2D( macroMap, vMapUv * 0.0087 + vec2( 0.31, 0.57 ) ).r;
   float ml = ( mA - 0.5 ) * 1.0 + ( mB - 0.5 ) * 0.8;
   sampledDiffuseColor.rgb *= clamp( 1.0 + ml, 0.7, 1.3 );
-  sampledDiffuseColor.rgb = mix( sampledDiffuseColor.rgb, sampledDiffuseColor.rgb * vec3( 1.10, 1.03, 0.80 ), clamp( ( mB - 0.52 ) * 2.5, 0.0, 0.6 ) );
+  sampledDiffuseColor.rgb = mix( sampledDiffuseColor.rgb, sampledDiffuseColor.rgb * vec3( 1.10, 1.03, 0.80 ), clamp( ( mB - 0.52 ) * 2.5, 0.0, 0.6 ) );${grass ? GRASS_TONE : ''}
   diffuseColor *= sampledDiffuseColor;
 #endif`);
   };
-  material.customProgramCacheKey = () => 'macro2';
+  material.customProgramCacheKey = () => (grass ? (light ? 'macro2gl' : 'macro2g') : 'macro2');
 }
 
 /** 世界の物とスタートを囲む四角（会場の飾りをこの外に置く）。 */
@@ -417,17 +437,33 @@ function building(ctx, x, y, w, d, h, o = {}) {
   const floors = o.floors || Math.max(1, Math.round(h / 3.4));
   const texW = facadeTexture(THREE, { ...o, floors, cols: Math.max(2, Math.round(w / 3.2)) });
   const texD = facadeTexture(THREE, { ...o, floors, cols: Math.max(2, Math.round(d / 3.2)), door: false });
-  const mW = ctx.std(0xffffff, { map: texW, roughness: 0.92 });
-  const mD = ctx.std(0xffffff, { map: texD, roughness: 0.92 });
-  const roof = ctx.std(o.roof || 0x8f918e, { roughness: 0.95 });
+  // 壁は少し暖かい色に（ブラッシュアップ 3）
+  const mW = ctx.std(0xfbf3e2, { map: texW, roughness: 0.92 });
+  const mD = ctx.std(0xfbf3e2, { map: texD, roughness: 0.92 });
+  const roof = ctx.std(o.roof || 0x7d7266, { roughness: 0.95 });
   const mesh = new THREE.Mesh(ctx.own(new THREE.BoxGeometry(w, h, d)), [mD, mD, roof, roof, mW, mW]);
   mesh.position.set(x, h / 2, -y);
   mesh.rotation.y = o.rot || 0;
   mesh.castShadow = ctx.quality !== 'light';
   mesh.receiveShadow = true;
   ctx.add(mesh);
-  // 屋上のふち
-  ctx.box(w + 0.3, 0.3, d + 0.3, ctx.std(o.edge || 0xa3a39e), x, y, h);
+  // 屋根のふち（少し張り出す）と、その下の影色の帯・足もとの帯（ブラッシュアップ 3。建物の向き rot に合わせて子にする）
+  const part = (bw, bh, bd, color, cy) => {
+    const m = new THREE.Mesh(ctx.own(new THREE.BoxGeometry(bw, bh, bd)), ctx.std(color, { roughness: 0.95 }));
+    m.position.y = cy;
+    m.castShadow = ctx.quality !== 'light';
+    m.receiveShadow = true;
+    mesh.add(m);
+    return m;
+  };
+  if (h > 2) {
+    part(w + 0.9, 0.42, d + 0.9, o.edge || 0x8a7c6a, h / 2 + 0.2);
+    part(w + 1.0, 0.1, d + 1.0, 0xb9ab95, h / 2 + 0.44);
+    part(w + 0.04, 0.55, d + 0.04, 0xa79c8b, h / 2 - 0.27);
+    part(w + 0.06, 0.45, d + 0.06, 0x9c9282, -h / 2 + 0.22);
+  } else {
+    part(w + 0.3, 0.3, d + 0.3, o.edge || 0xa3a39e, h / 2 + 0.15);
+  }
   return mesh;
 }
 
@@ -1019,6 +1055,11 @@ function makeFlag(THREE, o, own, std, shadows, mats) {
   pole.position.y = 0.21; pole.castShadow = shadows; node.add(pole);
   const foot = new THREE.Mesh(own(new THREE.CylinderGeometry(0.035, 0.04, 0.015, 12)), std(0x7d7a73));
   foot.position.y = 0.0075; node.add(foot);
+  // 地面に色付きの輪（上から見ても旗の場所が分かる。ブラッシュアップ 12）
+  const ring = new THREE.Mesh(own(new THREE.RingGeometry(0.15, 0.2, 40)),
+    own(new THREE.MeshLambertMaterial({ color: 0xd9922b, transparent: true, opacity: 0.85, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 })));
+  ring.rotation.x = -Math.PI / 2; ring.position.y = 0.004; ring.renderOrder = 1; ring.userData.noOcclude = true; ring.name = 'flag-ring';
+  node.add(ring);
   // 布（三角）に名前の字。少し波うたせる
   const cv = document.createElement('canvas'); cv.width = 128; cv.height = 96;
   const g = cv.getContext('2d');

@@ -12,7 +12,7 @@ import * as THREE from 'three';
 import { createRoverModel, ROVER_DIM } from './rover_model.js';
 import { buildVenue, buildObjects, createParachute, createTextureBank, courseBounds, venueStyle } from './venues3d.js';
 import { createOverlays, arrowTarget, finalStopTime } from './overlays.js';
-import { createCameraRig, CAMERA_LABELS, CAMERA_MODES, horizontalFov } from './camera_rig.js';
+import { createCameraRig, CAMERA_LABELS, CAMERA_MODES, horizontalFov, horizonPitch } from './camera_rig.js';
 import { normalizeRecord, sampleFrame, Player } from './player.js';
 import { Timeline, defaultSpeedFor } from './timeline.js';
 import { Graphs, defaultGraphKinds } from './graphs.js';
@@ -27,6 +27,49 @@ export const QUALITY = Object.freeze({
   normal: { shadows: true, shadowMap: 1024, pixelRatio: 1.5, antialias: true, env: true },
   fine: { shadows: true, shadowMap: 2048, pixelRatio: 2, antialias: true, env: true },
 });
+
+/**
+ * 空の雲の絵（ブラッシュアップ 3）。横 = 方位 360°、縦 = 地平線（下）から sin(仰角) 0.56 まで。
+ * 白いふわっとした雲を 10 個ほど、下側をうすい影色に。光らせない（加算なし）。
+ */
+function cloudTexture(THREE) {
+  if (typeof document === 'undefined') { const t = new THREE.DataTexture(new Uint8Array([0, 0, 0, 255]), 1, 1); t.needsUpdate = true; return t; }
+  // 透けない絵に「赤 = 雲の濃さ」「緑 = 濃さ × 明るさ」を描く（透明の絵だと、ふちが黒ずむ・sRGB の掛け算がずれるため）
+  const W = 2048, H = 256;
+  const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const g = cv.getContext('2d');
+  g.fillStyle = '#000'; g.fillRect(0, 0, W, H);
+  const pxDeg = W / 360, pyY = H / 0.56;
+  let seed = 11; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  const clouds = [];
+  for (let i = 0; i < 10; i++) clouds.push([i * 36 + rnd() * 20, 9 + rnd() * 8, 0.75 + rnd() * 0.6]);
+  for (const [az, el, sc] of clouds) {
+    const cx = az * pxDeg, cy = H - Math.sin(el * DEG) * pyY;
+    const puffs = [[-9, 0.6, 3.2], [-4, -1.2, 4.2], [2, -1.6, 4.6], [7, -0.6, 3.6], [11, 0.8, 2.4], [-12, 1.4, 2.0], [4, 1.2, 3.4]];
+    for (const [dx, dy, r] of puffs) {
+      for (const wrap of [-W, 0, W]) {
+        const x = cx + dx * sc * pxDeg + wrap, y = cy + dy * sc * DEG * pyY, rx = r * sc * pxDeg, ry = r * sc * DEG * pyY * 0.8;
+        g.save(); g.translate(x, y); g.scale(1, ry / rx);
+        const gr = g.createRadialGradient(0, -rx * 0.2, rx * 0.1, 0, 0, rx);
+        gr.addColorStop(0, 'rgba(255,255,255,0.92)'); gr.addColorStop(0.6, 'rgba(255,255,255,0.7)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+        g.fillStyle = gr; g.beginPath(); g.arc(0, 0, rx, 0, Math.PI * 2); g.fill(); g.restore();
+      }
+    }
+  }
+  // 下側にうすい影（緑だけを減らす）
+  g.globalCompositeOperation = 'multiply';
+  for (const [, el] of clouds) {
+    const cy = H - Math.sin(el * DEG) * pyY;
+    const sh = g.createLinearGradient(0, cy - 4, 0, cy + 26); sh.addColorStop(0, 'rgb(255,255,255)'); sh.addColorStop(1, 'rgb(255,170,255)');
+    g.fillStyle = sh; g.fillRect(0, cy - 4, W, 30);
+  }
+  const t = new THREE.CanvasTexture(cv);
+  t.colorSpace = THREE.NoColorSpace;
+  t.wrapS = THREE.RepeatWrapping;
+  t.generateMipmaps = false;       // 方位 ±180° の継ぎ目に線が出ないように
+  t.minFilter = THREE.LinearFilter;
+  return t;
+}
 
 /** 動きを減らす設定か（OS の prefers-reduced-motion か、設定の「動きを減らす」= html[data-reduced-motion]）。 */
 export function prefersReducedMotion() {
@@ -78,6 +121,14 @@ export function createScene(el, opts = {}) {
   // 画質は WebGL を作ってから決める（自動の時は描画の装置を見る）
   let quality = wanted === 'auto' ? 'normal' : wanted;
   let Q = QUALITY[quality] || QUALITY.normal;
+  // 自動の時は、先に小さな WebGL で描画の装置を見て、遅い端末なら線のなめらかさ（antialias）を最初から切る（ブラッシュアップ: 軽いでも重くしない）
+  if (wanted === 'auto') {
+    try {
+      const probe = document.createElement('canvas').getContext('webgl2') || document.createElement('canvas').getContext('webgl');
+      if (probe && detectSlowDevice({ getContext: () => probe }).length) { quality = 'light'; Q = QUALITY.light; }
+      const lose = probe && probe.getExtension('WEBGL_lose_context'); if (lose) lose.loseContext();
+    } catch { /* 無視 */ }
+  }
   const renderer = new THREE.WebGLRenderer({ antialias: quality !== 'light', powerPreference: 'high-performance', alpha: false, stencil: false });
   let autoReasons = [];
   if (wanted === 'auto') {
@@ -85,7 +136,9 @@ export function createScene(el, opts = {}) {
     if (autoReasons.length) { quality = 'light'; Q = QUALITY.light; }
   }
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.NoToneMapping;
+  // ブラッシュアップ 1: 中間の色を自然に寝かせる ACES（露出 1.05）。空の球は通さない（空の色はそのまま）
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   const canvas = renderer.domElement;
   canvas.setAttribute('role', 'img');
@@ -100,16 +153,19 @@ export function createScene(el, opts = {}) {
   const camera = new THREE.PerspectiveCamera(50, 1.6, 0.03, 1500);
   let dirty = true;
   const invalidate = () => { dirty = true; };
-  const bank = createTextureBank(THREE, renderer, { quality, onChange: invalidate });
+  const bank = createTextureBank(THREE, renderer, { quality, onChange: invalidate, software: detectSlowDevice(renderer).includes('software') });
 
   // ---- 空（上が淡い青・地平線が白っぽい）と霧
-  const skyU = { top: { value: new THREE.Color(0xbcd8ec) }, horizon: { value: new THREE.Color(0xeef2ee) }, ground: { value: new THREE.Color(0xc9c6b4) } };
+  const skyU = { top: { value: new THREE.Color(0xcfe6f5) }, horizon: { value: new THREE.Color(0xf3efe4) }, ground: { value: new THREE.Color(0xc9c6b4) },
+    clouds: { value: cloudTexture(THREE) }, cloudTint: { value: new THREE.Color(0xffffff) } };
   // 空の球はいつもカメラの所に置く（高い所から見ても遠くの面で切れない）
   const sky = new THREE.Mesh(new THREE.SphereGeometry(800, 32, 16), new THREE.ShaderMaterial({
     uniforms: skyU, side: THREE.BackSide, depthWrite: false, depthTest: false, fog: false,
     vertexShader: 'varying vec3 vP; void main(){ vP = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
-    fragmentShader: `uniform vec3 top; uniform vec3 horizon; uniform vec3 ground; varying vec3 vP;
+    // 雲（ブラッシュアップ 3）: 地平線の上 0〜34° の帯に、横一周の絵を 1 回読むだけ（軽い画質でも重くならない）
+    fragmentShader: `uniform vec3 top; uniform vec3 horizon; uniform vec3 ground; uniform sampler2D clouds; uniform vec3 cloudTint; varying vec3 vP;
       void main(){ float y = vP.y; vec3 c = y > 0.0 ? mix(horizon, top, pow(clamp(y * 1.6, 0.0, 1.0), 0.75)) : mix(horizon, ground, clamp(-y * 6.0, 0.0, 1.0));
+      if (y > 0.0 && y < 0.56) { vec4 k = texture2D(clouds, vec2(atan(vP.z, vP.x) * 0.15915 + 0.5, y / 0.56)); float ca = k.r; float cb = k.g / max(k.r, 0.004); c = mix(c, mix(vec3(0.74, 0.77, 0.82), vec3(1.0, 1.0, 0.985), cb) * cloudTint, ca); }
       gl_FragColor = vec4(c, 1.0);
       #include <colorspace_fragment>
       }`,
@@ -342,19 +398,22 @@ export function createScene(el, opts = {}) {
     const style = venueStyle(vkey);
     // 夕方の色の設定（html[data-theme="dusk"]）では、空と光も夕方に（直し C13）
     const dusk = typeof document !== 'undefined' && document.documentElement.dataset.theme === 'dusk';
-    const skyTop = dusk ? 0x7f8db0 : style.sky[0], skyHor = dusk ? 0xefc8a2 : style.sky[1];
+    // ブラッシュアップ 3: 昼の空は #cfe6f5 → #f3efe4 のグラデーション。霧は空の色で、遠くだけ（校舎の色が残るように弱める）
+    const skyTop = dusk ? 0x7f8db0 : 0xcfe6f5, skyHor = dusk ? 0xefc8a2 : 0xf3efe4;
     skyU.top.value.setHex(skyTop);
     skyU.horizon.value.setHex(skyHor);
-    scene.fog.color.setHex(skyHor);
+    skyU.cloudTint.value.setHex(dusk ? 0xf0d2bb : 0xffffff);
+    scene.fog.color.setHex(skyHor).lerp(new THREE.Color(skyTop), 0.25);
     scene.background.setHex(skyHor);
-    scene.fog.near = style.fog[0]; scene.fog.far = style.fog[1];
+    scene.fog.near = Math.max(70, style.fog[0] * 1.6); scene.fog.far = Math.max(340, style.fog[1] * 1.8);
     sunDir = dusk ? new THREE.Vector3(style.sun[0] * 1.6, 0.32, style.sun[2] * 1.6).normalize() : new THREE.Vector3(...style.sun).normalize();
-    hemi.intensity = dusk ? 0.95 : 1.35;
+    // ACES で中間が沈むぶん、光を少しだけ強く（×1.12・×1.08）
+    hemi.intensity = (dusk ? 0.95 : 1.35) * 1.12;
     hemi.color.setHex(dusk ? 0xe8d6c8 : 0xe4eef5);
     sun.color.setHex(dusk ? 0xffc48a : 0xfff1dc);
-    sun.intensity = dusk ? 1.7 : 2.3;
+    sun.intensity = (dusk ? 1.7 : 2.3) * 1.08;
     // 遠くまで続く地面（投下の高い所から見ても、地面の端が見えて宙に浮いた島に見えないように。霧に溶ける。直し C9）
-    const gcol = { grass: 0x6f8e4c, concrete: 0x9a978c, dune: 0xcdb48a }[style.ground] || 0x7d8a5a;
+    const gcol = { grass: 0x8f9a64, concrete: 0x9a978c, dune: 0xcdb48a }[style.ground] || 0x7d8a5a;
     farGround.material.color.setHex(gcol);
     skyU.ground.value.setHex(dusk ? 0x8a7d62 : gcol);
     venueObj = buildVenue(THREE, vkey, { quality, world, bank });
@@ -371,7 +430,7 @@ export function createScene(el, opts = {}) {
     });
     overlays.setWorld(world, levelRef, arrowLevelRef);
     buildTags(world);
-    const b = courseBounds(world, 1.2);
+    const b = courseBounds(world, 0.8);      // 上からの絵はコースに合わせて小さく（ブラッシュアップ 12）
     rig.fitTop(b, aspectNow());
     rig.snap();
     if (record) setRecord(record, ghosts);
@@ -404,11 +463,11 @@ export function createScene(el, opts = {}) {
     // 吊るす所（最初のコマが つり下げ なら）
     if (venueObj && venueObj.carrier && N.col.mode[0] === 1) venueObj.carrier.setTarget(N.col.x[0], N.col.y[0], N.col.z[0]);
     // 上からの絵: 世界と走った所を全部入れる（余白は小さめ。ローバーと旗が小さくなりすぎないように。直し A-19）
-    const b = courseBounds(world || { objects: [] }, 1.2);
+    const b = courseBounds(world || { objects: [] }, 0.8);
     for (let i = 0; i < N.n; i += 5) {
       if (N.col.mode[i] !== 0) continue;
-      b.x0 = Math.min(b.x0, N.col.x[i] - 0.8); b.x1 = Math.max(b.x1, N.col.x[i] + 0.8);
-      b.y0 = Math.min(b.y0, N.col.y[i] - 0.8); b.y1 = Math.max(b.y1, N.col.y[i] + 0.8);
+      b.x0 = Math.min(b.x0, N.col.x[i] - 0.45); b.x1 = Math.max(b.x1, N.col.x[i] + 0.45);
+      b.y0 = Math.min(b.y0, N.col.y[i] - 0.45); b.y1 = Math.max(b.y1, N.col.y[i] + 0.45);
     }
     rig.fitTop(b, aspectNow());
     rig.snap();
@@ -434,6 +493,8 @@ export function createScene(el, opts = {}) {
     rover.setWheels(p.angL, p.angR);
     const nich = nichromeSpans.some(([a, b]) => t >= a && t < b) && t < sepT + 0.25;
     rover.setNichrome(nich);
+    const blob = rover.group.getObjectByName('rover-shadow');
+    if (blob) blob.visible = (p.z || 0) < 0.05;          // 空中では足もとの影を出さない
     rover.group.updateMatrixWorld(true);
     rover.lidarAnchor.getWorldPosition(anchors.lidar);
     rover.cameraAnchor.getWorldPosition(anchors.camera);
@@ -678,9 +739,12 @@ export function createScene(el, opts = {}) {
       // カメラはゆっくり回る（1 周 90 s）。見る所は道のまん中と機体の間
       const a = tt * (2 * Math.PI / 90) + 4.1;
       const cx = Math.sin(dir) * L / 2, cy = Math.cos(dir) * L / 2;
-      camera.position.set(cx + Math.cos(a) * 2.3, 0.7, -(cy + Math.sin(a) * 2.3));
+      // 低い所から、地平線が上から 38% に来るよう少しだけ下を向く（横には傾けない。ブラッシュアップ 3）
+      camera.position.set(cx + Math.cos(a) * 2.6, 0.42, -(cy + Math.sin(a) * 2.6));
       look.lerp(new THREE.Vector3(cx * 0.4 + fake.x * 0.6, 0.12, -(cy * 0.4 + fake.y * 0.6)), tt < 0.05 ? 1 : 0.05);
-      camera.lookAt(look);
+      const lx = look.x - camera.position.x, lz = look.z - camera.position.z, ll = Math.hypot(lx, lz) || 1;
+      const tp = Math.tan(horizonPitch(0.38, camera.fov));
+      camera.lookAt(camera.position.x + lx / ll, camera.position.y - tp, camera.position.z + lz / ll);
     };
     // 追従のカメラの動きは使わない
     rig.update = ((orig) => (dtt, p, an) => (titleMotion ? false : orig(dtt, p, an)))(rig.update);
@@ -699,7 +763,7 @@ export function createScene(el, opts = {}) {
     chute.dispose();
     bank.dispose();
     if (envTex) envTex.dispose();
-    sky.geometry.dispose(); sky.material.dispose();
+    sky.geometry.dispose(); sky.material.dispose(); skyU.clouds.value.dispose();
     renderer.dispose();
     try { renderer.forceContextLoss(); } catch { /* 無視 */ }
     canvas.remove();

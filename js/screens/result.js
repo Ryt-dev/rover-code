@@ -158,6 +158,7 @@ export function showClear(host, app, o) {
     if (raf) cancelAnimationFrame(raf);
     finalState();
     el.classList.add('done');                 // 出そろった（テストと支援技術のため）
+    if (o.onDone) o.onDone();                 // ヘッダーの★・クリアの数も最後の形に（ブラッシュアップ 4）
     resolveDone();
   }
   function skip() { finish(); }
@@ -185,7 +186,7 @@ export function showClear(host, app, o) {
       if (!stars3[i]) continue;
       const when = TIMING.starStart + k * TIMING.starGap;
       const idx = i;
-      at(when, () => { q(`.st.s${idx}`).classList.add('in'); audio.play('star', { index: idx }); });
+      at(when, () => { const st = q(`.st.s${idx}`); st.classList.add('in', 'pop'); audio.play('star', { index: idx }); if (o.onStarLit) o.onStarLit(idx); });
       k++;
     }
     for (let i = 0; i < 3; i++) if (!stars3[i]) at(TIMING.starStart, () => q(`.st.s${i}`).classList.add('in'));

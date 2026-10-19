@@ -128,7 +128,7 @@
     {
      "name": "1 より大きくした",
      "code": "SPEED = 1.5\nTIME = 2.5\nmotor(SPEED, SPEED)\nwait(TIME)\nstop()\n",
-     "say": "motor は −1〜1 まで。1 より大きくしても 1 と同じ速さだよ。",
+     "say": "motor の強さは −1〜1 まで。1 より大きくしても 1 と同じだよ。",
      "expect": "fail",
      "rule": "L_MOTOR_PERCENT",
      "when": "re('SPEED\\s*=\\s*(1\\.0*[1-9]|[2-9])')"
@@ -667,9 +667,9 @@
      "( ) の中の計算から先に行われる"
     ],
     "robot": [
-     "1 秒に回る角度 ＝（左 − 右）× 1.1 ÷ 0.162 × 57.3",
-     "0.162 は左右の車輪の間（m）。57.3 は「ラジアン」という角度の単位を「度」に直す数（180 ÷ 3.14）",
-     "回る時間 ＝ 角度 ÷ 1 秒に回る角度"
+     "1 秒に回る角度 ＝ 195 ×（左 − 右）÷ 0.5（強さ 0.25 と −0.25 なら、差 0.5 で 1 秒に約 195°）",
+     "回る時間 ＝ 角度 ÷ 1 秒に回る角度",
+     "補足: 195 は、車輪の速さ（強さ 1 で 1.1 m/s）と左右の車輪の間 0.162 m から出る数。1.1 × 0.5 ÷ 0.162 ＝ 3.4（ラジアンという角度の単位）で、1 ラジアンは 57.3°"
     ]
    },
    "new": [],
@@ -810,7 +810,7 @@
     "text": "ANGLE とのずれ {deg}°",
     "world": "first_failed"
    },
-   "starter": "# ANGLE に「右に回る角度（度）」が入っている\nprint(\"右に\", ANGLE, \"度\")\nTURN = 0.25                                          # 回るときの強さ\ndeg_per_sec = (TURN - (-TURN)) * 1.1 / 0.162 * 57.3  # 1 秒に回る角度\nprint(\"1 秒に\", deg_per_sec, \"度\")\nmotor(TURN, -TURN)\nwait(1)    # ← ANGLE と deg_per_sec で計算しよう\nstop()\n",
+   "starter": "# ANGLE に「右に回る角度（度）」が入っている\nprint(\"右に\", ANGLE, \"度\")\nTURN = 0.25                                          # 回るときの強さ\ndeg_per_sec = 195 * (TURN - (-TURN)) / 0.5  # 1 秒に回る角度\nprint(\"1 秒に\", deg_per_sec, \"度\")\nmotor(TURN, -TURN)\nwait(1)    # ← ANGLE と deg_per_sec で計算しよう\nstop()\n",
    "locked": [],
    "blanks": [],
    "parsons": null,
@@ -821,7 +821,7 @@
     "wait(ANGLE / deg_per_sec)",
     "コーンまでは 1-3 と同じ: wait((2.7 - 0.15) / 0.66) で 15 cm 手前。"
    ],
-   "solution": "# 1. 回る速さを計算する\nTURN = 0.25\ndeg_per_sec = (TURN - (-TURN)) * 1.1 / 0.162 * 57.3\n# 2. ANGLE だけ回る\nmotor(TURN, -TURN)\nwait(ANGLE / deg_per_sec)\nstop()\nwait(0.3)\n# 3. コーンまで走る\nmotor(0.6, 0.6)\nwait((2.7 - 0.15) / 0.66)\nstop()\n",
+   "solution": "# 1. 回る速さを計算する\nTURN = 0.25\ndeg_per_sec = 195 * (TURN - (-TURN)) / 0.5\n# 2. ANGLE だけ回る\nmotor(TURN, -TURN)\nwait(ANGLE / deg_per_sec)\nstop()\nwait(0.3)\n# 3. コーンまで走る\nmotor(0.6, 0.6)\nwait((2.7 - 0.15) / 0.66)\nstop()\n",
    "solution_labels": [
     "回る速さを計算する",
     "ANGLE だけ回る",
@@ -831,7 +831,7 @@
    "mistakes": [
     {
      "name": "掛け算と割り算が逆",
-     "code": "TURN = 0.25\ndeg_per_sec = (TURN - (-TURN)) * 1.1 / 0.162 * 57.3\nmotor(TURN, -TURN)\nwait(ANGLE * deg_per_sec)\nstop()\n",
+     "code": "TURN = 0.25\ndeg_per_sec = 195 * (TURN - (-TURN)) / 0.5\nmotor(TURN, -TURN)\nwait(ANGLE * deg_per_sec)\nstop()\n",
      "say": "時間 ＝ 角度 ÷ 速さ だよ。掛けると、とんでもなく長く回っちゃう。",
      "expect": "fail",
      "rule": "B_SPIN_FOREVER",
@@ -870,11 +870,11 @@
     "worlds": [
      {
       "t_stop": 4.82,
-      "x": 1.806,
-      "y": 1.799,
-      "heading": 45.1,
+      "x": 1.794,
+      "y": 1.812,
+      "heading": 44.7,
       "lines": 9,
-      "gap": 0.151
+      "gap": 0.15
      },
      {
       "t_stop": 5.2,
@@ -886,9 +886,9 @@
      },
      {
       "t_stop": 5.62,
-      "x": -0.87,
-      "y": -2.397,
-      "heading": 200,
+      "x": -0.853,
+      "y": -2.403,
+      "heading": 199.6,
       "lines": 9,
       "gap": 0.15
      }
@@ -906,7 +906,7 @@
    "minutes": 10,
    "checkpoint": true,
    "carry_from": null,
-   "story": "わたしのメモ: 「北へ D1 m 進んで、右に A 度回って、D2 m 先にコーン（すき間）」。D1・A・D2 は世界ごとにちがう。どの世界でも行けるプログラムを書こう。（ボス面: クリアするまでヒントは 2 つまで）",
+   "story": "わたしのメモ: 「北へ D1 m 進んで、右に A 度回って、D2 m 先にコーン（すき間）」。D1・A・D2 は世界ごとにちがう。どの世界でも行けるプログラムを書こう。",
    "learn": {
     "python": [
      "変数と計算を組み合わせて、どんな数でも動くプログラムにする"
@@ -1115,10 +1115,10 @@
    "predict_card": null,
    "hints": [
     "1 秒に進む距離 v と、1 秒に回る角度 w を先に計算しておこう。速くするなら v も変わるよ。",
-    "時間は D1 / v、A / w、（D2 − 手前に止める分）/ v。速さ 0.9 だとすべりは 8 cm ほど。",
-    "v = 1.1 * 0.9 / w = 0.5 * 1.1 / 0.162 * 57.3 → 走る・止める・回る・止める・走る（D2 - 0.08）・止める"
+    "時間は D1 / v、A / w、（D2 − 手前に止める分）/ v。強さ 0.9 だとすべりは 8 cm ほど。",
+    "v = 1.1 * 0.9 / w = 195 * (0.25 - (-0.25)) / 0.5 → 走る・止める・回る・止める・走る（D2 - 0.08）・止める"
    ],
-   "solution": "# 1. 走る速さと回る速さを計算する\nv = 1.1 * 0.9\nw = 0.5 * 1.1 / 0.162 * 57.3\n# 2. 北へ D1 m\nmotor(0.9, 0.9)\nwait(D1 / v)\nstop()\nwait(0.3)\n# 3. 右へ A 度\nmotor(0.25, -0.25)\nwait(A / w)\nstop()\nwait(0.3)\n# 4. コーンまで D2 m\nmotor(0.9, 0.9)\nwait((D2 - 0.08) / v)\nstop()\n",
+   "solution": "# 1. 走る速さと回る速さを計算する\nv = 1.1 * 0.9\nw = 195 * (0.25 - (-0.25)) / 0.5\n# 2. 北へ D1 m\nmotor(0.9, 0.9)\nwait(D1 / v)\nstop()\nwait(0.3)\n# 3. 右へ A 度\nmotor(0.25, -0.25)\nwait(A / w)\nstop()\nwait(0.3)\n# 4. コーンまで D2 m\nmotor(0.9, 0.9)\nwait((D2 - 0.08) / v)\nstop()\n",
    "solution_labels": [
     "走る速さと回る速さを計算する",
     "北へ D1 m",
@@ -1129,7 +1129,7 @@
    "mistakes": [
     {
      "name": "数を直接書いた",
-     "code": "motor(0.6, 0.6)\nwait(3.03)\nstop()\nwait(0.3)\nmotor(0.25, -0.25)\nwait(0.463)\nstop()\nwait(0.3)\nmotor(0.6, 0.6)\nwait(3.7)\nstop()\n",
+     "code": "motor(0.6, 0.6)\nwait(3.03)\nstop()\nwait(0.3)\nmotor(0.25, -0.25)\nwait(0.46)\nstop()\nwait(0.3)\nmotor(0.6, 0.6)\nwait(3.7)\nstop()\n",
      "say": "1 つ目の世界だけに合わせた数だと、ほかの世界で外れるよ。D1・A・D2 を使って計算しよう。",
      "expect": "fail",
      "rule": null,
@@ -1167,25 +1167,25 @@
     "worlds": [
      {
       "t_stop": 6,
-      "x": 2.423,
+      "x": 2.421,
       "y": 2.007,
       "heading": 89.9,
-      "lines": 13,
-      "gap": 0.077
-     },
-     {
-      "t_stop": 6.28,
-      "x": 1.361,
-      "y": 4.355,
-      "heading": 45.1,
       "lines": 13,
       "gap": 0.079
      },
      {
+      "t_stop": 6.28,
+      "x": 1.36,
+      "y": 4.354,
+      "heading": 45.1,
+      "lines": 13,
+      "gap": 0.081
+     },
+     {
       "t_stop": 6.24,
-      "x": 2.067,
-      "y": -0.562,
-      "heading": 135,
+      "x": 2.081,
+      "y": -0.548,
+      "heading": 134.6,
       "lines": 13,
       "gap": 0.081
      }

@@ -240,7 +240,7 @@
      "when": "rule('B_CAMERA_EDGE') or (has('camera()') and not has('c.angle'))"
     }
    ],
-   "senpai_clear": "「止まって・見て・回る」。シンプルだけど、本番でも一番確実な探し方なんだ。",
+   "senpai_clear": "「止まって・見て・回る」。シンプルだけど、本番でもいちばん確実な探し方なんだ。",
    "explain": {
     "goal": "stop_at_cone",
     "goalRadius": 0.3,
@@ -534,7 +534,7 @@
     {
      "name": "ゆっくり回りながら見る",
      "code": "motor(0.1, -0.1)\nwhile True:\n    c = camera()\n    if c.found:\n        break\nstop()\nmotor(0.6, 0.6)\nwhile True:\n    d = lidar()\n    if d is not None and d < 0.25:\n        break\nstop()\n",
-     "say": "ゆっくりなら見のがさないけど、見えた時にはもう 0.4 秒ぶん回っている。止まってから c.angle で向きを直そう。",
+     "say": "ゆっくりなら見のがさないけど、見えたときはもう 0.4 秒ぶん回っている。止まってから c.angle で向きを直そう。",
      "expect": "any",
      "rule": "B_CAMERA_LATENCY",
      "when": "re('motor\\(0\\.1, -0\\.1\\)') and not has('c.angle')"
@@ -1235,7 +1235,7 @@
    "minutes": 20,
    "checkpoint": true,
    "carry_from": null,
-   "story": "船橋の誘導試験の本番形式。30 m 先のコーンへ。GNSS で近くまで → カメラで探して近づく → LiDAR でタッチ。カメラはときどき見のがし、遠くのオレンジの看板をコーンと見まちがえることもある。地図のゴールの座標がずれている日もあるよ。（チェックポイント面・本番テストあり）",
+   "story": "船橋の誘導試験の本番形式。30 m 先のコーンへ。GNSS で近くまで → カメラで探して近づく → LiDAR でタッチ。カメラはときどき見のがし、遠くのオレンジの看板をコーンと見まちがえることもある。地図のゴールの座標がずれている日もあるよ。本番テストでも確かめよう。",
    "learn": {
     "python": [
      "関数に分けて組み立てる（go_to・find_cone・approach・touch）",
@@ -2013,7 +2013,7 @@
     {
      "name": "GNSS だけ",
      "code": "import math\nLAT0 = 35.726195     # スタート地点の緯度\nLON0 = 140.057112    # スタート地点の経度\n\ndef to_xy(lat, lon):\n    x = (lon - LON0) * 111320 * math.cos(math.radians(LAT0))   # 東へ何 m\n    y = (lat - LAT0) * 110950                                  # 北へ何 m\n    return x, y\n\ndef angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\ndef go_to(gx, gy, stop_dist):\n    while True:\n        g = gnss()\n        if not g.valid:\n            stop()\n            wait(0.1)\n            continue\n        x, y = to_xy(g.lat, g.lon)\n        dx = gx - x\n        dy = gy - y\n        if math.hypot(dx, dy) < stop_dist:\n            break\n        bearing = math.degrees(math.atan2(dx, dy))\n        e = angle_diff(bearing, heading())\n        turn = max(-0.3, min(0.3, 0.01 * e))\n        motor(0.7 + turn, 0.7 - turn)\n    stop()\n\ngx, gy = to_xy(GOAL_LAT, GOAL_LON)\nwhile not gnss().valid:\n    wait(0.1)\ngo_to(gx, gy, 1.0)\n",
-     "say": "GNSS だけだと 1〜3 m ずれる。最後はカメラと LiDAR に交代しよう。",
+     "say": "GNSS だけだと、ふだん 0.3〜2 m、悪い日は 3 m ほどずれる。最後はカメラと LiDAR に交代しよう。",
      "expect": "fail",
      "rule": null,
      "when": "moved > 3 and not has('camera()')"

@@ -19,6 +19,7 @@ import { createFallbackCard } from '../ui/fallback_card.js';
 import { createHints, HINT_WAIT_MS } from '../hints.js';
 import { oneShotStarIndexes } from '../store.js';
 import { showClear, testTable, headline } from './result.js';
+import { createWaitBar } from '../ui/wait_bar.js';
 import { failCard } from './loadfail.js';
 import { setupLayout } from './play_layout.js';
 import { chapterLabel, countLines, fmtMeasure, measureOf, isMeasured, learnCard, predictCard, stepsCard, goalsCard, hudValues, unitOf, fmtCm, measureText } from './play_parts.js';
@@ -41,6 +42,15 @@ export async function mount(root, app, id) {
       <p><button type="button" class="btn primary" data-go="#/map">${icon('map')}<span>${esc(t('button.map'))}</span></button></p></div>`;
     root.querySelector('[data-go]').addEventListener('click', () => app.go('#/map'));
     return { unmount() {} };
+  }
+  // 面の前の場面（story.json の before_level。10-3 の前の「後日、鳥取へ」）: 初めて開く時だけ先に見せる
+  const L0 = store.hasLevel(id) ? store.level(id) : null;
+  if (!store.isReadOnly() && !store.storySeen(`L${id}`) && !(L0 && (L0.cleared || L0.attempts > 0))) {
+    const story = await app.lazy('story');
+    if (((story && story.scenes) || []).some((s) => s.before_level === id)) {
+      setTimeout(() => app.router.replace(`#/story/L${encodeURIComponent(id)}`), 0);
+      return { unmount() {} };
+    }
   }
   const deps = await app.deps;
   const api = await app.lazy('api');
@@ -427,6 +437,9 @@ export async function mount(root, app, id) {
   let graphs = null;
   let graphRec = null;
   const offs = [];
+  let waitPct = null;
+  const waitBar = createWaitBar(q('.run-sub').parentElement, {});
+  q('.run-sub').after(waitBar.el);
 
   offs.push(app.bridge.onState((s) => {
     runnerState = s;
@@ -455,6 +468,13 @@ export async function mount(root, app, id) {
     txt.innerHTML = `${phase === 'idle' && !needPredict && runnerState.state === 'ready' ? '▶&#xFE0E; ' : ''}${esc(label)}`;
     btn.disabled = disabled;
     btn.classList.toggle('waiting', phase === 'queued' || runnerState.state === 'loading');
+    // 待ち時間の細いバー（0.5 秒をこえた時だけ出る。ブラッシュアップ 15）
+    if (waitBar) {
+      if (phase === 'computing') waitBar.start(t(testMode ? 'wait.test' : 'wait.compute'), testMode ? waitPct : null);
+      else if (phase === 'queued' && (runnerState.state === 'loading' || runnerState.state === 'respawn')) waitBar.start(t('wait.python', { pct: runnerState.pct || 0 }), runnerState.pct || 0);
+      else waitBar.stop();
+      if (phase === 'queued' && runnerState.state === 'loading') waitBar.set(runnerState.pct || 0, t('wait.python', { pct: runnerState.pct || 0 }));
+    }
     btn.setAttribute('aria-label', phase === 'queued' ? t('runner.queued') : label);
     const stop = q('[data-a="stop"]');
     stop.disabled = !(phase === 'computing' || phase === 'replaying');
@@ -637,6 +657,8 @@ export async function mount(root, app, id) {
   function onProgress(p) {
     if (!testMode || !p) return;
     const pct = p.of ? Math.round(p.run / p.of * 100) : 0;
+    waitPct = pct;
+    if (waitBar) waitBar.set(pct);
     q('.run-sub').textContent = `${t('runner.progress_test', { run: p.run, of: p.of })}（${pct}%）`;
   }
 
@@ -683,6 +705,8 @@ export async function mount(root, app, id) {
     const attemptNo = L.attemptsSinceReset + 1;
     const lines = countLines(code, level.lang);
     let outcome = null;
+    const starsBefore = L.stars.slice();
+    const clearsBefore = progress.totals().clears;
     let normalClear = !!(rr.judge && rr.judge.clear && rr.judge.clear.ok);
     if (testMode && rr.worldRuns) normalClear = !rr.testSkipped;
     if (computed && !store.isReadOnly()) {
@@ -694,7 +718,10 @@ export async function mount(root, app, id) {
     if (computed) predictFresh = false;
     hints.onRun();
     renderHints();
-    app.header.set({ chapter: chapterLabel(ch), levelId: id, levelTitle: level.title, stars: L.stars });
+    // クリアの時は、札の★が点くまでヘッダーの★と「クリア n/53」を前のままにする（ブラッシュアップ 4）
+    if (outcome && outcome.clear && !reducedUi()) app.headerHold = { clears: clearsBefore, stars: starsBefore };
+    else app.headerHold = null;
+    app.header.set({ chapter: chapterLabel(ch), levelId: id, levelTitle: level.title, stars: app.headerHold ? starsBefore : L.stars });
     app.refreshHeader();
     if (predictQs && pcard) {
       pcard.reveal();
@@ -836,12 +863,23 @@ export async function mount(root, app, id) {
     const F = readFrames(rec);
     const w = worldDef || firstWorld;
     let lastDrive = -1;
+    // ぶつかった・止まった時の音（ブラッシュアップ 13）
+    const bumps = (rec.events || []).filter((e) => e && (e.k === 'cone_touch' || (e.k === 'contact' && e.what === 'cone'))).map((e) => e.t);
+    let soundT = -1, wasMoving = false;
+    audio.ambience(true);                                   // 芝の上の風と遠くの鳥（走る音のつまみで、とても小さく）
     player.on('time', (tt) => {
       try { scene.setTime(tt); } catch { /* なし */ }
       const pose = F.n ? poseAt(F, tt) : null;
       renderHud(pose, w, rec);
       showPrintsUpTo(rec, tt);
       if (pose && player && player.playing && Math.abs((pose.v || 0) - lastDrive) > 0.03) { lastDrive = pose.v || 0; audio.drive(lastDrive); }
+      if (player && player.playing && soundT >= 0 && tt > soundT) {
+        if (bumps.some((bt) => bt > soundT && bt <= tt)) audio.play('bump');
+        const moving = !!pose && Math.abs(pose.v || 0) > 0.04;
+        if (wasMoving && pose && Math.abs(pose.v || 0) < 0.005) { audio.play('stop'); wasMoving = false; }
+        else if (moving) wasMoving = true;
+      }
+      soundT = tt;
     });
     player.on('line', (n) => {
       if (codeChangedSinceRun) return;                      // コードが変わったら行の印は出さない（2.4〔1.1〕）
@@ -1138,7 +1176,26 @@ export async function mount(root, app, id) {
     q('.log').appendChild(d);
     return d;
   }
+  /** 止めていたヘッダーの★と「クリア n/53」を今の記録に合わせる。 */
+  function releaseHeader() {
+    if (!app.headerHold) return;
+    app.headerHold = null;
+    app.header.set({ chapter: chapterLabel(ch), levelId: id, levelTitle: level.title, stars: L.stars });
+    app.refreshHeader();
+  }
+  /** クリアの札の★ i が点いた時: ヘッダーの★ i も同時に点け、最初の★で「クリア n/53」も進める。 */
+  function litHeaderStar(i) {
+    const h = app.headerHold;
+    if (!h) return;
+    h.stars[i] = !!L.stars[i] || h.stars[i];
+    h.clears = NaN;
+    app.header.set({ chapter: chapterLabel(ch), levelId: id, levelTitle: level.title, stars: h.stars });
+    app.refreshHeader();
+    if (h.stars.every((v, k) => v === !!L.stars[k])) releaseHeader();
+  }
+  function reducedUi() { return document.documentElement.classList.contains('reduce-motion'); }
   function clearResult() {
+    releaseHeader();
     if (errHint) { errHint = null; renderHints(); }
     const sr = q('.senpai-run');
     if (sr && !sr.parentElement.classList.contains('view')) q('.result-slot').before(sr);
@@ -1204,6 +1261,8 @@ export async function mount(root, app, id) {
       level, outcome, got, predict: predictRes, show: rr.judge && rr.judge.show, compare: { you, senpai: sen }, nextTip, chapterClear,
       exportNudge: !!chapterClear && store.exportNudgeDue(), sheet, senpaiClear, compact: matchesLow(),
       onCelebrate: (k) => { try { scene.celebrate(k); } catch { /* なし */ } },
+      onStarLit: (i) => litHeaderStar(i),
+      onDone: () => releaseHeader(),
       onNext: () => goNext(chapterClear),
       onAgain: () => { clearResult(); try { editor.focus(); } catch { /* なし */ } setTab('code', true); },
       onMap: () => app.go('#/map'),
@@ -1451,6 +1510,8 @@ export async function mount(root, app, id) {
   return {
     unmount() {
       runSeq++;
+      audio.ambience(false);
+      app.headerHold = null;                     // 札を見ずに画面を出たら、ヘッダーは今の記録のまま（次の画面で）
       if (phase === 'queued') app.bridge.cancelQueued();
       for (const off of offs) off();
       clearTimeout(hintTimer);

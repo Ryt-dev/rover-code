@@ -9,15 +9,16 @@
 
 import { esc } from '../ui/strings.js';
 import { faceSVG, roverSVG, richText } from '../ui/senpai.js';
+import { driftLayer } from './story.js';
 
 const NAME_KEY = 'rovercode.certName';
 
-// 見出し: 1 枚目「エンディング」、2・3 枚目にも場面の名前（空白だった。直し係 4）
+// 見出し: どの場面にも専用の名前（1 枚目が「エンディング」だけだった。ブラッシュアップ 7）。1 枚目には★と記録のまとめ
 const SCENES = [
-  { art: 'takezaki_a', title: 'エンディング', lines: [
+  { art: 'takezaki_a', title: '竹崎の風の中で', lines: [
     { who: 'senpai', text: '種コン、おつかれさま。ローバー、ちゃんとコーンの前で止まったね。' },
     { who: 'rover', text: 'ぼく、最後まで自分で考えて走れたよ。' },
-  ] },
+  ], summary: true },
   { art: 'lunar', title: 'ルナテラスの砂の上で', lines: [
     { who: 'senpai', text: 'ルナテラスの砂の上でも走れた。プログラムは、どの会場へも持っていけるんだ。' },
     { who: 'rover', text: '砂はすべるけど、もうこわくないよ。' },
@@ -52,12 +53,28 @@ export async function mount(root, app) {
   root.innerHTML = '<div class="ending"></div>';
   const host = root.querySelector('.ending');
 
+  function summary() {
+    const tot = progress.totals();
+    const all = progress.levelOrder().length || progress.TOTAL_LEVELS;
+    const ttl = progress.title();
+    const d = app.store.get();
+    let runs = 0;
+    for (const L of Object.values((d && d.levels) || {})) runs += Number(L && L.attempts) || 0;
+    return `<dl class="end-sum" aria-label="ここまでの記録">
+      <div><dt>クリア</dt><dd>${esc(String(tot.clears))} / ${esc(String(all))} 面</dd></div>
+      <div><dt>★</dt><dd class="end-sum-star">${esc(String(tot.stars))} / ${esc(String(all * 3))}</dd></div>
+      <div><dt>走らせた回数</dt><dd>${esc(String(runs))} 回</dd></div>
+      <div><dt>肩書</dt><dd>${esc(ttl.name)}</dd></div></dl>`;
+  }
+
   function scene(i) {
     const sc = SCENES[i];
     host.innerHTML = `<div class="story-page">
-      <div class="story-art" aria-hidden="true"><img src="assets/img/scenes/${esc(sc.art)}.svg" alt="" onerror="this.style.display='none'"></div>
+      <div class="story-art" aria-hidden="true" data-art="${esc(sc.art)}"><img src="assets/img/scenes/${esc(sc.art)}.svg" alt="" onerror="this.style.display='none'">${driftLayer()}</div>
       <div class="story-box">
-        <h1 class="story-title">${esc(sc.title || 'エンディング')}</h1>
+        <p class="end-kicker">エンディング ${i + 1} / ${SCENES.length}</p>
+        <h1 class="story-title">${esc(sc.title)}</h1>
+        ${sc.summary ? summary() : ''}
         <div class="story-lines" aria-live="polite">${sc.lines.map((ln) => `<div class="sl ${esc(ln.who)}"><span class="sl-face">${ln.who === 'rover' ? roverSVG() : faceSVG('smile')}</span><div class="sl-text"><b>${ln.who === 'rover' ? 'ローバー' : 'ミナミ先輩'}</b><p>${richText(ln.text)}</p></div></div>`).join('')}</div>
         <div class="story-nav"><span class="story-count">${i + 1} / ${SCENES.length} 枚目</span>
           <button type="button" class="btn ghost" data-a="skip">とばす</button>

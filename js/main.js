@@ -22,6 +22,7 @@ import { toast } from './ui/toast.js';
 import { openDialog, closeDialog, isOpen as dialogOpen } from './ui/dialog.js';
 import { createBridge } from './ui/run_bridge.js';
 import { loadDeps } from './ui/deps.js';
+import { createWaitBar } from './ui/wait_bar.js';
 
 // ② ページを開いたらすぐ Python の準備を始める（ほかの何より先）
 const runnerReady = import('./runner.js').then((m) => m, (e) => { console.warn('runner.js を読めなかった', e); return null; });
@@ -137,8 +138,19 @@ export async function boot() {
   // 画面の切りかえ
   let current = null;   // { name, unmount }
   let seq = 0;
+  const screenWait = createWaitBar(document.body, { className: 'screen-wait' });   // 画面の切りかえが 0.5 秒をこえた時だけ（ブラッシュアップ 15）
+  // ボタンを押した時の小さな木の音（−18 dB。ブラッシュアップ 13）
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest && e.target.closest('button, .btn, [role="tab"], .opt');
+    if (b && !b.disabled && !b.closest('[data-a="run"]')) audio.play('tap');
+  }, true);
   const show = async (name, param) => {
     const my = ++seq;
+    audio.play('tap');                                      // 画面の切りかえも同じ木の音
+    screenWait.start(t('wait.screen'));
+    try { await showInner(name, param, my); } finally { if (my === seq) screenWait.stop(); }
+  };
+  const showInner = async (name, param, my) => {
     if (dialogOpen()) closeDialog(null);
     let mod;
     try { mod = await SCREENS[name](); } catch (e) { console.error(e); mod = await SCREENS.title(); name = 'title'; }
@@ -178,7 +190,9 @@ export async function boot() {
   function refreshHeader() {
     if (!app.header) return;
     const tt = progress.totals();
-    app.header.setTotals({ clears: tt.clears, total: progress.levelOrder().length || progress.TOTAL_LEVELS });
+    // クリアの札の★が点くまでは、前の「クリア n/53」のまま（走り終わる前のネタばれをなくす。ブラッシュアップ 4）
+    const clears = app.headerHold && Number.isFinite(app.headerHold.clears) ? app.headerHold.clears : tt.clears;
+    app.header.setTotals({ clears, total: progress.levelOrder().length || progress.TOTAL_LEVELS });
   }
 }
 

@@ -102,7 +102,7 @@ export async function mount(root, app, param) {
         </fieldset>
         <label class="fld"><span class="hd-label"></span><input type="range" class="heading" min="0" max="359" step="1" value="0"></label>
         <fieldset><legend>${esc(t('free.strict'))}</legend>
-          ${['ideal', 'real', 'final'].map((k) => `<label class="opt"><input type="radio" name="strict" value="${k}"${k === st.strict ? ' checked' : ''}> <span>${esc(t(`free.strict_${k}`))}</span></label>`).join('')}
+          <div class="seg" role="radiogroup" aria-label="${esc(t('free.strict'))}">${['ideal', 'real', 'final'].map((k) => `<label class="opt"><input type="radio" name="strict" value="${k}"${k === st.strict ? ' checked' : ''}> <span>${esc(t(`free.strict_${k}`))}</span></label>`).join('')}</div>
         </fieldset>
         <fieldset><legend>${esc(t('free.drop'))}</legend>
           <label class="opt"><input type="checkbox" class="drop"> <span>${esc(t('free.drop_on'))}</span></label>

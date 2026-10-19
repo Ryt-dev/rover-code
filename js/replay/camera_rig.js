@@ -14,6 +14,11 @@ export const CAMERA_MODES = Object.freeze(['follow', 'top', 'onboard']);
 export const CAMERA_LABELS = Object.freeze({ follow: '追従', top: '上から', onboard: '機体カメラ' });
 
 const DEG = Math.PI / 180;
+/** 追従の縦の画角（度）。ローバーが画面の中心から下に見える角（ブラッシュアップ 3: 地平線 39%・ローバー 60%）。 */
+const FOLLOW_FOV = 50;
+const ROVER_BELOW = Math.atan((0.60 - 0.5) * 2 * Math.tan(FOLLOW_FOV / 2 * DEG));
+/** 地平線を上から hf の高さに置く時の、下向きの角（ラジアン）。タイトルのカメラも使う。 */
+export const horizonPitch = (hf = 0.37, fovDeg = FOLLOW_FOV) => Math.atan((0.5 - hf) * 2 * Math.tan(fovDeg / 2 * DEG));
 /** 機体カメラの縦横比（水平 62.2°・垂直 48.8°）。 */
 export const ONBOARD_ASPECT = Math.tan(ROVER_DIM.camHFov / 2 * DEG) / Math.tan(ROVER_DIM.camVFov / 2 * DEG);
 
@@ -31,7 +36,8 @@ export function createCameraRig(THREE, camera, dom, opts = {}) {
   const reduced = () => (typeof opts.reducedMotion === 'function' ? opts.reducedMotion() : !!opts.reducedMotion);
   const onChange = opts.onChange || (() => {});
   // 追従: 後ろ斜め上。ドラッグで回りこみ、ホイールで近づく
-  const follow = { dist: 1.15, height: 0.55, az: 0, pitchAdd: 0, pos: new THREE.Vector3(), look: new THREE.Vector3(), yaw: 0, init: false };
+  // ブラッシュアップ 3: 低く・少し離れて、ほぼ水平に見る（地平線が上から 39% あたり。ローバーは上から 60% あたり）
+  const follow = { dist: 1.6, height: 0.40, az: 0, pitchAdd: 0, pos: new THREE.Vector3(), look: new THREE.Vector3(), yaw: 0, init: false };
   // 上から: 中心と高さ
   const top = { cx: 0, cy: 0, height: 12, fitted: false };
   let last = null;          // 前の姿
@@ -57,7 +63,7 @@ export function createCameraRig(THREE, camera, dom, opts = {}) {
       camera.near = 0.5; camera.far = 2000;
       camera.up.set(0, 0, -1);    // 北が上
     } else {
-      camera.fov = 50;
+      camera.fov = FOLLOW_FOV;
       camera.near = 0.03; camera.far = 1500;
       camera.up.set(0, 1, 0);
     }
@@ -75,12 +81,12 @@ export function createCameraRig(THREE, camera, dom, opts = {}) {
   /** 上からの絵を四角（sim の座標 x0..x1, y0..y1）に合わせる。 */
   function fitTop(b, aspect = camera.aspect || 1.6) {
     if (!b) return;
-    const w = Math.max(2, b.x1 - b.x0), h = Math.max(2, b.y1 - b.y0);
+    const w = Math.max(1.6, b.x1 - b.x0), h = Math.max(1.6, b.y1 - b.y0);
     top.cx = (b.x0 + b.x1) / 2; top.cy = (b.y0 + b.y1) / 2;
     const vf = 35 * DEG;
     const needH = h / 2 / Math.tan(vf / 2);
     const needW = w / 2 / (Math.tan(vf / 2) * aspect);
-    top.height = Math.min(600, Math.max(3, Math.max(needH, needW) * 1.1));
+    top.height = Math.min(600, Math.max(2.5, Math.max(needH, needW) * 1.15));   // 上の札の帯（46 px）のぶん少し余白
     top.fitted = true;
     snapNext = true;
     onChange();
@@ -136,8 +142,14 @@ export function createCameraRig(THREE, camera, dom, opts = {}) {
     const fx = Math.sin(yaw), fy = Math.cos(yaw);
     const px = pose.x - fx * dist, py = pose.y - fy * dist;
     tmp.set(px, (pose.z || 0) + height, -py);
-    const ahead = air ? 0 : 0.35;
-    tmp2.set(pose.x + Math.sin(h) * ahead, (pose.z || 0) + (air ? 0.75 : 0.06), -(pose.y + Math.cos(h) * ahead));
+    if (air) tmp2.set(pose.x, (pose.z || 0) + 0.75, -pose.y);
+    else {
+      // 見る向き: カメラの向き（yaw）のまま、ローバーが画面の決まった高さ（上から 60%）に来るだけ下を向く。横には傾けない
+      const al = Math.atan2(height - 0.08, dist);
+      const th = Math.max(0, al - ROVER_BELOW);
+      const far = dist + 3;
+      tmp2.set(px + fx * far, (pose.z || 0) + height - far * Math.tan(th), -(py + fy * far));
+    }
     if (snapNext) { follow.pos.copy(tmp); follow.look.copy(tmp2); }
     else {
       const kk = reduced() ? 1 : k;
@@ -196,7 +208,7 @@ export function createCameraRig(THREE, camera, dom, opts = {}) {
     for (const [side, dy] of SAMPLES) {
       lowPt.set(target.x + sx * side, target.y + dy, target.z + sz * side);
       const hit = opts.clip(lowPt, c);
-      if (Number.isFinite(hit) && hit < lowPt.distanceTo(c) - 0.02) return true;
+      if (Number.isFinite(hit) && hit < lowPt.distanceTo(c) - 0.003) return true;   // カメラのすぐ前の旗の布も見る（ブラッシュアップでカメラが低くなった）
     }
     return false;
   }
@@ -263,7 +275,7 @@ export function createCameraRig(THREE, camera, dom, opts = {}) {
     e.preventDefault();
     zoom(Math.exp(Math.sign(e.deltaY) * Math.min(Math.abs(e.deltaY), 120) * 0.0018));
   }
-  function onDbl() { follow.az = 0; follow.pitchAdd = 0; follow.dist = 1.15; onChange(); }
+  function onDbl() { follow.az = 0; follow.pitchAdd = 0; follow.dist = 1.6; onChange(); }
   if (dom) {
     dom.addEventListener('pointerdown', onDown);
     dom.addEventListener('pointermove', onMove);

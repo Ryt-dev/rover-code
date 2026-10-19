@@ -9,6 +9,7 @@
 import { esc } from '../ui/strings.js';
 import { icon } from '../ui/icons.js';
 import { failCard } from './loadfail.js';
+import { createWaitBar } from '../ui/wait_bar.js';
 
 /**
  * 画面を出す。
@@ -64,16 +65,22 @@ export function mount(root, app, param) {
   // Python の準備 %
   const loadEl = q('.title-load');
   const failEl = q('.title-fail');
+  // 細い進捗バー（0.5 秒をこえた時だけ。ひとことは下の .title-load。ブラッシュアップ 15）
+  const bar = createWaitBar(loadEl.parentElement, { className: 'title-wait' });
+  loadEl.before(bar.el);
   offs.push(app.bridge.onState((s) => {
     if (s.state === 'loading' || s.state === 'respawn') {
       loadEl.textContent = s.slow ? t('runner.slow', { pct: s.pct || 0 }) : t('title.loading_note', { pct: s.pct || 0 });
       loadEl.hidden = false;
+      bar.start('', s.pct || 0); bar.set(s.pct || 0);
       failEl.innerHTML = '';
     } else if (s.state === 'failed') {
+      bar.stop();
       loadEl.hidden = true;
       failEl.innerHTML = '';
       failEl.appendChild(failCard(app, s.reason));
     } else {
+      bar.stop();
       loadEl.hidden = true;
       failEl.innerHTML = '';
       if (s.state === 'ready') start3D();

@@ -280,6 +280,8 @@ export function hudValues(kinds, pose, world, rec) {
     else if (k === 'alt') out.push([t('hud.alt'), `${Math.max(0, (pose && pose.z) || 0).toFixed(1)} m`]);
     else if (k === 'left') out.push([t('hud.left'), `${Math.max(0, ((world && world.time_limit) || 0) - tt).toFixed(0)} s`]);
     else if (k === 'lidar') {
+      // 一度も LiDAR を読まない走り（と実行の前）は札を出さない（ブラッシュアップ 11: 使わないセンサの「読んでいない」を出さない）
+      if (!((rec && rec.events) || []).some((e) => e.k === 'lidar')) continue;
       const e = lastEvent(rec, 'lidar', tt);
       // 値が無い時は「—」ではなく字で（薄くて見えなかった。直し係 5）: None（光が返ってこない）は「届かない」、まだ一度も読んでいなければ「読んでいない」
       out.push([t('hud.lidar'), e ? (e.v === null || e.v === undefined ? '届かない' : `${Number(e.v).toFixed(2)} m`) : '読んでいない']);
@@ -290,6 +292,7 @@ export function hudValues(kinds, pose, world, rec) {
       out.push([t('hud.phase'), name]);
     } else if (k === 'gnss') {
       const fx = (rec && rec.gnssFixes) || [];
+      if (!fx.length) continue;                 // GNSS を使わない走りは札を出さない（ブラッシュアップ 11）
       let err = null;
       for (const f of fx) if (f[0] <= tt && f[5]) err = Math.hypot(f[3] - f[1], f[4] - f[2]);
       out.push([t('hud.gnss'), err === null ? '—' : `${err.toFixed(1)} m`]);

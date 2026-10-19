@@ -22,7 +22,7 @@ export function mount(root, app, param) {
   const s = () => store.settings();
   const radio = (name, value, label, cur) => `<label class="opt"><input type="radio" name="${name}" value="${esc(value)}"${String(cur) === String(value) ? ' checked' : ''}> <span>${esc(label)}</span></label>`;
   const check = (name, label, on) => `<label class="opt"><input type="checkbox" name="${name}"${on ? ' checked' : ''}> <span>${esc(label)}</span></label>`;
-  const range = (name, label, min, max, v, unit = '') => `<label class="rng"><span>${esc(label)}</span><input type="range" name="${name}" min="${min}" max="${max}" step="1" value="${v}"><output>${v}${unit}</output></label>`;
+  const range = (name, label, min, max, v, unit = '') => `<label class="rng"><span>${esc(label)}</span><input type="range" name="${name}" min="${min}" max="${max}" step="1" value="${v}" style="--pz:${((v - min) / (max - min) * 100).toFixed(1)}%"><output>${v}${unit}</output></label>`;
 
   function render() {
     const st = s();
@@ -40,38 +40,50 @@ export function mount(root, app, param) {
           ${check('mute', t('settings.mute'), st.mute)}
         </fieldset>
         <fieldset><legend>${esc(t('settings.zenkaku'))}</legend>
+          <div class="seg" role="radiogroup" aria-label="${esc(t('settings.zenkaku'))}">
           ${radio('autoZenkaku', 'true', t('settings.zenkaku_on'), st.autoZenkaku)}
           ${radio('autoZenkaku', 'false', t('settings.zenkaku_off'), st.autoZenkaku)}
+          </div>
         </fieldset>
         <fieldset><legend>${esc(t('settings.font'))}</legend>
           ${range('editorFont', t('settings.font_editor', { px: '' }).replace(/\s*px$/, ''), 14, 20, st.editorFont, ' px')}
           ${range('uiFont', t('settings.font_ui', { px: '' }).replace(/\s*px$/, ''), 14, 18, st.uiFont, ' px')}
         </fieldset>
         <fieldset><legend>${esc(t('settings.replay'))}</legend>
+          <div class="seg" role="radiogroup" aria-label="${esc(t('settings.replay'))}">
           ${radio('replaySpeed', 'auto', t('settings.replay_auto'), st.replaySpeed)}
           ${radio('replaySpeed', 'line', t('settings.replay_line'), st.replaySpeed)}
           ${radio('replaySpeed', '1', t('settings.replay_x1'), st.replaySpeed)}
           ${radio('replaySpeed', '2', t('settings.replay_x2'), st.replaySpeed)}
           ${radio('replaySpeed', 'result', t('settings.replay_result'), st.replaySpeed)}
+          </div>
         </fieldset>
         <fieldset><legend>${esc(t('settings.quality'))}</legend>
+          <div class="seg" role="radiogroup" aria-label="${esc(t('settings.quality'))}">
           ${radio('quality', 'auto', t('settings.quality_auto'), st.quality)}
           ${radio('quality', 'light', t('settings.quality_light'), st.quality)}
           ${radio('quality', 'normal', t('settings.quality_normal'), st.quality)}
           ${radio('quality', 'fine', t('settings.quality_fine'), st.quality)}
+          </div>
         </fieldset>
         <fieldset><legend>${esc(t('settings.theme'))}</legend>
+          <div class="seg" role="radiogroup" aria-label="${esc(t('settings.theme'))}">
           ${radio('theme', 'light', t('settings.theme_light'), st.theme)}
           ${radio('theme', 'dusk', t('settings.theme_dusk'), st.theme)}
           ${radio('theme', 'auto', t('settings.theme_auto'), st.theme)}
+          </div>
         </fieldset>
         <fieldset><legend>${esc(t('settings.motion'))}</legend>
+          <div class="seg" role="radiogroup" aria-label="${esc(t('settings.motion'))}">
           ${radio('reduceMotion', 'true', t('settings.motion_on'), st.reduceMotion)}
           ${radio('reduceMotion', 'false', t('settings.motion_off'), st.reduceMotion)}
+          </div>
         </fieldset>
         <fieldset><legend>${esc(t('settings.raw'))}</legend>
+          <div class="seg" role="radiogroup" aria-label="${esc(t('settings.raw'))}">
           ${radio('rawError', 'chapter', t('settings.raw_chapter'), st.rawError)}
           ${radio('rawError', 'always', t('settings.raw_always'), st.rawError)}
+          </div>
         </fieldset>
         <fieldset><legend>${esc(t('settings.overlays'))}</legend>
           ${check('ov_trail', t('settings.ov_trail'), st.overlays.trail)}
@@ -108,6 +120,7 @@ export function mount(root, app, param) {
     if (!(el instanceof HTMLInputElement)) return;
     if (el.type === 'range') {
       const v = Number(el.value);
+      el.style.setProperty('--pz', `${((v - Number(el.min)) / (Number(el.max) - Number(el.min)) * 100).toFixed(1)}%`);   // つまみの左を塗る
       const out = el.parentElement.querySelector('output');
       if (out) out.textContent = `${v}${el.name.endsWith('Font') ? ' px' : ''}`;
       apply({ [el.name]: v });

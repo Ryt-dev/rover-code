@@ -15,13 +15,14 @@
    "learn": {
     "python": [
      "while heading() < 82: のように、条件がかなうまで回り続ける",
-     "pass は「何もしない」（while の中身が無いとき）",
+     "while の中身は wait(0.02)（短く待つ）。何もしないなら pass とも書ける",
      "for で 10 回測って足し、10 で割ると平均"
     ],
     "robot": [
-     "heading() は機体の向き（度）。北 0・東 90・南 180・西 270、時計回り。±1.5° ほどばらつく",
+     "heading() はローバーの向き（度）。北 0・東 90・南 180・西 270、時計回り。±1.5° ほどばらつく",
      "止まれと言っても、回る勢いで少し回りすぎる。近くなったらゆっくり、少し手前で止める",
-     "止まってから何回か測って平均すると、ばらつきが小さくなる"
+     "止まってから何回か測って平均すると、ばらつきが小さくなる",
+     "本物の機体では、くり返しの中に wait(0.02) などを入れる（何もしないくり返しは、マイコンの力を使いきってしまう）"
     ]
    },
    "new": [
@@ -190,7 +191,7 @@
     "速く回るのは 60° まで。そこから motor(0.1, -0.1) でゆっくり回って、82° で止める。",
     "★2: 止まってから heading() を 10 回測って平均し、90 との差だけ回る（この芝では 0.1 の強さで 1 秒に約 58°）。"
    ],
-   "solution": "# 1. 速く回って 60° まで\nmotor(0.25, -0.25)\nwhile heading() < 60:\n    pass\n# 2. ゆっくり回って 82° で止める（止まるまでに少し回る）\nmotor(0.1, -0.1)\nwhile heading() < 82:\n    pass\nstop()\nwait(0.3)\n# 3. 止まって 10 回測り、平均で残りを直す（この芝では差 0.2 で 1 秒に約 58°）\ntotal = 0\nfor i in range(10):\n    total = total + heading()\ne = 90 - total / 10\nif e > 0:\n    motor(0.1, -0.1)\nelse:\n    motor(-0.1, 0.1)\nwait(abs(e) / 58)\nstop()\nwait(0.3)\n# 4. コーンへ走って、LiDAR で止まる\nmotor(0.6, 0.6)\nwhile True:\n    d = lidar()\n    if d is not None and d < 0.25:\n        break\nstop()\n",
+   "solution": "# 1. 速く回って 60° まで\nmotor(0.25, -0.25)\nwhile heading() < 60:\n    wait(0.02)\n# 2. ゆっくり回って 82° で止める（止まるまでに少し回る）\nmotor(0.1, -0.1)\nwhile heading() < 82:\n    wait(0.02)\nstop()\nwait(0.3)\n# 3. 止まって 10 回測り、平均で残りを直す（この芝では差 0.2 で 1 秒に約 58°）\ntotal = 0\nfor i in range(10):\n    total = total + heading()\ne = 90 - total / 10\nif e > 0:\n    motor(0.1, -0.1)\nelse:\n    motor(-0.1, 0.1)\nwait(abs(e) / 58)\nstop()\nwait(0.3)\n# 4. コーンへ走って、LiDAR で止まる\nmotor(0.6, 0.6)\nwhile True:\n    d = lidar()\n    if d is not None and d < 0.25:\n        break\n    wait(0.02)\nstop()\n",
    "solution_labels": [
     "速く回って 60° まで",
     "ゆっくり回って 82° で止める（止まるまでに少し回る）",
@@ -251,28 +252,28 @@
     ],
     "worlds": [
      {
-      "t_stop": 7.7,
+      "t_stop": 7.68,
       "x": 3.867,
-      "y": -0.063,
-      "heading": 90.9,
-      "lines": 25,
-      "gap": 0.138
+      "y": -0.036,
+      "heading": 90.5,
+      "lines": 26,
+      "gap": 0.134
      },
      {
-      "t_stop": 7.5,
-      "x": 3.848,
-      "y": 0.024,
-      "heading": 89.6,
-      "lines": 25,
-      "gap": 0.153
+      "t_stop": 7.62,
+      "x": 3.907,
+      "y": -0.067,
+      "heading": 91,
+      "lines": 26,
+      "gap": 0.099
      },
      {
-      "t_stop": 7.42,
-      "x": 3.854,
-      "y": -0.01,
-      "heading": 90.1,
-      "lines": 25,
-      "gap": 0.146
+      "t_stop": 7.6,
+      "x": 3.907,
+      "y": -0.054,
+      "heading": 90.8,
+      "lines": 26,
+      "gap": 0.097
      }
     ],
     "sim": "w1"
@@ -574,7 +575,8 @@
     "robot": [
      "エンコーダは車輪の回転を数えるセンサ。車輪 1 回転で 2000 カウント、直径 12.7 cm（1 周 0.399 m）",
      "距離 ＝ カウント ÷ 2000 × π × 0.127。odometer() はそれを計算ずみで返す",
-     "砂ですべると、少し多めに数える"
+     "砂ですべると、少し多めに数える",
+     "本物の機体では、くり返しの中に wait(0.02) などを入れる（何もしないくり返しは、マイコンの力を使いきってしまう）"
     ]
    },
    "new": [
@@ -779,7 +781,7 @@
     "encoder() は (左, 右) の 2 つの数を返す: l, r = encoder()。平均 (l + r) / 2 を m に直す。",
     "def dist_m(): l, r = encoder() → return (l + r) / 2 / 2000 * math.pi * 0.127。while dist_m() - start < 4.92: pass"
    ],
-   "solution": "import math\n\n# 1. カウントを m に直す関数\ndef dist_m():\n    l, r = encoder()\n    return (l + r) / 2 / 2000 * math.pi * 0.127\n\n# 2. 5 m 近くまで走って止まる\nstart = dist_m()\nmotor(0.6, 0.6)\nwhile dist_m() - start < 4.92:\n    pass\nstop()\n",
+   "solution": "import math\n\n# 1. カウントを m に直す関数\ndef dist_m():\n    l, r = encoder()\n    return (l + r) / 2 / 2000 * math.pi * 0.127\n\n# 2. 5 m 近くまで走って止まる\nstart = dist_m()\nmotor(0.6, 0.6)\nwhile dist_m() - start < 4.92:\n    wait(0.02)\nstop()\n",
    "solution_labels": [
     "カウントを m に直す関数",
     "5 m 近くまで走って止まる"
@@ -844,16 +846,16 @@
       "lines": 9
      },
      {
-      "t_stop": 11.12,
+      "t_stop": 11.14,
       "x": 0,
-      "y": 4.947,
+      "y": 4.959,
       "heading": 0,
       "lines": 9
      },
      {
       "t_stop": 9.6,
       "x": 0,
-      "y": 4.934,
+      "y": 4.936,
       "heading": 0,
       "lines": 9
      }
@@ -871,18 +873,14 @@
    "minutes": 12,
    "checkpoint": false,
    "carry_from": null,
-   "story": "石の列の間を北へ 10 m。同じ数を入れても、左右のモーターの差とゆるい坂で、まっすぐ走らない（ずれ方は世界ごとにちがう）。ここの方位センサは値をならしてあるぶん、0.25 秒おくれて届く。向きのずれに比例して直す「P 制御」でまっすぐ走ろう。",
+   "story": "石の列の間を北へ 10 m。同じ数を入れても、左右のモーターの差とゆるい坂で、まっすぐ走らない（ずれ方は世界ごとにちがう）。ここの方位センサは値をならしてあるぶん、0.25 秒遅れて届く。向きのずれに比例して直す「P 制御」でまっすぐ走ろう。",
    "learn": {
     "python": [
-     "ずれ e を計算 → 曲げる強さ turn = K * e → motor(BASE + turn, BASE - turn) を何度もくり返す",
-     "数（K）を変えて動きを比べる（チューニング）",
-     "ずれの合計: total = total + e * (t - t_prev)。「ずれ × たった時間」を足していく"
+     "ずれ e → 曲げる強さ turn = K * e → motor(BASE + turn, BASE - turn) を何度もくり返す（P 制御）",
+     "数（K）を変えて動きをくらべる（チューニング）"
     ],
     "robot": [
-     "向き: e = angle_diff(TARGET, heading())。右へずれると e はマイナス → turn もマイナス → 左が遅く右が速くなって、左へ戻る",
-     "P 制御: ずれに比例して直す。K が小さいとじわじわ・大きいと行きすぎて戻りすぎ、左右に大きくふれる（発振）",
-     "P だけだと、坂のように押され続けると少しずれが残る。ずれの合計（I）も足すと消せる（PI 制御）",
-     "e * (t - t_prev) と時間を掛けるのは、くり返しの速さが変わっても同じ強さで足すため（回数で足すと、速く回るほど大きくなる）"
+     "右へずれると e はマイナス → turn もマイナス → 左が遅く右が速くなって、左へ戻る。K が小さいとじわじわ、大きいと左右にふらふら（発振）"
     ]
    },
    "new": [
@@ -2057,7 +2055,7 @@
      "measure": "max_offset('lane')",
      "better": "low",
      "unit": "cm",
-     "tip": "坂に押され続けると、P だけでは 10 cm 以上ずれが残る。ずれの合計（I）も使おう"
+     "tip": "坂に押され続けると、P だけでは 10 cm 以上ずれが残る。ずれの合計も足そう（I 制御）: total = total + e * (t - t_prev)、turn = K * e + KI * total。時間を掛けるのは、くり返しの速さが変わっても同じ強さで足すため"
     }
    ],
    "steps": [],
@@ -2079,11 +2077,11 @@
      "左へそれて石にぶつかる"
     ],
     "answer": 1,
-    "why": "この機体は右のモーターが 6% 弱く、坂も東（右）へ下っている。同じ数を入れても右へ曲がる。",
+    "why": "このローバーは右のモーターが 6% 弱く、坂も東（右）へ下っている。同じ数を入れても右へ曲がる。",
     "check": "seed != 1 or (bumps > 0 and x_end > 0)"
    },
    "hints": [
-    "K = 0 だと何も直さない。K = 0.01、0.03、0.1 と変えて、走り方を比べよう（大きすぎると左右にふらふら）。",
+    "K = 0 だと何も直さない。K = 0.01、0.03、0.1 と変えて、走り方をくらべよう（大きすぎると左右にふらふら）。",
     "K = 0.03 くらいで★2。★3 は「ずれの合計」total を足す: total = total + e * (t - t_prev)、turn = K * e + KI * total。",
     "K = 0.02・KI = 0.02 くらい。t = now() で今の時刻（秒）が分かる。t_prev は 1 回前の時刻。"
    ],
@@ -2197,7 +2195,7 @@
    "minutes": 14,
    "checkpoint": true,
    "carry_from": null,
-   "story": "ゆるい坂の上で、1 辺 4 m の四角を走ってスタートに戻ろう。モーターの差は世界ごとにちがい、砂の所もある。深い芝で、方位は 0.2 秒おくれて届く。turn_to と、まっすぐ走る straight を作って組み合わせよう。（チェックポイント面）",
+   "story": "ゆるい坂の上で、1 辺 4 m の四角を走ってスタートに戻ろう。モーターの差は世界ごとにちがい、砂の所もある。深い芝で、方位は 0.2 秒遅れて届く。turn_to と、まっすぐ走る straight を作って組み合わせよう。",
    "learn": {
     "python": [
      "関数の中で while・if を使い、引数で向きと距離を渡す",
@@ -2490,7 +2488,7 @@
    "mistakes": [
     {
      "name": "時間で走った",
-     "code": "def go(m):\n    motor(0.6, 0.6)\n    wait(m / 0.66)\n    stop()\n\ndef turn(deg):\n    if deg > 0:\n        motor(0.25, -0.25)\n    else:\n        motor(-0.25, 0.25)\n    wait(abs(deg) / 194.5)\n    stop()\n\nfor i in range(4):\n    go(4.0)\n    turn(90)\n",
+     "code": "def go(m):\n    motor(0.6, 0.6)\n    wait(m / 0.66)\n    stop()\n\ndef turn(deg):\n    if deg > 0:\n        motor(0.25, -0.25)\n    else:\n        motor(-0.25, 0.25)\n    wait(abs(deg) / 195)\n    stop()\n\nfor i in range(4):\n    go(4.0)\n    turn(90)\n",
      "say": "坂とモーターの差で、時間と角度だけだと戻れないね。heading() と odometer() を使おう。",
      "expect": "fail",
      "rule": null,

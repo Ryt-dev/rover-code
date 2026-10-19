@@ -40,7 +40,7 @@ export function mount(root, app, param) {
         </dl>
       </div>
       <div class="map-board">
-        <svg class="map-road" aria-hidden="true"><path class="road-base"/><path class="road-dash"/></svg>
+        <svg class="map-road" aria-hidden="true"><path class="road-edge"/><path class="road-base"/><path class="road-dash"/></svg>
         <ol class="map-cards" aria-label="${esc(t('map.list_label'))}"></ol>
       </div>
       <div class="map-foot">
@@ -55,6 +55,8 @@ export function mount(root, app, param) {
       <div class="map-pop" role="dialog" aria-modal="false" hidden></div>
     </div>`;
 
+  // 芝のイラストの地（ブラッシュアップ 6。画面ごとに 1 回だけ描いて使い回す）
+  root.style.setProperty('--map-grass', `url(${grassTile(document.documentElement.dataset.theme)})`);
   const list = root.querySelector('.map-cards');
   const levelInfo = new Map();     // id → Level（開いた章だけ読む）
   for (const c of chapters) list.appendChild(chapterCard(c));
@@ -104,7 +106,8 @@ export function mount(root, app, param) {
       <div class="lv"></div>
       <div class="ch-prog"><div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="${pr.total}" aria-valuenow="${pr.cleared}" aria-label="${esc(t('map.chapter_prog', pr))}"><i style="width:${pr.total ? Math.round(pr.cleared / pr.total * 100) : 0}%"></i></div><span>${esc(t('map.chapter_prog', pr))}</span></div>
       ${!unlocked ? `<p class="lock-note">${esc(isC ? t('map.locked_c') : t('map.locked_note'))}</p>` : ''}
-      ${story ? `<button type="button" class="btn small ghost story-btn" data-story="${esc(c.no)}">${icon('book')}<span>${esc(t('map.story_again'))}</span></button>` : ''}`;
+      ${story ? `<button type="button" class="btn small ghost story-btn" data-story="${esc(c.no)}">${icon('book')}<span>${esc(t('map.story_again'))}</span></button>` : ''}
+      ${c.levels.filter((x) => store.storySeen(`L${x}`)).map((x) => `<button type="button" class="btn small ghost story-btn" data-story="L${esc(x)}">${icon('book')}<span>${esc(t('map.story_before_again', { id: x }))}</span></button>`).join('')}`;
     const lv = li.querySelector('.lv');
     c.levels.forEach((id, i) => {
       const st = squareState(id);
@@ -119,6 +122,14 @@ export function mount(root, app, param) {
       if (st === 'now') b.setAttribute('aria-current', 'step');
       lv.appendChild(b);
     });
+    // 今の章: 橙のふちと「いまここ」の札（ブラッシュアップ 6）
+    if (c.levels.includes(cur) && unlocked) {
+      li.classList.add('now');
+      const tag = document.createElement('span');
+      tag.className = 'here-tag';
+      tag.textContent = t('map.here');
+      li.appendChild(tag);
+    }
     return li;
   }
 
@@ -209,6 +220,7 @@ export function mount(root, app, param) {
       const mx = (px + x) / 2;
       d += px === x ? ` L${x.toFixed(1)} ${y.toFixed(1)}` : ` C${mx.toFixed(1)} ${py.toFixed(1)}, ${mx.toFixed(1)} ${y.toFixed(1)}, ${x.toFixed(1)} ${y.toFixed(1)}`;
     });
+    svg.querySelector('.road-edge').setAttribute('d', d);
     svg.querySelector('.road-base').setAttribute('d', d);
     svg.querySelector('.road-dash').setAttribute('d', d);
   }
@@ -220,4 +232,36 @@ export function mount(root, app, param) {
   if (nowSq && param === 'focus') nowSq.focus();
 
   return { unmount() { if (ro) ro.disconnect(); } };
+}
+
+// ---- 芝のイラスト（520 px 四方のくり返し。色むら・草の房・小さな花）。テーマごとに 1 回だけ作る
+const grassCache = new Map();
+function grassTile(theme) {
+  const dark = theme === 'dusk' || (theme === 'auto' && globalThis.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
+  const key = dark ? 'dark' : 'light';
+  if (grassCache.has(key)) return grassCache.get(key);
+  let url = '';
+  try {
+    const cv = document.createElement('canvas'); cv.width = cv.height = 520;
+    const g = cv.getContext('2d');
+    g.fillStyle = dark ? '#3d5233' : '#bcd08f'; g.fillRect(0, 0, 520, 520);
+    let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+    for (let i = 0; i < 26; i++) {
+      const x = rnd() * 520, y = rnd() * 520, r = 40 + rnd() * 90;
+      const c = dark ? (rnd() < 0.5 ? '52,70,44' : '72,88,56') : (rnd() < 0.5 ? '170,196,120' : '205,214,150');
+      const gr = g.createRadialGradient(x, y, 0, x, y, r);
+      gr.addColorStop(0, `rgba(${c},.55)`); gr.addColorStop(1, `rgba(${c},0)`);
+      for (const dx of [-520, 0, 520]) for (const dy of [-520, 0, 520]) { g.save(); g.translate(dx, dy); g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); g.restore(); }
+    }
+    g.lineCap = 'round';
+    for (let i = 0; i < 230; i++) {
+      const x = rnd() * 520, y = rnd() * 520, sz = 4 + rnd() * 5;
+      g.strokeStyle = dark ? 'rgba(110,140,80,.5)' : rnd() < 0.7 ? 'rgba(120,150,78,.55)' : 'rgba(150,172,96,.6)'; g.lineWidth = 1.4;
+      g.beginPath(); g.moveTo(x - 3, y); g.lineTo(x - 5, y - sz * 0.8); g.moveTo(x, y); g.lineTo(x, y - sz); g.moveTo(x + 3, y); g.lineTo(x + 5, y - sz * 0.75); g.stroke();
+    }
+    for (let i = 0; i < 18; i++) { const x = rnd() * 520, y = rnd() * 520; g.fillStyle = rnd() < 0.5 ? 'rgba(255,252,240,.9)' : 'rgba(240,214,110,.9)'; if (dark) g.globalAlpha = 0.5; g.beginPath(); g.arc(x, y, 2.2, 0, 7); g.fill(); g.globalAlpha = 1; }
+    url = cv.toDataURL('image/png');
+  } catch { url = ''; }
+  grassCache.set(key, url);
+  return url;
 }

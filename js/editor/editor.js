@@ -43,6 +43,7 @@ export const MESSAGES = Object.freeze({
   lockedNote: '（鍵の行。原因は空欄に入れた値かもしれないよ）',
   exitHint: 'Tab でエディタの外へ（ほかのキーで取り消し）',
   blocked: '鍵つきの行は書きかえられないよ。黄色の空欄に書いてね',
+  blockedNoBlank: '鍵つきの行は書きかえられないよ。鍵の無い行（↓ ここから書く の下）に書いてね',
   unlockBar: 'クリアしたので、鍵を外して全部書きかえてもいいよ',
   unlockButton: '鍵を外す',
   readOnly: '予想を選ぶまで、コードは読むだけだよ',
@@ -251,7 +252,7 @@ export function createEditor(el, opts = {}) {
     if (!lockRanges.length && !hasBlanks) { refreshUnlockStrip(); return; }
     locked = applyLocked(cm, {
       starter, locked: lockRanges, blanks: opts.blanks,
-      onBlocked: () => emit('blocked', { message: MESSAGES.blocked }),
+      onBlocked: () => emit('blocked', { message: (locked && locked.blanks().length) || hasBlanks ? MESSAGES.blocked : MESSAGES.blockedNoBlank }),
     });
     if (!locked.active()) { locked.destroy(); locked = null; }
     root.classList.toggle('has-locks', !!locked);

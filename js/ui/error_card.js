@@ -35,7 +35,7 @@ import { play } from '../audio.js';
 const STYLE_ID = 'rc-ec-style';
 const CSS = `
 .rc-ec{--ec-line:var(--line,#d9d2c3);background:var(--card,#fffdf8);color:var(--ink,#23313a);border:1px solid var(--ec-line);
-  border-left:4px solid var(--error,#b4472f);border-radius:12px;padding:12px 14px;margin:8px 0;font-size:var(--ui-font,15px);
+  border-left:4px solid var(--error,#b4472f);border-radius:var(--r-3,14px);padding:12px 14px;margin:8px 0;font-size:var(--ui-font,15px);
   line-height:1.7;max-width:100%;box-sizing:border-box;overflow-wrap:anywhere}
 .rc-ec--warn,.rc-ec--info{background:var(--warn,#fff3e6);border-color:var(--warn-line,#f0d3b3);border-left-color:var(--star-ink,#9a6a12);
   padding:8px 12px;font-size:calc(var(--ui-font,15px) - 1px)}
@@ -45,7 +45,7 @@ const CSS = `
   background:var(--sand,#f3ead8);color:var(--ink,#23313a);border:1px solid var(--ec-line)}
 .rc-ec--warn .rc-ec-face,.rc-ec--info .rc-ec-face{width:26px;height:26px}
 .rc-ec-title{margin:2px 0 0;font-weight:700}
-.rc-ec-where{display:inline-flex;gap:6px;align-items:center;margin:6px 0 0 42px;padding:2px 6px;border:0;border-radius:6px;
+.rc-ec-where{display:inline-flex;gap:6px;align-items:center;margin:6px 0 0 42px;padding:2px 6px;border:0;border-radius:var(--r-1,6px);
   background:transparent;color:var(--blue,#2f6f9f);font:inherit;text-align:left;cursor:pointer;text-decoration:underline;
   text-underline-offset:3px}
 .rc-ec-where[aria-disabled="true"]{color:var(--sub,#5d6b73);cursor:default;text-decoration:none}
@@ -53,23 +53,23 @@ const CSS = `
 .rc-ec-sec p{margin:4px 0}
 .rc-ec-label{font-weight:700;margin-right:4px}
 .rc-ec-ex{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
-.rc-ec-ex pre{margin:0;padding:6px 10px;border-radius:8px;background:#262d32;color:#c8a2d8;font-family:'BIZ UDGothic',monospace;
-  font-size:14px;line-height:1.5;white-space:pre;overflow-x:auto;max-width:100%}
+.rc-ec-ex pre{margin:0;padding:6px 10px;border-radius:var(--r-2,10px);background:#262d32;color:#c8a2d8;font-family:'BIZ UDGothic',monospace;
+  font-size:var(--fs-15,15px);line-height:1.5;white-space:pre;overflow-x:auto;max-width:100%}
 .rc-ec-ex .rc-ec-bad::before{content:"✗ ";color:#e4806a}
 .rc-ec-ex .rc-ec-good::before{content:"✓ ";color:#8cc6a0}
 .rc-ec-ex pre code{color:#e9e4d8}
 .rc-ec-btns{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 0 42px}
-.rc-ec button.rc-ec-btn{font:inherit;font-size:14px;padding:6px 12px;min-height:36px;border-radius:999px;cursor:pointer;
+.rc-ec button.rc-ec-btn{font:inherit;font-size:var(--fs-15,15px);padding:6px 12px;min-height:36px;border-radius:999px;cursor:pointer;
   border:1px solid var(--ec-line);background:var(--card,#fffdf8);color:var(--ink,#23313a)}
 .rc-ec button.rc-ec-fix{background:var(--grass-btn,#4a7a2e);border-color:var(--grass-btn,#4a7a2e);color:#fff}
 .rc-ec button.rc-ec-next{border-style:dashed}
 .rc-ec button:focus-visible{outline:2px solid var(--focus-color,#23313a);outline-offset:2px}
 .rc-ec-raw{margin:8px 0 0 42px;color:var(--sub,#5d6b73)}
-.rc-ec-raw code{font-family:'BIZ UDGothic',monospace;font-size:13px;overflow-wrap:anywhere}
-.rc-ec-raw--small{font-size:13px}
+.rc-ec-raw code{font-family:'BIZ UDGothic',monospace;font-size:var(--fs-13,13px);overflow-wrap:anywhere}
+.rc-ec-raw--small{font-size:var(--fs-13,13px)}
 .rc-ec-raw--first{margin:8px 0 4px 42px;color:var(--ink,#23313a)}
-.rc-ec-raw--first code{display:block;font-size:15px;padding:6px 10px;border-radius:8px;background:var(--sand,#f3ead8)}
-.rc-ec-raw summary{cursor:pointer;font-size:13px}
+.rc-ec-raw--first code{display:block;font-size:var(--fs-15,15px);padding:6px 10px;border-radius:var(--r-2,10px);background:var(--sand,#f3ead8)}
+.rc-ec-raw summary{cursor:pointer;font-size:var(--fs-13,13px)}
 .rc-ec-notes{color:var(--sub,#5d6b73)}
 .rc-ec--shake{animation:rc-ec-shake .32s ease-out 1}
 @keyframes rc-ec-shake{0%{transform:translateX(0)}25%{transform:translateX(-3px)}50%{transform:translateX(3px)}75%{transform:translateX(-2px)}100%{transform:translateX(0)}}

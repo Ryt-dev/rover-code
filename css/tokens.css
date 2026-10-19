@@ -70,10 +70,22 @@
   --fs-code: 15px;
   --lh-code: 1.75;
 
-  /* 形と間隔 */
-  --radius-card: 14px;
-  --radius-dialog: 16px;
-  --radius-btn: 9px;
+  /* 形と間隔（ブラッシュアップ: 角丸は 4 段・影は 2 段・字は 6 段。ほかの CSS は直書きせずこれを使う） */
+  --r-1: 6px;                /* 小さな札・入力・マス */
+  --r-2: 10px;               /* ボタン・小さなカード */
+  --r-3: 14px;               /* カード */
+  --r-4: 20px;               /* ダイアログ・大きな面 */
+  --shadow-1: 0 2px 0 rgba(120, 100, 60, .14), 0 4px 12px rgba(60, 48, 24, .08);   /* 置いてある物（カード・ボタン） */
+  --shadow-2: 0 3px 0 rgba(120, 100, 60, .12), 0 12px 30px rgba(60, 48, 24, .20);  /* 浮いている物（ダイアログ・クリアのカード） */
+  --fs-12: 12px;
+  --fs-13: 13px;
+  --fs-15: 15px;
+  --fs-18: 18px;
+  --fs-24: 24px;
+  --fs-32: 32px;
+  --radius-card: var(--r-3);
+  --radius-dialog: var(--r-4);
+  --radius-btn: var(--r-2);
   --gap: 14px;
   --header-h: 60px;
   --aside-w: 430px;

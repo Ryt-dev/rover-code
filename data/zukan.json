@@ -1,9 +1,13 @@
 {
-  "$comment": "持ち主 W4（レベルと内容）。ずかん＝部の技術ノート（SPEC 3.7: 命令 17・センサ 7・考え方 18・会場 8）。エラーの分類の項目は error_rules.json の zukan（W3）。項目の形: {id, category, name, summary（命令はパレットのマウスで出す 1 行＝api.json の summary と同じ）, body（2〜6 文）, figure（SVG か null）, example, sil, related, unlock（開く面）}。会場は chapters（その章が開いたら見える）。",
+  "$comment": "持ち主 W4（レベルと内容）。ずかん＝部の技術ノート（SPEC 3.7: 命令 17・センサ 7・考え方 18・会場 8。ブラッシュアップで書き方 12 を足した: id は面の new と同じ名前）。エラーの分類の項目は error_rules.json の zukan（W3）。項目の形: {id, category, name, summary（命令はパレットのマウスで出す 1 行＝api.json の summary と同じ）, body（2〜6 文）, figure（SVG か null）, example, sil, related, unlock（開く面）}。会場は chapters（その章が開いたら見える）。",
   "categories": [
     {
       "key": "command",
       "name": "命令"
+    },
+    {
+      "key": "syntax",
+      "name": "書き方"
     },
     {
       "key": "sensor",
@@ -42,10 +46,10 @@
       "id": "motor",
       "category": "command",
       "name": "motor(左, 右)",
-      "summary": "左右の車輪の速さ（デューティ −1〜1）。1 で約 1.1 m/s、0.08 未満は回らない",
-      "body": "左と右の車輪の速さを、−1〜1 の数（デューティ）で決める。1 で約 1.1 m/s。左右に同じ数でまっすぐ、反対の符号でその場で回る。0.08 より小さいと車輪は回らない。決めた速さは、次に motor か stop を呼ぶまで続く。",
+      "summary": "左右の車輪の強さ（−1〜1）。1 で約 1.1 m/s、0.08 未満は回らない",
+      "body": "左と右の車輪の強さを、−1〜1 の数で決める。1 で約 1.1 m/s。左右に同じ数でまっすぐ、反対の符号でその場で回る。0.08 より小さいと車輪は回らない。決めた強さは、次に motor か stop を呼ぶまで続く。補足: 強さはモーターに送る力の割合で、デューティともいう。",
       "figure": null,
-      "example": "motor(0.6, 0.6)   # まっすぐ\nwait(2)\nmotor(0.3, -0.3)  # 右へその場で回る\nwait(1)\nstop()",
+      "example": "motor(0.6, 0.6)   # まっすぐ\nwait(2)\nmotor(0.25, -0.25)  # 右へその場で回る\nwait(0.46)          # 約 90°\nstop()",
       "sil": "SIL でも同じ名前・同じ書き方で動く（from rover_sil import *）。 0.05 秒ごとに今の指令を送り続ける（SIL は 0.5 秒指令が来ないと止める）。",
       "related": [
         "stop",
@@ -103,7 +107,7 @@
       "category": "command",
       "name": "now()",
       "summary": "スタートからの時間（秒）",
-      "body": "スタートからの時間を秒で返す。2 回読んで引き算すると、その間の時間がわかる。読むたびに 0.001 秒進むので、while で待つ書き方もできる。",
+      "body": "スタートからの時間を秒で返す。2 回読んで引き算すると、その間の時間が分かる。読むたびに 0.001 秒進むので、while で待つ書き方もできる。",
       "figure": null,
       "example": "t0 = now()\nwhile now() - t0 < 2:\n    pass\nprint(\"2 秒たった\")",
       "sil": "SIL でも同じ名前・同じ書き方で動く（from rover_sil import *）。 シミュレータの時刻を返す。",
@@ -117,11 +121,11 @@
       "id": "lidar",
       "category": "command",
       "name": "lidar()",
-      "summary": "前の物までの距離 m（1 cm 単位、0.05〜12 m）。何も無い時は None",
-      "body": "前に向けた細い光で、前の物までの距離を m で返す（1 cm 単位、0.05〜12 m）。何も無い時や遠すぎる時は None。少しばらつくので、近づくときはゆっくり。",
+      "summary": "前の物までの距離 m（1 cm 単位、0.05〜12 m）。何も無いときは None",
+      "body": "前に向けた細い光で、前の物までの距離を m で返す（1 cm 単位、0.05〜12 m）。何も無いときや遠すぎるときは None。少しばらつくので、近づくときはゆっくり。",
       "figure": null,
       "example": "d = lidar()\nif d is not None and d < 0.5:\n    stop()",
-      "sil": "SIL でも同じ名前・同じ書き方で動く（from rover_sil import *）。 光が弱い時も None になる。",
+      "sil": "SIL でも同じ名前・同じ書き方で動く（from rover_sil import *）。 光が弱いときも None になる。",
       "related": [
         "sensor_lidar",
         "idea_none",
@@ -211,7 +215,7 @@
       "category": "command",
       "name": "phase(名前)",
       "summary": "今のフェーズの名前を画面と記録に出す",
-      "body": "今のフェーズ（段）の名前を、画面と記録に出す。状態機械で今どこにいるかを残しておくと、失敗した時に追いかけやすい。",
+      "body": "今のフェーズ（段）の名前を、画面と記録に出す。状態機械で今どこにいるかを残しておくと、失敗したときに追いかけやすい。",
       "figure": null,
       "example": "phase(\"待機\")\n# …\nphase(\"着地\")",
       "sil": "SIL でも同じ名前・同じ書き方で動く（from rover_sil import *）。 CanSatSim の記録にも段の名前が残る。",
@@ -228,7 +232,7 @@
       "body": "気圧から計算した高さを m で返す。電源を入れた地面が 0。±0.1 m ほどばらつく。",
       "figure": null,
       "example": "a = altitude()\nprint(\"高さ\", a, \"m\")",
-      "sil": "SIL でも同じ名前・同じ書き方で動く（from rover_sil import *）。 起動した時の気圧を 0 m にする。",
+      "sil": "SIL でも同じ名前・同じ書き方で動く（from rover_sil import *）。 起動したときの気圧を 0 m にする。",
       "related": [
         "sensor_baro",
         "idea_landing"
@@ -269,8 +273,8 @@
       "id": "marker",
       "category": "command",
       "name": "marker()",
-      "summary": "AR マーカーを探す（found・id・angle・dist）。4 m 以内・画角の中の一番近いもの",
-      "body": "AR マーカーを探して、found・id・angle・dist を返す。4 m 以内で、画角の中の一番近いものだけ。",
+      "summary": "AR マーカーを探す（found・id・angle・dist）。4 m 以内・画角の中のいちばん近いもの",
+      "body": "AR マーカーを探して、found・id・angle・dist を返す。angle は右がプラスの度、dist は m。4 m 以内で、画角の中のいちばん近いものだけ。",
       "figure": null,
       "example": "m = marker()\nif m.found:\n    print(m.id, m.dist)",
       "sil": "SIL にはまだ AR マーカーが無い（呼ぶとそう出る）。",
@@ -281,11 +285,180 @@
       "unlock": "10-3"
     },
     {
+      "id": "変数",
+      "category": "syntax",
+      "name": "変数（名前 = 数）",
+      "summary": "数に名前をつけて、何度でも使う",
+      "body": "名前 = 数 で、数に名前をつける（変数）。名前を書いた所に、その数が入る。あとで変えたい数を上にまとめておくと、直す所が 1 か所で済む。大文字と小文字は別の名前。",
+      "figure": null,
+      "example": "SPEED = 0.6\nTIME = 2.5\nmotor(SPEED, SPEED)\nwait(TIME)\nstop()",
+      "sil": null,
+      "related": [
+        "idea_speed_time"
+      ],
+      "unlock": "2-1"
+    },
+    {
+      "id": "for",
+      "category": "syntax",
+      "name": "for・range",
+      "summary": "中の行を、決めた回数くり返す",
+      "body": "for i in range(4): の下の、字下げした行を 4 回くり返す。i には 0, 1, 2, 3 が順に入る。range(1, 5) なら 1, 2, 3, 4（終わりの数は入らない）。",
+      "figure": null,
+      "example": "for i in range(4):\n    print(i)\n    motor(0.2 * i, 0.2 * i)\n    wait(1)\nstop()",
+      "sil": null,
+      "related": [
+        "idea_loop"
+      ],
+      "unlock": "3-1"
+    },
+    {
+      "id": "if",
+      "category": "syntax",
+      "name": "if・elif・else",
+      "summary": "条件で分かれ道を作る",
+      "body": "if 条件: の下は、条件が合ったときだけ動く。合わないときは else: の下。elif で分かれ道をいくつも作れる。上から順に調べて、最初に合った所だけが動く。",
+      "figure": null,
+      "example": "d = lidar()\nif d is None or d > 1.5:\n    motor(1.0, 1.0)\nelif d > 0.4:\n    motor(0.4, 0.4)\nelse:\n    stop()",
+      "sil": null,
+      "related": [
+        "idea_none"
+      ],
+      "unlock": "4-2"
+    },
+    {
+      "id": "while",
+      "category": "syntax",
+      "name": "while・break",
+      "summary": "条件が合っているあいだ、くり返す",
+      "body": "while 条件: の下は、条件が合っているあいだ何度もくり返す。while True: はずっとくり返し、中で break を通るとぬける。くり返しの中で wait(0.02) のように少し待つと、本物の機体でも安心。",
+      "figure": null,
+      "example": "motor(0.7, 0.7)\nwhile True:\n    if lidar() <= 0.25:\n        break\n    wait(0.02)\nstop()",
+      "sil": null,
+      "related": [
+        "idea_feedback"
+      ],
+      "unlock": "4-3"
+    },
+    {
+      "id": "def",
+      "category": "syntax",
+      "name": "def・return",
+      "summary": "自分の命令（関数）を作る",
+      "body": "def 名前(引数): の下に、命令の中身を字下げして書く。呼ぶより上に書く。return で答えを返すと、呼んだ所で値として使える。",
+      "figure": null,
+      "example": "def turn_time(deg):\n    return abs(deg) / 195\n\nmotor(0.25, -0.25)\nwait(turn_time(90))\nstop()",
+      "sil": null,
+      "related": [
+        "idea_function"
+      ],
+      "unlock": "5-1"
+    },
+    {
+      "id": "リスト",
+      "category": "syntax",
+      "name": "リストとタプル",
+      "summary": "値を順に並べて、まとめて持つ",
+      "body": "[ ] で囲むとリスト、( ) で囲むとタプル。[(0, 2.0), (90, 1.5)] のように、組を並べたリストも作れる。for a, m in ROUTE: で、組を 1 つずつ取り出せる。ROUTE[0] で最初の組。",
+      "figure": null,
+      "example": "ROUTE = [(0, 2.0), (90, 1.5)]\nfor a, m in ROUTE:\n    print(a, m)\nprint(ROUTE[0])",
+      "sil": null,
+      "related": [
+        "idea_list"
+      ],
+      "unlock": "5-3"
+    },
+    {
+      "id": "%",
+      "category": "syntax",
+      "name": "%（割った余り）",
+      "summary": "割った余り。角度を 0〜360 に収める",
+      "body": "a % b は、a を b で割った余り（370 を 360 で割った余りは 10）。Python ではマイナスの数でも答えは 0 以上になる（−90 を 360 で割った余りは 270）。角度の差は、例の 3 行目の式で −180〜180 にできる。",
+      "figure": null,
+      "example": "print(370 % 360)\nprint(-90 % 360)\ne = (10 - 350 + 180) % 360 - 180\nprint(e)   # 20",
+      "sil": null,
+      "related": [
+        "idea_angle_diff"
+      ],
+      "unlock": "6-2"
+    },
+    {
+      "id": "not",
+      "category": "syntax",
+      "name": "not（〜でない）",
+      "summary": "条件を反対にする",
+      "body": "not 条件 は、条件が合っていないときに合う。while not gnss().valid: は「測位できていないあいだ」くり返す。if not CAMERA_OK: のように、印の変数と一緒にもよく使う。",
+      "figure": null,
+      "example": "while not gnss().valid:\n    wait(0.1)\nprint(\"測位できた\")",
+      "sil": null,
+      "related": [
+        "gnss"
+      ],
+      "unlock": "7-1"
+    },
+    {
+      "id": "round",
+      "category": "syntax",
+      "name": "round（四捨五入）",
+      "summary": "数を四捨五入して見やすくする",
+      "body": "round(x) は x を四捨五入した整数、round(x, 1) は小数 1 けたの数。print で出す前に使うと、長い小数が読みやすくなる。",
+      "figure": null,
+      "example": "print(round(12.345))\nprint(round(12.345, 1))",
+      "sil": null,
+      "related": [
+        "idea_debug"
+      ],
+      "unlock": "7-2"
+    },
+    {
+      "id": "continue",
+      "category": "syntax",
+      "name": "continue（次の回へ）",
+      "summary": "くり返しの残りをとばして、次の回へ",
+      "body": "continue を通ると、その回の残りの行をとばして、くり返しの頭に戻る。GNSS の測位が無い回は止まって待ち、次の回へ進む、のように使う。",
+      "figure": null,
+      "example": "while True:\n    g = gnss()\n    if not g.valid:\n        stop()\n        wait(0.1)\n        continue\n    print(g.lat, g.lon)\n    break",
+      "sil": null,
+      "related": [
+        "idea_waypoint"
+      ],
+      "unlock": "7-3"
+    },
+    {
+      "id": "global",
+      "category": "syntax",
+      "name": "global",
+      "summary": "関数の中から、外の変数を書きかえる",
+      "body": "関数の中で外の変数に入れ直すときは、先に global 名前 と書く。書かないと、関数の中だけの別の変数になる。INVERTED や CAMERA_OK のような「印」を関数の中で変えるときに使う。",
+      "figure": null,
+      "example": "CAMERA_OK = True\n\ndef camera_broken():\n    global CAMERA_OK\n    CAMERA_OK = False",
+      "sil": null,
+      "related": [
+        "idea_robust"
+      ],
+      "unlock": "9-4"
+    },
+    {
+      "id": "try",
+      "category": "syntax",
+      "name": "try・except",
+      "summary": "エラーが出ても止まらずに、別の手を打つ",
+      "body": "try: の下でエラーが出ると、except の下へ飛ぶ。except OSError: はセンサが返事をしないときのエラー。壊れたときの切りかえを書いておくと、プログラムが止まらない。",
+      "figure": null,
+      "example": "try:\n    c = camera()\nexcept OSError:\n    c = None\n    print(\"カメラなし → GNSS だけで行く\")",
+      "sil": null,
+      "related": [
+        "idea_robust",
+        "camera"
+      ],
+      "unlock": "9-5"
+    },
+    {
       "id": "sensor_lidar",
       "category": "sensor",
       "name": "LiDAR（距離センサ）",
       "summary": "光を当てて、はね返るまでの時間で距離を測る",
-      "body": "前に細い光を 1 本出して、前の物までの距離を測る。光は細いので、コーンの横を通るとふれていても測れないことがある。0.05 m より近い・12 m より遠い・何も無い時は None。本物では、落下の衝撃でレンズが外れることもある。",
+      "body": "前に細い光を 1 本出して、前の物までの距離を測る。光は細いので、コーンの横を通るとふれていても測れないことがある。0.05 m より近い・12 m より遠い・何も無いときは None。本物では、落下の衝撃でレンズが外れることもある。",
       "figure": null,
       "example": "d = lidar()\nprint(d)",
       "sil": null,
@@ -300,7 +473,7 @@
       "category": "sensor",
       "name": "IMU と方位",
       "summary": "向きを、北 0・東 90 の度で知る",
-      "body": "地磁気と傾きから、機体の向きを計算する。鉄や電線の近くでは少しずれる。ずれは「何度ずれているか」より「同じ向きを保てるか」に使うと強い。",
+      "body": "地磁気と傾きから、ローバーの向きを計算する。鉄や電線の近くでは少しずれる。ずれは「何度ずれているか」より「同じ向きを保てるか」に使うと強い。",
       "figure": null,
       "example": "h = heading()\nprint(h)",
       "sil": null,
@@ -330,7 +503,7 @@
       "category": "sensor",
       "name": "GNSS",
       "summary": "衛星の電波から、緯度・経度を知る",
-      "body": "衛星からの電波で、今いる場所の緯度と経度を出す。1 秒に 1 回・0.3 秒遅れ。ずれは 0.3〜2 m ほどで、ゆっくり動くので、止まって何回測っても平均では消えない。最後の数 m は別のセンサにまかせる。",
+      "body": "衛星からの電波で、今いる場所の緯度と経度を出す。1 秒に 1 回・0.3 秒遅れ。ずれはふだん 0.3〜2 m、悪い日は 3 m ほどで、ゆっくり動くので、止まって何回測っても平均では消えない。最後の数 m は別のセンサにまかせる。",
       "figure": null,
       "example": "g = gnss()\nif g.valid:\n    print(g.lat, g.lon)",
       "sil": null,
@@ -346,7 +519,7 @@
       "category": "sensor",
       "name": "カメラ",
       "summary": "画像の中の赤いコーンの向きと大きさ",
-      "body": "水平の画角は約 62°。コーンが画角の中にあれば、何度の方向か（angle）と、どのくらい大きく見えるか（size）がわかる。1 枚に 0.4 秒かかるので、走りながら見ると、見えた時にはもう向きが変わっている。逆光の日は見のがしが多い。",
+      "body": "水平の画角は約 62°。コーンが画角の中にあれば、何度の方向か（angle）と、どのくらい大きく見えるか（size）が分かる。1 枚に 0.4 秒かかるので、走りながら見ると、見えたときにはもう向きが変わっている。逆光の日は見のがしが多い。",
       "figure": null,
       "example": "c = camera()\nprint(c.found, c.angle, c.size)",
       "sil": null,
@@ -406,7 +579,7 @@
       "category": "idea",
       "name": "速さ × 時間 ＝ 距離",
       "summary": "走る時間は、距離 ÷ 速さで出せる",
-      "body": "デューティ 0.6 なら 1 秒に約 0.66 m（1.1 × 0.6）。3 m 走るなら 3 ÷ 0.66 で約 4.5 秒。止まる時に少しすべるので、少し手前を狙う。",
+      "body": "強さ 0.6 なら 1 秒に約 0.66 m（1.1 × 0.6）。3 m 走るなら 3 ÷ 0.66 で約 4.5 秒。止まるときに少しすべるので、少し手前を狙う。",
       "figure": null,
       "example": "SPEED = 0.6\nTIME = 2.9 / (1.1 * SPEED)\nmotor(SPEED, SPEED)\nwait(TIME)\nstop()",
       "sil": null,
@@ -421,9 +594,9 @@
       "category": "idea",
       "name": "その場で回る",
       "summary": "左右を反対に回すと、その場で向きを変えられる",
-      "body": "motor(0.3, -0.3) で右回り。速さ 1 で 1 秒に約 194°。速く回ると止まる時に回りすぎるので、正確に向くならゆっくり回る。",
+      "body": "motor(0.25, -0.25) で右回り。左右の強さの差が 0.5 なら、1 秒に約 195° 回る（90° なら 0.46 秒）。速く回ると止まるときに回りすぎるので、正確に向くならゆっくり回る。",
       "figure": null,
-      "example": "motor(0.3, -0.3)\nwait(1.0)\nstop()",
+      "example": "motor(0.25, -0.25)\nwait(0.46)    # 右へ約 90°\nstop()",
       "sil": null,
       "related": [
         "motor",
@@ -438,7 +611,7 @@
       "summary": "同じ動きを、決めた回数だけくり返す",
       "body": "for と range で、中の行を決めた回数くり返す。字下げした行だけがくり返される。i は 0 から始まる。",
       "figure": null,
-      "example": "for i in range(4):\n    motor(0.5, 0.5)\n    wait(2)\n    motor(0.3, -0.3)\n    wait(1)\nstop()",
+      "example": "for i in range(4):\n    motor(0.5, 0.5)\n    wait(2)\n    motor(0.25, -0.25)\n    wait(0.46)    # 右へ約 90°\nstop()",
       "sil": null,
       "related": [
         "idea_order"
@@ -449,8 +622,8 @@
       "id": "idea_none",
       "category": "idea",
       "name": "None（値が無い）",
-      "summary": "測れなかった時は None が返る",
-      "body": "センサは、いつも測れるとは限らない。lidar() は何も無い時に None を返す。None はたし算も大小くらべもできないので、使う前に is not None で確かめる。",
+      "summary": "測れなかったときは None が返る",
+      "body": "センサは、いつも測れるとは限らない。lidar() は何も無いときに None を返す。None はたし算も大小くらべもできないので、使う前に is not None で確かめる。",
       "figure": null,
       "example": "d = lidar()\nif d is not None and d < 0.5:\n    stop()",
       "sil": null,
@@ -494,7 +667,7 @@
       "category": "idea",
       "name": "道順をリストに",
       "summary": "曲がる角度と走る長さを、データとして並べる",
-      "body": "道順を [(角度, 長さ), …] のリストにしておくと、for で順に取り出して走れる。道順を変える時はリストだけ直せばよい。",
+      "body": "道順を [(角度, 長さ), …] のリストにしておくと、for で順に取り出して走れる。道順を変えるときはリストだけ直せばよい。",
       "figure": null,
       "example": "ROUTE = [(0, 2.0), (90, 1.5)]\nfor a, m in ROUTE:\n    print(a, m)",
       "sil": null,
@@ -509,7 +682,7 @@
       "category": "idea",
       "name": "角度の差",
       "summary": "359° と 1° の差は 2°。北をまたぐ計算",
-      "body": "向きの差を引き算だけで出すと、北をまたいだ時に 358° になってしまう。(目標 − 今 + 180) % 360 − 180 で、−180〜180 の近い方の差になる。",
+      "body": "向きの差を引き算だけで出すと、北をまたいだときに 358° になってしまう。(目標 − 今 + 180) % 360 − 180 で、−180〜180 の近い方の差になる。",
       "figure": null,
       "example": "def angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\nprint(angle_diff(10, 350))   # 20",
       "sil": null,
@@ -524,7 +697,7 @@
       "category": "idea",
       "name": "P 制御（比例制御）",
       "summary": "ずれが大きいほど強く直す",
-      "body": "ずれに数（ゲイン）をかけた分だけ、左右の速さに差をつける。ゲインが大きすぎると左右にふらつき、小さすぎると直りきらない。ずれの合計も使うのが PI 制御。坂に押され続ける時に効く。",
+      "body": "ずれに数（ゲイン）をかけた分だけ、左右の速さに差をつける。ゲインが大きすぎると左右にふらつき、小さすぎると直りきらない。ずれの合計も使うのが PI 制御。坂に押され続けるときに効く。",
       "figure": null,
       "example": "e = angle_diff(0, heading())\nturn = 0.03 * e\nmotor(0.6 + turn, 0.6 - turn)",
       "sil": null,
@@ -539,7 +712,7 @@
       "category": "idea",
       "name": "緯度・経度を m に",
       "summary": "度の差に、1 度あたりの m をかける",
-      "body": "緯度 1 度は約 110950 m。経度 1 度は緯度によって変わり、111320 × cos(緯度) m。基準の点からの差を m に直すと、東へ何 m・北へ何 m かがわかる。",
+      "body": "緯度 1 度は約 110950 m。経度 1 度は緯度によって変わり、111320 × cos(緯度) m。基準の点からの差を m に直すと、東へ何 m・北へ何 m かが分かる。",
       "figure": null,
       "example": "import math\nx = (lon - LON0) * 111320 * math.cos(math.radians(LAT0))\ny = (lat - LAT0) * 110950",
       "sil": null,
@@ -568,7 +741,7 @@
       "id": "idea_waypoint",
       "category": "idea",
       "name": "中継点",
-      "summary": "直接行けない時は、間の点を順に通る",
+      "summary": "直接行けないときは、間の点を順に通る",
       "body": "池や林をよけるには、通る点のリストを作って 1 つずつ向かう。中継点では止まらず、近くまで来たら次へ切りかえると速い。",
       "figure": null,
       "example": "WAYPOINTS = [(5, 10), (12, 20)]\nfor wx, wy in WAYPOINTS:\n    print(\"次は\", wx, wy)",
@@ -599,7 +772,7 @@
       "category": "idea",
       "name": "センサのバトン",
       "summary": "遠くは GNSS、近くはカメラ、最後は LiDAR",
-      "body": "どのセンサにも得意な距離がある。GNSS は数 m ずれるが遠くまでわかる。カメラは 20 m 先から向きがわかる。LiDAR は近くを cm で測れる。得意な所で次へ渡す。",
+      "body": "どのセンサにも得意な距離がある。GNSS は数 m ずれるが遠くまで分かる。カメラは 20 m 先から向きが分かる。LiDAR は近くを cm で測れる。得意な所で次へ渡す。",
       "figure": null,
       "example": "# GNSS で 5 m まで → カメラで 1 m まで → LiDAR でタッチ",
       "sil": null,
@@ -615,7 +788,7 @@
       "category": "idea",
       "name": "状態機械（フェーズ）",
       "summary": "今どの段かを変数に入れて、段ごとに仕事を変える",
-      "body": "文字列の変数 state に「待機」「着地」「分離」などを入れ、while の中で state ごとに違う仕事をする。段が変わる条件をはっきり書くと、失敗した段がすぐわかる。",
+      "body": "文字列の変数 state に「待機」「着地」「分離」などを入れ、while の中で state ごとにちがう仕事をする。段が変わる条件をはっきり書くと、失敗した段がすぐ分かる。段ごとに phase() を呼ぶと、今どこにいるかが記録に残る。",
       "figure": null,
       "example": "state = \"待機\"\nphase(state)\nwhile state != \"ゴール\":\n    if state == \"待機\":\n        state = \"ゴール\"\n        phase(state)",
       "sil": null,
@@ -630,9 +803,9 @@
       "category": "idea",
       "name": "着地を見分ける",
       "summary": "高さが変わらず、加速度が落ちついたら着地",
-      "body": "つり下げられて止まっている間も高さは変わらない。高さが地面の近くで、しばらく変わらず、加速度が約 9.8 で落ちついたら着地と決める。着地の前にモーターやニクロム線を使わない。",
+      "body": "つり下げられて止まっている間も高さは変わらない。高さが地面の近くで、しばらく変わらず、加速度の大きさ √(ax² + ay² + az²) が約 9.8 で落ちついたら着地と決める。大きさで見るので、さかさま（az が −9.8）でも同じ。着地の前にモーターやニクロム線を使わない。",
       "figure": null,
-      "example": "a = altitude()\nax, ay, az = accel()\nif a < 2 and abs(az - 9.8) < 2:\n    print(\"着地かも\")",
+      "example": "import math\na = altitude()\nax, ay, az = accel()\ng = math.sqrt(ax * ax + ay * ay + az * az)   # 加速度の大きさ\nif a < 2 and abs(g - 9.8) < 2:\n    print(\"着地かも\")",
       "sil": null,
       "related": [
         "altitude",
@@ -646,7 +819,7 @@
       "category": "idea",
       "name": "本番テスト（頑健さ）",
       "summary": "1 回うまくいくより、何回やってもうまくいく",
-      "body": "風・GNSS のずれ・見のがしは毎回ちがう。本番テストは、種を変えた世界で何回も走らせて、何回成功したかを見る。こわれた時の try と except も、頑健さの一部。",
+      "body": "風・GNSS のずれ・見のがしは毎回ちがう。本番テストは、種を変えた世界で何回も走らせて、何回成功したかを見る。こわれたときの try と except も、頑健さの一部。",
       "figure": null,
       "example": "try:\n    c = camera()\nexcept OSError:\n    c = None",
       "sil": null,
@@ -660,7 +833,7 @@
       "category": "idea",
       "name": "print で調べる",
       "summary": "値を出してみると、思いこみに気づける",
-      "body": "うまくいかない時は、怪しい所の値を print する。出力の欄は時刻つきなので、いつその値だったかもわかる。再生の時間のつまみと合わせて見よう。",
+      "body": "うまくいかないときは、怪しい所の値を print する。出力の欄は時刻つきなので、いつその値だったかも分かる。再生の時間のつまみと合わせて見よう。",
       "figure": null,
       "example": "d = lidar()\nprint(\"いまの距離\", d)",
       "sil": null,

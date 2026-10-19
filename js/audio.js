@@ -25,6 +25,10 @@ export const SOUNDS = Object.freeze({
   page: '紙をめくる音（ヒントを開く）',
   chute: '布がはためく音・小さく焼ける音（パラ・溶断）',
   chapter: '木琴とアコースティックギターの短いフレーズ（章クリア）',
+  // ブラッシュアップ 13
+  tap: '小さな木の音（ボタン・画面の切りかえ。−18 dB）',
+  bump: 'こもった音（コーンにぶつかった）',
+  stop: 'マリンバを 1 打（ローバーが止まった）',
 });
 
 // ---------------------------------------------------------------- 音を作る（純粋な計算。Node のテストでも動く）
@@ -296,10 +300,68 @@ export function driveLoop(sr) {
   return normalize(x.subarray(0, n - f), 0.45);
 }
 
+/** 小さな木の音（短い木の板を指先でたたく。ボタン・画面の切りかえ）。 */
+export function woodTap(sr) {
+  return struck(sr, 1320, 0.06, [[1, 1, 0.012], [2.3, 0.5, 0.007], [3.9, 0.2, 0.004]], { mallet: 0.25, malletFc: 5000, attackMs: 0.3, seed: 81 });
+}
+/** こもった音（布をかぶせた太鼓のような低い 1 打。コーンにぶつかった）。 */
+export function bump(sr) {
+  const x = struck(sr, 150, 0.22, [[1, 1, 0.06], [1.6, 0.5, 0.035], [2.4, 0.25, 0.02]], { mallet: 0.5, malletFc: 900, attackMs: 1.2, seed: 82 });
+  lowpass(x, sr, 700);
+  return fadeTail(normalize(x), sr);
+}
+/**
+ * 環境音のループ 8 s: 芝の上の風（ゆっくり強弱が変わる低い雑音）と遠くの鳥（短いさえずりが時々）。
+ * 鳥は 1 声 0.1 s ほどで消える。ずっと鳴る発振音は使わない。
+ * @param {number} sr
+ */
+export function ambienceLoop(sr) {
+  const n = sr * 8;
+  const R = rng(91);
+  const x = new Float32Array(n);
+  for (let i = 0; i < n; i++) x[i] = R() * 2 - 1;
+  lowpass(x, sr, 500); lowpass(x, sr, 800);
+  // 風の強弱（ゆっくり。ループの両端で同じ値）
+  for (let i = 0; i < n; i++) { const u = i / n; x[i] *= 0.55 + 0.3 * Math.sin(2 * Math.PI * u) + 0.15 * Math.sin(2 * Math.PI * 3 * u + 1); }
+  // 遠くの鳥: 2〜3 声のさえずりを 2 回
+  for (const at of [1.6, 5.3]) {
+    for (let k = 0; k < 3; k++) {
+      const i0 = Math.round((at + k * 0.16) * sr), len = Math.round(sr * 0.09);
+      const f0 = 3200 + 500 * R(), f1 = f0 + 900;
+      let ph = 0;
+      for (let j = 0; j < len && i0 + j < n; j++) {
+        const u = j / len;
+        ph += 2 * Math.PI * (f0 + (f1 - f0) * u) / sr;
+        x[i0 + j] += 0.18 * Math.sin(ph) * Math.sin(Math.PI * u) ** 2;
+      }
+    }
+  }
+  const f = Math.round(sr * 0.05);
+  for (let j = 0; j < f; j++) { const a = j / f; x[j] = x[j] * a + x[n - f + j] * (1 - a); }
+  return normalize(x.subarray(0, n - f), 0.35);
+}
+/** 短い残響（約 0.4 s。部屋の壁のはね返りのまね）のインパルス応答。 */
+export function roomImpulse(sr, dur = 0.4) {
+  const n = Math.round(sr * dur);
+  const R = rng(97);
+  const x = new Float32Array(n);
+  for (let i = 0; i < n; i++) x[i] = (R() * 2 - 1) * Math.exp(-6.9 * i / n);   // 0.4 s で −60 dB
+  lowpass(x, sr, 3500);
+  return x;
+}
+
 /** 名前ごとの作り方。 */
 export const MAKERS = Object.freeze({
   run: (sr) => clapper(sr),
   star: (sr) => marimba(sr, NOTE('C5'), 1.0),
+  // ★は音程ごとに作り分ける（再生の速さを変えると音色まで変わるので。ブラッシュアップ 13）
+  star0: (sr) => marimba(sr, NOTE('C5'), 1.0),
+  star1: (sr) => marimba(sr, NOTE('E5'), 0.95),
+  star2: (sr) => marimba(sr, NOTE('G5'), 0.9),
+  tap: (sr) => woodTap(sr),
+  bump: (sr) => bump(sr),
+  stop: (sr) => marimba(sr, NOTE('G4'), 0.9),
+  amb: (sr) => ambienceLoop(sr),
   clear: (sr) => clearArp(sr),
   leaves: (sr) => kalimbaTwo(sr),
   error: (sr) => woodblock(sr),
@@ -323,6 +385,8 @@ const buffers = new Map();
 let vol = { sfx: 60, ambience: 40, mute: false };
 let driveSrc = null;
 let driveGain = null;
+let ambSrc = null;
+let ambLoopGain = null;
 let recorded = null;   // credits.json の録音 { name: url }
 
 const toGain = (v) => { const u = Math.max(0, Math.min(100, v)) / 100; return u * u; };
@@ -366,6 +430,17 @@ export function unlock() {
       ambGain = ctx.createGain();
       sfxGain.connect(master);
       ambGain.connect(master);
+      // 全体に短い残響（約 0.4 s）を薄く（ブラッシュアップ 13）
+      try {
+        const conv = ctx.createConvolver();
+        const ir = roomImpulse(ctx.sampleRate);
+        const irb = ctx.createBuffer(2, ir.length, ctx.sampleRate);
+        irb.getChannelData(0).set(ir); irb.getChannelData(1).set(roomImpulse(ctx.sampleRate, 0.38).subarray(0, ir.length));
+        conv.buffer = irb;
+        const wet = ctx.createGain();
+        wet.gain.value = 0.14;
+        sfxGain.connect(conv); conv.connect(wet); wet.connect(master);
+      } catch { /* 残響なしでもよい */ }
       applyVolume();
       // 録音があれば読み込む（無ければ作った音）
       loadRecorded().then(async (rec) => {
@@ -377,7 +452,7 @@ export function unlock() {
         }
       });
       // よく使う音を先に作っておく（最初の 1 打を待たせない）
-      setTimeout(() => { for (const n of ['run', 'star', 'error', 'clear']) bufferFor(n); }, 0);
+      setTimeout(() => { for (const n of ['run', 'star0', 'star1', 'star2', 'error', 'clear', 'tap']) bufferFor(n); }, 0);
     }
     if (ctx.state === 'suspended') ctx.resume();
     return true;
@@ -392,17 +467,21 @@ export function isReady() { return !!ctx && ctx.state === 'running'; }
  * @param {keyof SOUNDS} name
  * @param {{index?: number, delay?: number}} [opts] index は★の何番目か（0〜2。音の高さ）
  */
+let lastTap = 0;
 export function play(name, opts = {}) {
   if (!ctx || vol.mute || vol.sfx <= 0) return;
+  if (name === 'tap') { const now = ctx.currentTime; if (now - lastTap < 0.09) return; lastTap = now; }   // ボタンと画面の切りかえが重なっても 1 回
   try {
     if (ctx.state === 'suspended') ctx.resume();
-    const b = bufferFor(name);
+    const starIdx = name === 'star' && Number.isInteger(opts.index) ? Math.max(0, Math.min(2, opts.index)) : null;
+    const recStar = !!(recorded && recorded.star && buffers.has('star'));     // 録音の★だけは再生の速さで高さを変える
+    const b = bufferFor(starIdx !== null && !recStar ? `star${starIdx}` : name);
     if (!b) return;
     const src = ctx.createBufferSource();
     src.buffer = b;
-    if (name === 'star' && Number.isInteger(opts.index)) src.playbackRate.value = STAR_RATES[Math.max(0, Math.min(2, opts.index))];
+    if (starIdx !== null && recStar) src.playbackRate.value = STAR_RATES[starIdx];
     const g = ctx.createGain();
-    g.gain.value = name === 'run' || name === 'error' ? 0.7 : name === 'note' || name === 'page' ? 0.55 : 0.9;
+    g.gain.value = name === 'tap' ? 0.126 : name === 'run' || name === 'error' ? 0.7 : name === 'note' || name === 'page' ? 0.55 : name === 'bump' ? 0.6 : 0.9;   // tap は −18 dB
     src.connect(g);
     g.connect(sfxGain);
     src.start(ctx.currentTime + (opts.delay || 0));
@@ -434,6 +513,32 @@ export function drive(speed) {
     const u = v / 1.1;
     driveSrc.playbackRate.setTargetAtTime(0.75 + 0.45 * u, ctx.currentTime, 0.1);
     driveGain.gain.setTargetAtTime(0.12 + 0.5 * u, ctx.currentTime, 0.1);
+  } catch { /* なし */ }
+}
+
+/**
+ * 芝の上の風と遠くの鳥（走る音のつまみで、とても小さく）。on=false で止める。
+ * @param {boolean} on
+ */
+export function ambience(on) {
+  if (!ctx) return;
+  try {
+    if (!on) {
+      if (ambLoopGain) ambLoopGain.gain.setTargetAtTime(0, ctx.currentTime, 0.3);
+      const s = ambSrc; ambSrc = null;
+      if (s) setTimeout(() => { try { s.stop(); } catch { /* なし */ } }, 1500);
+      return;
+    }
+    if (ambSrc || vol.mute) return;
+    ambSrc = ctx.createBufferSource();
+    ambSrc.buffer = bufferFor('amb');
+    ambSrc.loop = true;
+    ambLoopGain = ctx.createGain();
+    ambLoopGain.gain.value = 0;
+    ambSrc.connect(ambLoopGain);
+    ambLoopGain.connect(ambGain);
+    ambSrc.start();
+    ambLoopGain.gain.setTargetAtTime(0.09, ctx.currentTime, 0.8);
   } catch { /* なし */ }
 }
 

@@ -16,7 +16,7 @@
     "python": [
      "文字列を変数に入れて、今の状態を表す: state = \"探す\"",
      "while state != \"ゴール\": と if / elif state == ...: で状態ごとの仕事",
-     "== は「同じか比べる」、!= は「ちがうか比べる」"
+     "== は「同じか」、!= は「ちがうか」をくらべる"
     ],
     "robot": [
      "状態機械（フェーズ）: 本物の搭載ソフトはほとんどこの形（CanSatSim の sil_example.py も同じ）",
@@ -309,7 +309,7 @@
      "when": "count('state = \"ゴール\"') >= 2"
     }
    ],
-   "senpai_clear": "状態機械は、本物の CanSat の頭脳の形。ここから先は全部この形で考えよう。",
+   "senpai_clear": "状態機械は、本物の CanSat の頭脳の形。ここからは段ごとに phase() を呼んで、今どこにいるかを残そう。",
    "explain": {
     "goal": "stop_at_cone",
     "goalRadius": 0.3,
@@ -388,7 +388,7 @@
    "minutes": 12,
    "checkpoint": false,
    "carry_from": null,
-   "story": "高所作業車で 30 m まで上げ、合図で投下される（いつ落ちるかは世界ごとにちがう）。パラシュートで降りて着地したら、phase(\"着地\") と知らせよう。着地の前にモーターを回したり、ニクロム線を焼いたりしたら失格！",
+   "story": "高所作業車で 30 m まで上げ、合図で投下される（いつ落ちるかは世界ごとにちがう）。パラで降りて着地したら、phase(\"着地\") と知らせよう。着地の前にモーターを回したり、ニクロム線を焼いたりしたら失格！",
    "learn": {
     "python": [
      "回数を数える変数: still = still + 1。条件が切れたら 0 に戻す",
@@ -601,7 +601,7 @@
    "predict_card": null,
    "hints": [
     "0.1 秒ごとに高さを読み、地面の近く（a < 2）で前との差が小さければ still を 1 増やす。ちがえば 0 に。",
-    "still が 30 になったら（約 3 秒）break。a < 2 が無いと、クレーンの上で「着地」と勘違いする。",
+    "still が 30 になったら（約 3 秒）break。a < 2 が無いと、クレーンの上で「着地」とかんちがいする。",
     "★3: accel() を 0.01 秒ごとに読んで大きさをリストに足し、500 個より多ければ pop(0)。着地したら max(リスト) を print。"
    ],
    "solution": "# 1. 待機: 加速度と高さを読み続ける\nphase(\"待機\")\nrecent = []               # 最近 5 秒の加速度の大きさ（ブラックボックス）\nstill = 0                 # 高さがほとんど変わらなかった回数\nprev = altitude()\nn = 0\nwhile True:\n    ax, ay, az = accel()                       # 0.01 秒に 1 回読む\n    recent.append((ax * ax + ay * ay + az * az) ** 0.5)\n    if len(recent) > 500:\n        recent.pop(0)                          # 古いのを捨てる\n    n = n + 1\n    if n % 10 == 0:                            # 10 回に 1 回、高さを見る\n        a = altitude()\n        if a < 2 and abs(a - prev) < 0.5:      # 地面の近くで、ほとんど変わらない\n            still = still + 1\n        else:\n            still = 0\n        prev = a\n        if still >= 30:                        # 3 秒ほど続いたら着地\n            break\n# 2. 着地を知らせる\nphase(\"着地\")\nprint(\"着地の衝撃\", round(max(recent)), \"m/s²\")\n",
@@ -628,7 +628,7 @@
      "when": "has('accel()') and re('^[ \\t]+wait\\(0\\.[1-9]')"
     }
    ],
-   "senpai_clear": "着地判定は、種コンで一番「やらかし」が多い所。クレーンの上で着地と勘違いするのは、本当によくあるんだ。",
+   "senpai_clear": "着地判定は、種コンでいちばん「やらかし」が多い所。クレーンの上で着地とかんちがいするのは、本当によくあるんだ。",
    "explain": {
     "goal": "free",
     "goalRadius": 1.0,
@@ -698,13 +698,13 @@
    "id": "9-3",
    "order": 44,
    "chapter": 9,
-   "title": "パラシュートを切り離して逃げる",
+   "title": "パラを切り離して逃げる",
    "type": "make",
    "lang": "python",
    "minutes": 12,
    "checkpoint": false,
    "carry_from": null,
-   "story": "着地した！ パラシュートはまだつながっていて、風下に広がっている。ニクロム線に電気を流してひもを焼き切り、パラに乗り上げないよう風上へ 3 m 以上逃げよう。風が吹いてくる向き WIND_FROM が入っている。ニクロム線は 1 回で切れないこともある。",
+   "story": "着地した！ パラはまだつながっていて、風下に広がっている。ニクロム線に電気を流してひもを焼き切り、パラに乗り上げないよう風上へ 3 m 以上逃げよう。風が吹いてくる向き WIND_FROM が入っている。ニクロム線は 1 回で切れないこともある。",
    "learn": {
     "python": [
      "for i in range(2): で「念のため 2 回」"
@@ -889,7 +889,7 @@
      "expr": "calls('nichrome') >= 1"
     },
     {
-     "label": "パラシュートを切り離す",
+     "label": "パラを切り離す",
      "expr": "separated"
     },
     {
@@ -946,7 +946,7 @@
      "when": "re('^motor\\([\\s\\S]*nichrome\\(True\\)')"
     }
    ],
-   "senpai_clear": "パラの絡まりは、本番でローバーが動けなくなる一番の原因。風を読むのも技術だよ。",
+   "senpai_clear": "パラの絡まりは、本番でローバーが動けなくなるいちばんの原因。風を読むのも技術だよ。",
    "explain": {
     "goal": "free",
     "goalRadius": 1.0,
@@ -1023,7 +1023,7 @@
    "minutes": 12,
    "checkpoint": false,
    "carry_from": "8-4",
-   "story": "着地でひっくり返った！ この機体は車輪が胴の外側にあるので、さかさまでも走れる。でも 8-4 のプログラムのままだと、前に進むつもりが後ろへ下がり、カメラの左右も逆になる。2 つの世界でさかさま。「持ってくる」で 8-4 のプログラムを入れて、直してコーンにタッチしよう。",
+   "story": "着地でひっくり返った！ このローバーは車輪が胴の外側にあるので、さかさまでも走れる。でも 8-4 のプログラムのままだと、前に進むつもりが後ろへ下がり、カメラの左右も逆になる。2 つの世界でさかさま。「持ってくる」で 8-4 のプログラムを入れて、直してコーンにタッチしよう。",
    "learn": {
     "python": [
      "関数で motor を包む（ラッパー）: drive(l, r) の中で、さかさまなら motor(-r, -l)",
@@ -1270,10 +1270,10 @@
      "expect": "any",
      "rule": null,
      "when": "has('INVERTED') and count('cam_angle(') < 2",
-     "fix": "カメラの角度も cam_angle(c) で受け取ろう。さかさまの時は左右の符号が反対になる。"
+     "fix": "カメラの角度も cam_angle(c) で受け取ろう。さかさまのときは左右の符号が反対になる。"
     }
    ],
-   "senpai_clear": "さかさまでも走れる機体と、それを知っているプログラム。両方そろって「生き残る」ローバーだ。",
+   "senpai_clear": "さかさまでも走れる体と、それを知っているプログラム。両方そろって「生き残る」ローバーだ。",
    "explain": {
     "goal": "stop_at_cone",
     "goalRadius": 0.5,
@@ -1353,18 +1353,19 @@
    "lang": "python",
    "minutes": 15,
    "checkpoint": false,
-   "carry_from": "8-5",
-   "story": "着地の衝撃で、センサが壊れることがある。1 つ目の世界は全部元気、2 つ目は LiDAR のレンズが外れて何も測れない（ずっと None）、3 つ目はカメラが応答しない（camera() がエラーを出す）。どの世界でも、エラーで止まらず、できるだけコーンに近づこう。",
+   "carry_from": null,
+   "story": "去年の本番では、着地で LiDAR のレンズが外れて、コーンの 2 m 前で止まった。今年は壊れても止まらないプログラムで行こう。世界 1 は全部元気、世界 2 は LiDAR がずっと None、世界 3 はカメラがエラーを出す。道具は鍵つきの行で入っているよ。",
    "learn": {
     "python": [
      "try: 〜 except OSError: で、エラーが出ても止まらずに別の手を打つ",
      "global でフラグ（CAMERA_OK など。「使えるか」を覚えておく変数）を書きかえる",
-     "「壊れている」を見分ける: 1.6 m 先にコーンがあるはずなのに LiDAR が None"
+     "「壊れている」を見分ける: 1.6 m 先にコーンがあるはずなのに LiDAR が None",
+     "go_to(gx, gy, 5.0, 400) の 400 は、400 秒たったらあきらめる時間（timeout）。ずっと着かないときに、次の手へ進むため"
     ],
     "robot": [
      "フェイルセーフ・縮退運転: 1 つ壊れても、残ったセンサで最後まで行く",
      "カメラが無ければ GNSS だけ（数 m ずれる）、LiDAR が無ければカメラの大きさ＋エンコーダで近づく",
-     "先輩たちの機体でも、着地の衝撃で LiDAR（TSD20 という型）のレンズが外れたことがある。本当に起きる故障なんだ"
+     "去年の本物の機体も、着地の衝撃で LiDAR（TSD20 という型）のレンズが外れた。本当に起きる故障なんだ"
     ]
    },
    "new": [
@@ -1565,7 +1566,7 @@
      "expr": "t_stop <= 100",
      "label": "すべての世界で 100 秒以内",
      "need": "all",
-     "tip": "見つからない時に探し続けない。回数を決めて次の手へ",
+     "tip": "見つからないときに探し続けない。回数を決めて次の手へ",
      "measure": "t_stop",
      "better": "low",
      "unit": "秒"
@@ -1594,18 +1595,35 @@
     "text": "コーンの {cm} cm 手前で止まった",
     "world": "first_failed"
    },
-   "starter": "import math\nLAT0 = 35.726195      # 投下点（スタート）の緯度\nLON0 = 140.057112     # 投下点（スタート）の経度\n\ndef to_xy(lat, lon):\n    x = (lon - LON0) * 111320 * math.cos(math.radians(LAT0))\n    y = (lat - LAT0) * 110950\n    return x, y\n\n# 「持ってくる」で 8-5 のプログラムを入れて、壊れても止まらないようにしよう\ngx, gy = to_xy(GOAL_LAT, GOAL_LON)\nprint(\"ゴール\", gx, gy)\n",
-   "locked": [],
+   "starter": "# 鍵つきの行は、8 章と 9-4 までに作った道具。書くのは「↓ ここから書く」の 3 か所だけ\nimport math\nLAT0 = 35.726195      # 投下点（スタート）の緯度\nLON0 = 140.057112     # 投下点（スタート）の経度\n\ndef to_xy(lat, lon):\n    x = (lon - LON0) * 111320 * math.cos(math.radians(LAT0))\n    y = (lat - LAT0) * 110950\n    return x, y\n\ndef angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\n# ---- 1. 道具箱（さかさま・回る・GNSS で行く）\nINVERTED = False            # さかさまなら True（着地のあとで決める）\n\ndef drive(l, r):            # さかさまでも「前」に走る motor\n    l = max(-1, min(1, l))  # −1〜1 に収める（はみ出すと注意が出る）\n    r = max(-1, min(1, r))\n    if INVERTED:\n        motor(-r, -l)\n    else:\n        motor(l, r)\n\ndef cam_angle(c):           # さかさまだと画像の左右も逆\n    if INVERTED:\n        return -c.angle\n    return c.angle\n\ndef turn_small(deg):\n    if deg > 0:\n        drive(0.1, -0.1)\n    else:\n        drive(-0.1, 0.1)\n    wait(abs(deg) / 77.8)\n    stop()\n    wait(0.3)\n\ndef turn_to(target):\n    while True:\n        e = angle_diff(target, heading())\n        if abs(e) < 9:\n            break\n        if abs(e) > 30:\n            p = 0.25\n        else:\n            p = 0.1\n        if e > 0:\n            drive(p, -p)\n        else:\n            drive(-p, p)\n    stop()\n    wait(0.3)\n\ndef go_to(gx, gy, stop_dist, timeout):   # stop_dist m まで行く。timeout 秒たったらあきらめる\n    t0 = now()\n    while now() - t0 < timeout:\n        g = gnss()\n        if not g.valid:             # 測位がとぎれたら止まって待つ\n            stop()\n            wait(0.2)\n            continue\n        x, y = to_xy(g.lat, g.lon)\n        dx = gx - x\n        dy = gy - y\n        if math.hypot(dx, dy) < stop_dist:\n            break\n        d = lidar()\n        if d is not None and d < 0.4:   # 安全のため: 前に何かあったら止まる\n            break\n        e = angle_diff(math.degrees(math.atan2(dx, dy)), heading())\n        turn = max(-0.3, min(0.3, 0.01 * e))\n        drive(0.8 + turn, 0.8 - turn)\n    stop()\n\n# ---- 2. 壊れても止まらない道具（try と except）\nCAMERA_OK = True\n\ndef look():                 # カメラが壊れていたら None\n    global CAMERA_OK\n    if not CAMERA_OK:\n        return None\n    # ↓ ここから書く（1）: camera() を try: で包む。except OSError: なら CAMERA_OK を False にして None を返す\n    return None             # （いまはカメラを使わない）\n    # ↑ ここまで\n\ndef face_goal(gx, gy):      # GNSS でゴールの方を向く（探す前に）\n    g = gnss()\n    if g.valid:\n        x, y = to_xy(g.lat, g.lon)\n        turn_to(math.degrees(math.atan2(gx - x, gy - y)) % 360)\n\ndef find_cone():            # 止まって見る。もう一度見えたら本物（見まちがい対策）\n    for i in range(18):\n        c = look()\n        if c is None:\n            return None\n        if c.found:\n            for j in range(2):\n                c2 = look()\n                if c2 is not None and c2.found and abs(c2.angle - c.angle) < 8:\n                    return cam_angle(c2)\n        turn_small(40)\n    return None\n\ndef approach():             # カメラで近づく。大きく見えたら True、見失ったら False\n    lost = 0\n    while True:\n        c = look()\n        if c is None:\n            return False\n        if c.found and c.size > 0.04:\n            lost = 0\n            if c.size > 0.5:\n                return True\n            turn = 0.0015 * cam_angle(c)\n            drive(0.4 + turn, 0.4 - turn)\n        else:\n            lost = lost + 1\n            if lost >= 3:\n                stop()\n                return False\n\ndef aim():                  # 止まって、コーンの方を向き直す。その向きを返す\n    stop()\n    wait(0.3)\n    c = look()\n    if c is not None and c.found:\n        turn_small(cam_angle(c))\n    return heading()\n\ndef touch_camera(target):   # LiDAR が壊れた時: カメラの大きさ 0.85 まで近づいて、あと 25 cm\n    lost = 0\n    while True:\n        c = look()\n        if c is None:\n            break\n        if c.found:\n            lost = 0\n            if c.size > 0.85:\n                break\n            turn = 0.0015 * cam_angle(c)\n            drive(0.25 + turn, 0.25 - turn)\n        else:\n            lost = lost + 1\n            if lost >= 3:\n                break\n    start = odometer()\n    while abs(odometer() - start) < 0.25:\n        e = angle_diff(target, heading())\n        drive(0.15 + 0.02 * e, 0.15 - 0.02 * e)\n    stop()\n\ndef touch_lidar(target):    # LiDAR でそっとタッチ\n    start = odometer()           # 見張り: 1.5 m 進んでもふれなければやめる（光がコーンの横を通った時）\n    while abs(odometer() - start) < 1.5:\n        d = lidar()\n        if d is not None and d < 0.06:\n            break\n        if d is not None and d < 0.6:\n            base = 0.12\n        else:\n            base = 0.2              # LiDAR が値を返さない間もゆっくり\n        e = angle_diff(target, heading())\n        drive(base + 0.02 * e, base - 0.02 * e)\n    wait(0.4)\n    stop()\n\ndef touch():                # 最後のタッチ。LiDAR が壊れていたらカメラに切りかえる\n    target = aim()\n    # ↓ ここから書く（2）: lidar() が None なら touch_camera(target)、そうでなければ touch_lidar(target)\n    touch_lidar(target)\n    # ↑ ここまで\ngx, gy = to_xy(GOAL_LAT, GOAL_LON)\nwhile not gnss().valid:\n    wait(0.2)\n\n# ---- 3. GNSS → 探す → 近づく → タッチ（だめなら GNSS だけ）\nphase(\"GNSS\")\ngo_to(gx, gy, 5.0, 400)     # 5 m まで。400 秒たったらあきらめる\nface_goal(gx, gy)\nphase(\"探す\")\nreached = False\nfor k in range(4):\n    a = find_cone()\n    if a is None:\n        break\n    turn_small(a)\n    phase(\"近づく\")\n    if approach():\n        reached = True\n        break\n    phase(\"探す\")\nif reached:\n    phase(\"タッチ\")\n    touch()\nelse:\n    phase(\"GNSS だけ\")\n    # ↓ ここから書く（3）: カメラが使えない時の最後の手。go_to で GNSS だけでゴールの 1 m まで（120 秒であきらめる）\n    pass\n    # ↑ ここまで\nstop()\nphase(\"ゴール\")\n",
+   "locked": [
+    [
+     1,
+     83
+    ],
+    [
+     85,
+     171
+    ],
+    [
+     173,
+     199
+    ],
+    [
+     201,
+     203
+    ]
+   ],
    "blanks": [],
    "parsons": null,
    "predict": [],
    "predict_card": null,
    "hints": [
-    "camera() を try: で囲み、except OSError: のときは「カメラなし」の印を立てる。",
-    "LiDAR は、コーンの 1.6 m 手前で None なら壊れている。そのときはカメラの大きさ 0.85 まで近づき、エンコーダで 25 cm だけ進む。",
-    "カメラが無いときは、GNSS でゴールの 1 m まで行って止まる（数 m ずれるけど、0 点よりずっといい）。"
+    "（1）look() の中で、camera() を try: で囲む。except OSError: のときは CAMERA_OK = False にして None を返す。",
+    "（2）touch() の中で、if lidar() is None: なら touch_camera(target)、else: なら touch_lidar(target)。コーンの手前で None なら、LiDAR が壊れている。",
+    "（3）カメラが無いときは go_to(gx, gy, 1.0, 120) で、GNSS だけでゴールの 1 m まで行く（数 m ずれるけど、0 点よりずっといい）。"
    ],
-   "solution": "import math\nLAT0 = 35.726195      # 投下点（スタート）の緯度\nLON0 = 140.057112     # 投下点（スタート）の経度\n\ndef to_xy(lat, lon):\n    x = (lon - LON0) * 111320 * math.cos(math.radians(LAT0))\n    y = (lat - LAT0) * 110950\n    return x, y\n\ndef angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\n# ---- 1. 道具箱（さかさま・回る・GNSS で行く）\nINVERTED = False            # さかさまなら True（着地のあとで決める）\n\ndef drive(l, r):            # さかさまでも「前」に走る motor\n    l = max(-1, min(1, l))  # −1〜1 に収める（はみ出すと注意が出る）\n    r = max(-1, min(1, r))\n    if INVERTED:\n        motor(-r, -l)\n    else:\n        motor(l, r)\n\ndef cam_angle(c):           # さかさまだと画像の左右も逆\n    if INVERTED:\n        return -c.angle\n    return c.angle\n\ndef turn_small(deg):\n    if deg > 0:\n        drive(0.1, -0.1)\n    else:\n        drive(-0.1, 0.1)\n    wait(abs(deg) / 77.8)\n    stop()\n    wait(0.3)\n\ndef turn_to(target):\n    while True:\n        e = angle_diff(target, heading())\n        if abs(e) < 9:\n            break\n        if abs(e) > 30:\n            p = 0.25\n        else:\n            p = 0.1\n        if e > 0:\n            drive(p, -p)\n        else:\n            drive(-p, p)\n    stop()\n    wait(0.3)\n\ndef go_to(gx, gy, stop_dist, timeout):\n    t0 = now()\n    while now() - t0 < timeout:\n        g = gnss()\n        if not g.valid:             # 測位がとぎれたら止まって待つ\n            stop()\n            wait(0.2)\n            continue\n        x, y = to_xy(g.lat, g.lon)\n        dx = gx - x\n        dy = gy - y\n        if math.hypot(dx, dy) < stop_dist:\n            break\n        d = lidar()\n        if d is not None and d < 0.4:   # 安全のため: 前に何かあったら止まる\n            break\n        e = angle_diff(math.degrees(math.atan2(dx, dy)), heading())\n        turn = max(-0.3, min(0.3, 0.01 * e))\n        drive(0.8 + turn, 0.8 - turn)\n    stop()\n\n# ---- 2. 壊れても止まらない道具（try と except）\nCAMERA_OK = True\n\ndef look():                 # カメラが壊れていたら None\n    global CAMERA_OK\n    if not CAMERA_OK:\n        return None\n    try:\n        return camera()\n    except OSError:\n        CAMERA_OK = False\n        print(\"カメラが応答しない → GNSS だけで行く\")\n        return None\n\ndef face_goal(gx, gy):      # GNSS でゴールの方を向く（探す前に）\n    g = gnss()\n    if g.valid:\n        x, y = to_xy(g.lat, g.lon)\n        turn_to(math.degrees(math.atan2(gx - x, gy - y)) % 360)\n\ndef find_cone():            # 止まって見る。もう一度見えたら本物（見まちがい対策）\n    for i in range(18):\n        c = look()\n        if c is None:\n            return None\n        if c.found:\n            for j in range(2):\n                c2 = look()\n                if c2 is not None and c2.found and abs(c2.angle - c.angle) < 8:\n                    return cam_angle(c2)\n        turn_small(40)\n    return None\n\ndef approach():             # カメラで近づく。大きく見えたら True、見失ったら False\n    lost = 0\n    while True:\n        c = look()\n        if c is None:\n            return False\n        if c.found and c.size > 0.04:\n            lost = 0\n            if c.size > 0.5:\n                return True\n            turn = 0.0015 * cam_angle(c)\n            drive(0.4 + turn, 0.4 - turn)\n        else:\n            lost = lost + 1\n            if lost >= 3:\n                stop()\n                return False\n\ndef touch():                # 最後は LiDAR でそっとタッチ（LiDAR が壊れていたらカメラで）\n    stop()\n    wait(0.3)\n    c = look()\n    if c is not None and c.found:\n        turn_small(cam_angle(c))\n    target = heading()\n    if lidar() is None:     # 1.6 m 先にコーンがあるはずなのに None → 壊れている\n        print(\"LiDAR が応答しない → カメラの大きさで近づく\")\n        lost = 0\n        while True:\n            c = look()\n            if c is None:\n                break\n            if c.found:\n                lost = 0\n                if c.size > 0.85:\n                    break\n                turn = 0.0015 * cam_angle(c)\n                drive(0.25 + turn, 0.25 - turn)\n            else:\n                lost = lost + 1\n                if lost >= 3:\n                    break\n        start = odometer()\n        while abs(odometer() - start) < 0.25:\n            e = angle_diff(target, heading())\n            drive(0.15 + 0.02 * e, 0.15 - 0.02 * e)\n        stop()\n        return\n    start = odometer()           # 見張り: 1.5 m 進んでもふれなければやめる（光がコーンの横を通った時）\n    while abs(odometer() - start) < 1.5:\n        d = lidar()\n        if d is not None and d < 0.06:\n            break\n        if d is not None and d < 0.6:\n            base = 0.12\n        else:\n            base = 0.2              # LiDAR が値を返さない間もゆっくり\n        e = angle_diff(target, heading())\n        drive(base + 0.02 * e, base - 0.02 * e)\n    wait(0.4)\n    stop()\n\ngx, gy = to_xy(GOAL_LAT, GOAL_LON)\nwhile not gnss().valid:\n    wait(0.2)\n\n# ---- 3. GNSS → 探す → 近づく → タッチ（だめなら GNSS だけ）\nphase(\"GNSS\")\ngo_to(gx, gy, 5.0, 400)\nface_goal(gx, gy)\nphase(\"探す\")\nreached = False\nfor k in range(4):\n    a = find_cone()\n    if a is None:\n        break\n    turn_small(a)\n    phase(\"近づく\")\n    if approach():\n        reached = True\n        break\n    phase(\"探す\")\nif reached:\n    phase(\"タッチ\")\n    touch()\nelse:\n    phase(\"GNSS だけ\")       # カメラが使えないときの最後の手\n    go_to(gx, gy, 1.0, 120)\nstop()\nphase(\"ゴール\")\n",
+   "solution": "import math\nLAT0 = 35.726195      # 投下点（スタート）の緯度\nLON0 = 140.057112     # 投下点（スタート）の経度\n\ndef to_xy(lat, lon):\n    x = (lon - LON0) * 111320 * math.cos(math.radians(LAT0))\n    y = (lat - LAT0) * 110950\n    return x, y\n\ndef angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\n# ---- 1. 道具箱（さかさま・回る・GNSS で行く）\nINVERTED = False            # さかさまなら True（着地のあとで決める）\n\ndef drive(l, r):            # さかさまでも「前」に走る motor\n    l = max(-1, min(1, l))  # −1〜1 に収める（はみ出すと注意が出る）\n    r = max(-1, min(1, r))\n    if INVERTED:\n        motor(-r, -l)\n    else:\n        motor(l, r)\n\ndef cam_angle(c):           # さかさまだと画像の左右も逆\n    if INVERTED:\n        return -c.angle\n    return c.angle\n\ndef turn_small(deg):\n    if deg > 0:\n        drive(0.1, -0.1)\n    else:\n        drive(-0.1, 0.1)\n    wait(abs(deg) / 77.8)\n    stop()\n    wait(0.3)\n\ndef turn_to(target):\n    while True:\n        e = angle_diff(target, heading())\n        if abs(e) < 9:\n            break\n        if abs(e) > 30:\n            p = 0.25\n        else:\n            p = 0.1\n        if e > 0:\n            drive(p, -p)\n        else:\n            drive(-p, p)\n    stop()\n    wait(0.3)\n\ndef go_to(gx, gy, stop_dist, timeout):   # stop_dist m まで行く。timeout 秒たったらあきらめる\n    t0 = now()\n    while now() - t0 < timeout:\n        g = gnss()\n        if not g.valid:             # 測位がとぎれたら止まって待つ\n            stop()\n            wait(0.2)\n            continue\n        x, y = to_xy(g.lat, g.lon)\n        dx = gx - x\n        dy = gy - y\n        if math.hypot(dx, dy) < stop_dist:\n            break\n        d = lidar()\n        if d is not None and d < 0.4:   # 安全のため: 前に何かあったら止まる\n            break\n        e = angle_diff(math.degrees(math.atan2(dx, dy)), heading())\n        turn = max(-0.3, min(0.3, 0.01 * e))\n        drive(0.8 + turn, 0.8 - turn)\n    stop()\n\n# ---- 2. 壊れても止まらない道具（try と except）\nCAMERA_OK = True\n\ndef look():                 # カメラが壊れていたら None\n    global CAMERA_OK\n    if not CAMERA_OK:\n        return None\n    try:\n        return camera()\n    except OSError:\n        CAMERA_OK = False\n        print(\"カメラが応答しない → GNSS だけで行く\")\n        return None\n\ndef face_goal(gx, gy):      # GNSS でゴールの方を向く（探す前に）\n    g = gnss()\n    if g.valid:\n        x, y = to_xy(g.lat, g.lon)\n        turn_to(math.degrees(math.atan2(gx - x, gy - y)) % 360)\n\ndef find_cone():            # 止まって見る。もう一度見えたら本物（見まちがい対策）\n    for i in range(18):\n        c = look()\n        if c is None:\n            return None\n        if c.found:\n            for j in range(2):\n                c2 = look()\n                if c2 is not None and c2.found and abs(c2.angle - c.angle) < 8:\n                    return cam_angle(c2)\n        turn_small(40)\n    return None\n\ndef approach():             # カメラで近づく。大きく見えたら True、見失ったら False\n    lost = 0\n    while True:\n        c = look()\n        if c is None:\n            return False\n        if c.found and c.size > 0.04:\n            lost = 0\n            if c.size > 0.5:\n                return True\n            turn = 0.0015 * cam_angle(c)\n            drive(0.4 + turn, 0.4 - turn)\n        else:\n            lost = lost + 1\n            if lost >= 3:\n                stop()\n                return False\n\ndef aim():                  # 止まって、コーンの方を向き直す。その向きを返す\n    stop()\n    wait(0.3)\n    c = look()\n    if c is not None and c.found:\n        turn_small(cam_angle(c))\n    return heading()\n\ndef touch_camera(target):   # LiDAR が壊れた時: カメラの大きさ 0.85 まで近づいて、あと 25 cm\n    lost = 0\n    while True:\n        c = look()\n        if c is None:\n            break\n        if c.found:\n            lost = 0\n            if c.size > 0.85:\n                break\n            turn = 0.0015 * cam_angle(c)\n            drive(0.25 + turn, 0.25 - turn)\n        else:\n            lost = lost + 1\n            if lost >= 3:\n                break\n    start = odometer()\n    while abs(odometer() - start) < 0.25:\n        e = angle_diff(target, heading())\n        drive(0.15 + 0.02 * e, 0.15 - 0.02 * e)\n    stop()\n\ndef touch_lidar(target):    # LiDAR でそっとタッチ\n    start = odometer()           # 見張り: 1.5 m 進んでもふれなければやめる（光がコーンの横を通った時）\n    while abs(odometer() - start) < 1.5:\n        d = lidar()\n        if d is not None and d < 0.06:\n            break\n        if d is not None and d < 0.6:\n            base = 0.12\n        else:\n            base = 0.2              # LiDAR が値を返さない間もゆっくり\n        e = angle_diff(target, heading())\n        drive(base + 0.02 * e, base - 0.02 * e)\n    wait(0.4)\n    stop()\n\ndef touch():                # 最後のタッチ。LiDAR が壊れていたらカメラに切りかえる\n    target = aim()\n    if lidar() is None:     # 1.6 m 先にコーンがあるはずなのに None → 壊れている\n        print(\"LiDAR が応答しない → カメラの大きさで近づく\")\n        touch_camera(target)\n    else:\n        touch_lidar(target)\ngx, gy = to_xy(GOAL_LAT, GOAL_LON)\nwhile not gnss().valid:\n    wait(0.2)\n\n# ---- 3. GNSS → 探す → 近づく → タッチ（だめなら GNSS だけ）\nphase(\"GNSS\")\ngo_to(gx, gy, 5.0, 400)     # 5 m まで。400 秒たったらあきらめる\nface_goal(gx, gy)\nphase(\"探す\")\nreached = False\nfor k in range(4):\n    a = find_cone()\n    if a is None:\n        break\n    turn_small(a)\n    phase(\"近づく\")\n    if approach():\n        reached = True\n        break\n    phase(\"探す\")\nif reached:\n    phase(\"タッチ\")\n    touch()\nelse:\n    phase(\"GNSS だけ\")\n    go_to(gx, gy, 1.0, 120)  # カメラが使えない時の最後の手。120 秒であきらめる\nstop()\nphase(\"ゴール\")\n",
    "solution_labels": [
     "道具箱（さかさま・回る・GNSS で行く）",
     "壊れても止まらない道具（try と except）",
@@ -1615,14 +1633,14 @@
    "mistakes": [
     {
      "name": "try を使わない",
-     "code": "import math\nLAT0 = 35.726195      # 投下点（スタート）の緯度\nLON0 = 140.057112     # 投下点（スタート）の経度\n\ndef to_xy(lat, lon):\n    x = (lon - LON0) * 111320 * math.cos(math.radians(LAT0))\n    y = (lat - LAT0) * 110950\n    return x, y\n\ndef angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\ngx, gy = to_xy(GOAL_LAT, GOAL_LON)\nc = camera()\n",
+     "code": "import math\nLAT0 = 35.726195      # 投下点（スタート）の緯度\nLON0 = 140.057112     # 投下点（スタート）の経度\n\ndef to_xy(lat, lon):\n    x = (lon - LON0) * 111320 * math.cos(math.radians(LAT0))\n    y = (lat - LAT0) * 110950\n    return x, y\n\ndef angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\n# ---- 1. 道具箱（さかさま・回る・GNSS で行く）\nINVERTED = False            # さかさまなら True（着地のあとで決める）\n\ndef drive(l, r):            # さかさまでも「前」に走る motor\n    l = max(-1, min(1, l))  # −1〜1 に収める（はみ出すと注意が出る）\n    r = max(-1, min(1, r))\n    if INVERTED:\n        motor(-r, -l)\n    else:\n        motor(l, r)\n\ndef cam_angle(c):           # さかさまだと画像の左右も逆\n    if INVERTED:\n        return -c.angle\n    return c.angle\n\ndef turn_small(deg):\n    if deg > 0:\n        drive(0.1, -0.1)\n    else:\n        drive(-0.1, 0.1)\n    wait(abs(deg) / 77.8)\n    stop()\n    wait(0.3)\n\ndef turn_to(target):\n    while True:\n        e = angle_diff(target, heading())\n        if abs(e) < 9:\n            break\n        if abs(e) > 30:\n            p = 0.25\n        else:\n            p = 0.1\n        if e > 0:\n            drive(p, -p)\n        else:\n            drive(-p, p)\n    stop()\n    wait(0.3)\n\ndef go_to(gx, gy, stop_dist, timeout):   # stop_dist m まで行く。timeout 秒たったらあきらめる\n    t0 = now()\n    while now() - t0 < timeout:\n        g = gnss()\n        if not g.valid:             # 測位がとぎれたら止まって待つ\n            stop()\n            wait(0.2)\n            continue\n        x, y = to_xy(g.lat, g.lon)\n        dx = gx - x\n        dy = gy - y\n        if math.hypot(dx, dy) < stop_dist:\n            break\n        d = lidar()\n        if d is not None and d < 0.4:   # 安全のため: 前に何かあったら止まる\n            break\n        e = angle_diff(math.degrees(math.atan2(dx, dy)), heading())\n        turn = max(-0.3, min(0.3, 0.01 * e))\n        drive(0.8 + turn, 0.8 - turn)\n    stop()\n\n# ---- 2. 壊れても止まらない道具（try と except）\nCAMERA_OK = True\n\ndef look():                 # カメラが壊れていたら None\n    global CAMERA_OK\n    if not CAMERA_OK:\n        return None\n    return camera()\n\ndef face_goal(gx, gy):      # GNSS でゴールの方を向く（探す前に）\n    g = gnss()\n    if g.valid:\n        x, y = to_xy(g.lat, g.lon)\n        turn_to(math.degrees(math.atan2(gx - x, gy - y)) % 360)\n\ndef find_cone():            # 止まって見る。もう一度見えたら本物（見まちがい対策）\n    for i in range(18):\n        c = look()\n        if c is None:\n            return None\n        if c.found:\n            for j in range(2):\n                c2 = look()\n                if c2 is not None and c2.found and abs(c2.angle - c.angle) < 8:\n                    return cam_angle(c2)\n        turn_small(40)\n    return None\n\ndef approach():             # カメラで近づく。大きく見えたら True、見失ったら False\n    lost = 0\n    while True:\n        c = look()\n        if c is None:\n            return False\n        if c.found and c.size > 0.04:\n            lost = 0\n            if c.size > 0.5:\n                return True\n            turn = 0.0015 * cam_angle(c)\n            drive(0.4 + turn, 0.4 - turn)\n        else:\n            lost = lost + 1\n            if lost >= 3:\n                stop()\n                return False\n\ndef aim():                  # 止まって、コーンの方を向き直す。その向きを返す\n    stop()\n    wait(0.3)\n    c = look()\n    if c is not None and c.found:\n        turn_small(cam_angle(c))\n    return heading()\n\ndef touch_camera(target):   # LiDAR が壊れた時: カメラの大きさ 0.85 まで近づいて、あと 25 cm\n    lost = 0\n    while True:\n        c = look()\n        if c is None:\n            break\n        if c.found:\n            lost = 0\n            if c.size > 0.85:\n                break\n            turn = 0.0015 * cam_angle(c)\n            drive(0.25 + turn, 0.25 - turn)\n        else:\n            lost = lost + 1\n            if lost >= 3:\n                break\n    start = odometer()\n    while abs(odometer() - start) < 0.25:\n        e = angle_diff(target, heading())\n        drive(0.15 + 0.02 * e, 0.15 - 0.02 * e)\n    stop()\n\ndef touch_lidar(target):    # LiDAR でそっとタッチ\n    start = odometer()           # 見張り: 1.5 m 進んでもふれなければやめる（光がコーンの横を通った時）\n    while abs(odometer() - start) < 1.5:\n        d = lidar()\n        if d is not None and d < 0.06:\n            break\n        if d is not None and d < 0.6:\n            base = 0.12\n        else:\n            base = 0.2              # LiDAR が値を返さない間もゆっくり\n        e = angle_diff(target, heading())\n        drive(base + 0.02 * e, base - 0.02 * e)\n    wait(0.4)\n    stop()\n\ndef touch():                # 最後のタッチ。LiDAR が壊れていたらカメラに切りかえる\n    target = aim()\n    if lidar() is None:     # 1.6 m 先にコーンがあるはずなのに None → 壊れている\n        print(\"LiDAR が応答しない → カメラの大きさで近づく\")\n        touch_camera(target)\n    else:\n        touch_lidar(target)\ngx, gy = to_xy(GOAL_LAT, GOAL_LON)\nwhile not gnss().valid:\n    wait(0.2)\n\n# ---- 3. GNSS → 探す → 近づく → タッチ（だめなら GNSS だけ）\nphase(\"GNSS\")\ngo_to(gx, gy, 5.0, 400)     # 5 m まで。400 秒たったらあきらめる\nface_goal(gx, gy)\nphase(\"探す\")\nreached = False\nfor k in range(4):\n    a = find_cone()\n    if a is None:\n        break\n    turn_small(a)\n    phase(\"近づく\")\n    if approach():\n        reached = True\n        break\n    phase(\"探す\")\nif reached:\n    phase(\"タッチ\")\n    touch()\nelse:\n    phase(\"GNSS だけ\")\n    go_to(gx, gy, 1.0, 120)  # カメラが使えない時の最後の手。120 秒であきらめる\nstop()\nphase(\"ゴール\")\n",
      "say": "カメラが応答しないと、そこでプログラムが止まる。本番なら 0 点。try: で包んで、別の手を打とう。",
      "expect": "fail",
      "rule": "SENSOR_BROKEN",
      "when": "card('SENSOR_BROKEN') or (has('camera()') and not has('try'))"
     }
    ],
-   "senpai_clear": "「壊れても止まらない」。これが去年のチームが本番で一番ほしかった力なんだ。",
+   "senpai_clear": "「壊れても止まらない」。これが去年のチームが本番でいちばんほしかった力なんだ。",
    "explain": {
     "goal": "stop_at_cone",
     "goalRadius": 3.0,
@@ -1670,7 +1688,7 @@
       "x": 14.231,
       "y": 20.188,
       "heading": 53.2,
-      "lines": 178,
+      "lines": 184,
       "gap": 0
      },
      {
@@ -1678,7 +1696,7 @@
       "x": 12.255,
       "y": -21.267,
       "heading": 149.9,
-      "lines": 178,
+      "lines": 184,
       "gap": 0.146
      },
      {
@@ -1686,7 +1704,7 @@
       "x": -25.92,
       "y": -1.578,
       "heading": 353.3,
-      "lines": 178,
+      "lines": 184,
       "gap": 2.744
      }
     ],
@@ -1703,7 +1721,7 @@
    "minutes": 25,
    "checkpoint": true,
    "carry_from": null,
-   "story": "30 m から落として、着地 → 分離 → 回避 → GNSS → カメラ → LiDAR まで、1 本のプログラムで通そう。風の向きは分からない（降下中に流された向きから考える）。「道具箱」で 9-2〜9-5 の関数を入れて組み立てよう。（チェックポイント面・本番テストあり）",
+   "story": "30 m から落として、着地 → 分離 → 回避 → GNSS → カメラ → LiDAR まで、1 本のプログラムで通そう。風の向きは分からない（降下中に流された向きから考える）。「道具箱」で 9-2〜9-5 の関数を入れて組み立てよう。本番テストでも確かめよう。",
    "learn": {
     "python": [
      "これまでの関数を全部組み合わせる。フェーズごとに phase() で記録"
@@ -1711,7 +1729,8 @@
     "robot": [
      "風の向きは「降下中に流された向き」＝ GNSS で投下前と着地後の位置の差",
      "パラは風下。風下と直角の向きに逃げれば、ゴールがどちらにあってもパラを踏まない",
-     "ミッションの順番: 待機 → 着地 → 分離 → 回避 → GNSS → 探す → 近づく → タッチ → ゴール"
+     "ミッションの順番: 待機 → 着地 → 分離 → 回避 → GNSS → 探す → 近づく → タッチ → ゴール",
+     "本物の機体では、くり返しの中に wait(0.02) などを入れる（何もしないくり返しは、マイコンの力を使いきってしまう）"
     ]
    },
    "new": [],
@@ -2545,7 +2564,7 @@
      "expr": "n_phase('着地') >= 1 and not motor_before_land and not nichrome_in_air"
     },
     {
-     "label": "パラシュートを切り離す",
+     "label": "パラを切り離す",
      "expr": "separated"
     },
     {
@@ -2577,7 +2596,7 @@
     "逃げる向きは、風下 ±90° のうちゴールの方に近い方。turn_to でそっちを向いて 3 m。",
     "9-4 の drive・cam_angle、9-5 の look・find_cone・approach・touch を道具箱にして、順に呼ぶ。"
    ],
-   "solution": "import math\nLAT0 = 35.726195      # 投下点（スタート）の緯度\nLON0 = 140.057112     # 投下点（スタート）の経度\n\ndef to_xy(lat, lon):\n    x = (lon - LON0) * 111320 * math.cos(math.radians(LAT0))\n    y = (lat - LAT0) * 110950\n    return x, y\n\ndef angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\n# ---- 1. 道具箱（さかさま・回る・GNSS・カメラ・タッチ）\nINVERTED = False            # さかさまなら True（着地のあとで決める）\n\ndef drive(l, r):            # さかさまでも「前」に走る motor\n    l = max(-1, min(1, l))  # −1〜1 に収める（はみ出すと注意が出る）\n    r = max(-1, min(1, r))\n    if INVERTED:\n        motor(-r, -l)\n    else:\n        motor(l, r)\n\ndef cam_angle(c):           # さかさまだと画像の左右も逆\n    if INVERTED:\n        return -c.angle\n    return c.angle\n\ndef turn_small(deg):\n    if deg > 0:\n        drive(0.1, -0.1)\n    else:\n        drive(-0.1, 0.1)\n    wait(abs(deg) / 77.8)\n    stop()\n    wait(0.3)\n\ndef turn_to(target):\n    while True:\n        e = angle_diff(target, heading())\n        if abs(e) < 9:\n            break\n        if abs(e) > 30:\n            p = 0.25\n        else:\n            p = 0.1\n        if e > 0:\n            drive(p, -p)\n        else:\n            drive(-p, p)\n    stop()\n    wait(0.3)\n\ndef go_to(gx, gy, stop_dist, timeout):\n    t0 = now()\n    while now() - t0 < timeout:\n        g = gnss()\n        if not g.valid:             # 測位がとぎれたら止まって待つ\n            stop()\n            wait(0.2)\n            continue\n        x, y = to_xy(g.lat, g.lon)\n        dx = gx - x\n        dy = gy - y\n        if math.hypot(dx, dy) < stop_dist:\n            break\n        d = lidar()\n        if d is not None and d < 0.4:   # 安全のため: 前に何かあったら止まる\n            break\n        e = angle_diff(math.degrees(math.atan2(dx, dy)), heading())\n        turn = max(-0.3, min(0.3, 0.01 * e))\n        drive(0.8 + turn, 0.8 - turn)\n    stop()\n\nCAMERA_OK = True\n\ndef look():                 # カメラが壊れていたら None\n    global CAMERA_OK\n    if not CAMERA_OK:\n        return None\n    try:\n        return camera()\n    except OSError:\n        CAMERA_OK = False\n        print(\"カメラが応答しない → GNSS だけで行く\")\n        return None\n\ndef face_goal(gx, gy):      # GNSS でゴールの方を向く（探す前に）\n    g = gnss()\n    if g.valid:\n        x, y = to_xy(g.lat, g.lon)\n        turn_to(math.degrees(math.atan2(gx - x, gy - y)) % 360)\n\ndef find_cone():            # 止まって見る。もう一度見えたら本物（見まちがい対策）\n    for i in range(18):\n        c = look()\n        if c is None:\n            return None\n        if c.found:\n            for j in range(2):\n                c2 = look()\n                if c2 is not None and c2.found and abs(c2.angle - c.angle) < 8:\n                    return cam_angle(c2)\n        turn_small(40)\n    return None\n\ndef approach():             # カメラで近づく。大きく見えたら True、見失ったら False\n    lost = 0\n    while True:\n        c = look()\n        if c is None:\n            return False\n        if c.found and c.size > 0.04:\n            lost = 0\n            if c.size > 0.5:\n                return True\n            turn = 0.0015 * cam_angle(c)\n            drive(0.4 + turn, 0.4 - turn)\n        else:\n            lost = lost + 1\n            if lost >= 3:\n                stop()\n                return False\n\ndef touch():                # 最後は LiDAR でそっとタッチ（LiDAR が壊れていたらカメラで）\n    stop()\n    wait(0.3)\n    c = look()\n    if c is not None and c.found:\n        turn_small(cam_angle(c))\n    target = heading()\n    if lidar() is None:     # 1.6 m 先にコーンがあるはずなのに None → 壊れている\n        print(\"LiDAR が応答しない → カメラの大きさで近づく\")\n        lost = 0\n        while True:\n            c = look()\n            if c is None:\n                break\n            if c.found:\n                lost = 0\n                if c.size > 0.85:\n                    break\n                turn = 0.0015 * cam_angle(c)\n                drive(0.25 + turn, 0.25 - turn)\n            else:\n                lost = lost + 1\n                if lost >= 3:\n                    break\n        start = odometer()\n        while abs(odometer() - start) < 0.25:\n            e = angle_diff(target, heading())\n            drive(0.15 + 0.02 * e, 0.15 - 0.02 * e)\n        stop()\n        return\n    start = odometer()           # 見張り: 1.5 m 進んでもふれなければやめる（光がコーンの横を通った時）\n    while abs(odometer() - start) < 1.5:\n        d = lidar()\n        if d is not None and d < 0.06:\n            break\n        if d is not None and d < 0.6:\n            base = 0.12\n        else:\n            base = 0.2              # LiDAR が値を返さない間もゆっくり\n        e = angle_diff(target, heading())\n        drive(base + 0.02 * e, base - 0.02 * e)\n    wait(0.4)\n    stop()\n\n# ---- 2. 待機 → 着地\nphase(\"待機\")\nwhile not gnss().valid:\n    wait(0.2)\ng = gnss()\nx0, y0 = to_xy(g.lat, g.lon)          # クレーンの上（投下前）の位置\nhist = []\nwhile True:\n    a = altitude()\n    hist.append(a)\n    if len(hist) > 30:\n        hist.pop(0)\n    if len(hist) == 30 and max(hist) - min(hist) < 0.6 and a < 2:\n        break\n    wait(0.1)\nphase(\"着地\")\nax, ay, az = accel()\nINVERTED = az < 0\n# ---- 3. 分離（念のため 2 回焼く）\nphase(\"分離\")\nfor i in range(2):\n    nichrome(True)\n    wait(3)\n    nichrome(False)\n    wait(1)\n# ---- 4. 回避: 降下中に流された向き＝風下。風下と直角の、ゴールに近い方へ 3 m\ng = gnss()\nx1, y1 = to_xy(g.lat, g.lon)\ndown = math.degrees(math.atan2(x1 - x0, y1 - y0))\ngx, gy = to_xy(GOAL_LAT, GOAL_LON)\nto_goal = math.degrees(math.atan2(gx - x1, gy - y1))\nside1 = (down + 90) % 360\nside2 = (down - 90) % 360\nif abs(angle_diff(side1, to_goal)) < abs(angle_diff(side2, to_goal)):\n    esc = side1\nelse:\n    esc = side2\nphase(\"回避\")\nturn_to(esc)\nstart = odometer()\ndrive(0.6, 0.6)\nwhile abs(odometer() - start) < 3.0:\n    pass\nstop()\n\n# ---- 5. GNSS → 探す → 近づく → タッチ\nphase(\"GNSS\")\ngo_to(gx, gy, 5.0, 400)\nface_goal(gx, gy)\nphase(\"探す\")\nreached = False\nfor k in range(4):\n    a = find_cone()\n    if a is None:\n        break\n    turn_small(a)\n    phase(\"近づく\")\n    if approach():\n        reached = True\n        break\n    phase(\"探す\")\nif reached:\n    phase(\"タッチ\")\n    touch()\nelse:\n    phase(\"GNSS だけ\")       # カメラが使えないときの最後の手\n    go_to(gx, gy, 1.0, 120)\nstop()\nphase(\"ゴール\")\n",
+   "solution": "import math\nLAT0 = 35.726195      # 投下点（スタート）の緯度\nLON0 = 140.057112     # 投下点（スタート）の経度\n\ndef to_xy(lat, lon):\n    x = (lon - LON0) * 111320 * math.cos(math.radians(LAT0))\n    y = (lat - LAT0) * 110950\n    return x, y\n\ndef angle_diff(target, cur):\n    return (target - cur + 180) % 360 - 180\n\n# ---- 1. 道具箱（さかさま・回る・GNSS・カメラ・タッチ）\nINVERTED = False            # さかさまなら True（着地のあとで決める）\n\ndef drive(l, r):            # さかさまでも「前」に走る motor\n    l = max(-1, min(1, l))  # −1〜1 に収める（はみ出すと注意が出る）\n    r = max(-1, min(1, r))\n    if INVERTED:\n        motor(-r, -l)\n    else:\n        motor(l, r)\n\ndef cam_angle(c):           # さかさまだと画像の左右も逆\n    if INVERTED:\n        return -c.angle\n    return c.angle\n\ndef turn_small(deg):\n    if deg > 0:\n        drive(0.1, -0.1)\n    else:\n        drive(-0.1, 0.1)\n    wait(abs(deg) / 77.8)\n    stop()\n    wait(0.3)\n\ndef turn_to(target):\n    while True:\n        e = angle_diff(target, heading())\n        if abs(e) < 9:\n            break\n        if abs(e) > 30:\n            p = 0.25\n        else:\n            p = 0.1\n        if e > 0:\n            drive(p, -p)\n        else:\n            drive(-p, p)\n        wait(0.02)\n    stop()\n    wait(0.3)\n\ndef go_to(gx, gy, stop_dist, timeout):\n    t0 = now()\n    while now() - t0 < timeout:\n        g = gnss()\n        if not g.valid:             # 測位がとぎれたら止まって待つ\n            stop()\n            wait(0.2)\n            continue\n        x, y = to_xy(g.lat, g.lon)\n        dx = gx - x\n        dy = gy - y\n        if math.hypot(dx, dy) < stop_dist:\n            break\n        d = lidar()\n        if d is not None and d < 0.4:   # 安全のため: 前に何かあったら止まる\n            break\n        e = angle_diff(math.degrees(math.atan2(dx, dy)), heading())\n        turn = max(-0.3, min(0.3, 0.01 * e))\n        drive(0.8 + turn, 0.8 - turn)\n        wait(0.02)\n    stop()\n\nCAMERA_OK = True\n\ndef look():                 # カメラが壊れていたら None\n    global CAMERA_OK\n    if not CAMERA_OK:\n        return None\n    try:\n        return camera()\n    except OSError:\n        CAMERA_OK = False\n        print(\"カメラが応答しない → GNSS だけで行く\")\n        return None\n\ndef face_goal(gx, gy):      # GNSS でゴールの方を向く（探す前に）\n    g = gnss()\n    if g.valid:\n        x, y = to_xy(g.lat, g.lon)\n        turn_to(math.degrees(math.atan2(gx - x, gy - y)) % 360)\n\ndef find_cone():            # 止まって見る。もう一度見えたら本物（見まちがい対策）\n    for i in range(18):\n        c = look()\n        if c is None:\n            return None\n        if c.found:\n            for j in range(2):\n                c2 = look()\n                if c2 is not None and c2.found and abs(c2.angle - c.angle) < 8:\n                    return cam_angle(c2)\n        turn_small(40)\n    return None\n\ndef approach():             # カメラで近づく。大きく見えたら True、見失ったら False\n    lost = 0\n    while True:\n        c = look()\n        if c is None:\n            return False\n        if c.found and c.size > 0.04:\n            lost = 0\n            if c.size > 0.5:\n                return True\n            turn = 0.0015 * cam_angle(c)\n            drive(0.4 + turn, 0.4 - turn)\n        else:\n            lost = lost + 1\n            if lost >= 3:\n                stop()\n                return False\n\ndef touch():                # 最後は LiDAR でそっとタッチ（LiDAR が壊れていたらカメラで）\n    stop()\n    wait(0.3)\n    c = look()\n    if c is not None and c.found:\n        turn_small(cam_angle(c))\n    target = heading()\n    if lidar() is None:     # 1.6 m 先にコーンがあるはずなのに None → 壊れている\n        print(\"LiDAR が応答しない → カメラの大きさで近づく\")\n        lost = 0\n        while True:\n            c = look()\n            if c is None:\n                break\n            if c.found:\n                lost = 0\n                if c.size > 0.85:\n                    break\n                turn = 0.0015 * cam_angle(c)\n                drive(0.25 + turn, 0.25 - turn)\n            else:\n                lost = lost + 1\n                if lost >= 3:\n                    break\n        start = odometer()\n        while abs(odometer() - start) < 0.25:\n            e = angle_diff(target, heading())\n            drive(0.15 + 0.02 * e, 0.15 - 0.02 * e)\n            wait(0.02)\n        stop()\n        return\n    start = odometer()           # 見張り: 1.5 m 進んでもふれなければやめる（光がコーンの横を通った時）\n    while abs(odometer() - start) < 1.5:\n        d = lidar()\n        if d is not None and d < 0.06:\n            break\n        if d is not None and d < 0.6:\n            base = 0.12\n        else:\n            base = 0.2              # LiDAR が値を返さない間もゆっくり\n        e = angle_diff(target, heading())\n        drive(base + 0.02 * e, base - 0.02 * e)\n        wait(0.02)\n    wait(0.4)\n    stop()\n\n# ---- 2. 待機 → 着地\nphase(\"待機\")\nwhile not gnss().valid:\n    wait(0.2)\ng = gnss()\nx0, y0 = to_xy(g.lat, g.lon)          # クレーンの上（投下前）の位置\nhist = []\nwhile True:\n    a = altitude()\n    hist.append(a)\n    if len(hist) > 30:\n        hist.pop(0)\n    if len(hist) == 30 and max(hist) - min(hist) < 0.6 and a < 2:\n        break\n    wait(0.1)\nphase(\"着地\")\nax, ay, az = accel()\nINVERTED = az < 0\n# ---- 3. 分離（念のため 2 回焼く）\nphase(\"分離\")\nfor i in range(2):\n    nichrome(True)\n    wait(3)\n    nichrome(False)\n    wait(1)\n# ---- 4. 回避: 降下中に流された向き＝風下。風下と直角の、ゴールに近い方へ 3 m\ng = gnss()\nx1, y1 = to_xy(g.lat, g.lon)\ndown = math.degrees(math.atan2(x1 - x0, y1 - y0))\ngx, gy = to_xy(GOAL_LAT, GOAL_LON)\nto_goal = math.degrees(math.atan2(gx - x1, gy - y1))\nside1 = (down + 90) % 360\nside2 = (down - 90) % 360\nif abs(angle_diff(side1, to_goal)) < abs(angle_diff(side2, to_goal)):\n    esc = side1\nelse:\n    esc = side2\nphase(\"回避\")\nturn_to(esc)\nstart = odometer()\ndrive(0.6, 0.6)\nwhile abs(odometer() - start) < 3.0:\n    wait(0.02)\nstop()\n\n# ---- 5. GNSS → 探す → 近づく → タッチ\nphase(\"GNSS\")\ngo_to(gx, gy, 5.0, 400)\nface_goal(gx, gy)\nphase(\"探す\")\nreached = False\nfor k in range(4):\n    a = find_cone()\n    if a is None:\n        break\n    turn_small(a)\n    phase(\"近づく\")\n    if approach():\n        reached = True\n        break\n    phase(\"探す\")\nif reached:\n    phase(\"タッチ\")\n    touch()\nelse:\n    phase(\"GNSS だけ\")       # カメラが使えないときの最後の手\n    go_to(gx, gy, 1.0, 120)\nstop()\nphase(\"ゴール\")\n",
    "solution_labels": [
     "道具箱（さかさま・回る・GNSS・カメラ・タッチ）",
     "待機 → 着地",
@@ -2640,28 +2659,28 @@
     ],
     "worlds": [
      {
-      "t_stop": 63.72,
-      "x": 25.807,
-      "y": 14.743,
-      "heading": 23.9,
-      "lines": 216,
+      "t_stop": 63.9,
+      "x": 25.81,
+      "y": 14.741,
+      "heading": 42.3,
+      "lines": 220,
       "gap": 0
      },
      {
-      "t_stop": 52.28,
-      "x": -26.009,
-      "y": -9.51,
-      "heading": 274.3,
-      "lines": 216,
+      "t_stop": 54.3,
+      "x": -26.014,
+      "y": -9.489,
+      "heading": 234.7,
+      "lines": 220,
       "gap": 0
      },
      {
-      "t_stop": 53.18,
-      "x": 5.385,
-      "y": 31.256,
-      "heading": 50,
-      "lines": 216,
-      "gap": 0
+      "t_stop": 53.8,
+      "x": 5.426,
+      "y": 31.219,
+      "heading": 50.2,
+      "lines": 220,
+      "gap": 0.013
      }
     ],
     "sim": "w1"
