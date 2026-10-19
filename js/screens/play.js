@@ -20,6 +20,7 @@ import { createHints, HINT_WAIT_MS } from '../hints.js';
 import { oneShotStarIndexes } from '../store.js';
 import { showClear, testTable, headline } from './result.js';
 import { failCard } from './loadfail.js';
+import { setupLayout } from './play_layout.js';
 import { chapterLabel, countLines, fmtMeasure, measureOf, isMeasured, learnCard, predictCard, stepsCard, goalsCard, hudValues, unitOf, fmtCm, measureText } from './play_parts.js';
 
 const DAY = 86400000;
@@ -89,8 +90,12 @@ export async function mount(root, app, id) {
       <div class="legend" aria-hidden="true"><span class="lg now">${esc(t('play.legend_now'))}</span><span class="lg prev">${esc(t('play.legend_prev'))}</span><span class="lg senpai">${esc(t('play.legend_senpai'))}</span></div>
       <button type="button" class="btn small senpai-run" hidden>${esc(t('button.show_senpai_run'))}</button>
       <div class="result-slot"></div>
-      <div class="vsplit" role="separator" aria-orientation="horizontal" tabindex="0" aria-valuemin="0" aria-valuemax="100" aria-valuenow="45" aria-label="${esc(t('play.vsplit'))}"></div>
     </div>
+    <div class="vsplit" role="separator" aria-orientation="horizontal" tabindex="0" aria-valuemin="0" aria-valuemax="100" aria-valuenow="45" aria-controls="pane-view" aria-label="${esc(t('play.vsplit'))}"></div>
+    <div class="asplit" role="separator" aria-orientation="vertical" tabindex="0" aria-valuemin="0" aria-valuemax="100" aria-valuenow="30" aria-controls="pane-mission" aria-label="${esc(t('play.split_aside'))}"></div>
+    <div class="csplit" role="separator" aria-orientation="vertical" tabindex="0" aria-valuemin="0" aria-valuemax="100" aria-valuenow="25" aria-controls="pane-output" aria-label="${esc(t('play.split_console'))}"></div>
+    <button type="button" class="unfold unfold-aside" aria-controls="pane-mission"><span>${esc(t('play.unfold_aside'))}</span></button>
+    <button type="button" class="unfold unfold-console" aria-controls="pane-output"><span>${esc(t('play.unfold_console'))}</span></button>
     <div class="tl-host"><div class="tl-empty"><span>${esc(t('play.tl_empty'))}</span><i class="tl-rail" aria-hidden="true"></i></div></div>
     <div class="curline" aria-hidden="true"></div>
     <div class="fail-head" hidden><span class="fh-mark" aria-hidden="true">✗</span><span class="fh-text"></span><button type="button" class="fh-go">${esc(t('play.fail_head_go'))}</button></div>
@@ -490,37 +495,10 @@ export async function mount(root, app, id) {
     else if (a === 'sil') onSil();
     else if (a === 'palette') { const on = !q('.editor').classList.contains('pal-open'); q('.editor').classList.toggle('pal-open', on); b.setAttribute('aria-pressed', String(on)); }
   });
-  // 3D とエディタの境目を引いて、3D の高さを変える（低い画面でエディタを広く。直し A-4）
-  (() => {
-    const bar = q('.vsplit');
-    const KEY = 'rovercode.viewH';
-    const apply = (px) => {
-      const h = P.getBoundingClientRect().height;
-      const v = Math.max(120, Math.min(h - 160, px));
-      P.style.setProperty('--view-h', `${Math.round(v)}px`);
-      bar.setAttribute('aria-valuenow', String(Math.round(v / Math.max(1, h) * 100)));
-      try { scene && scene.resize && scene.resize(); } catch { /* なし */ }
-      return v;
-    };
-    try { const v = Number(localStorage.getItem(KEY)); if (v > 0 && !matchesNarrow()) apply(v); } catch { /* なし */ }
-    const save = () => { try { localStorage.setItem(KEY, String(Math.round(q('.view').getBoundingClientRect().height))); } catch { /* なし */ } };
-    bar.addEventListener('pointerdown', (e) => {
-      e.preventDefault();
-      bar.setPointerCapture(e.pointerId);
-      const top = P.getBoundingClientRect().top;
-      const move = (ev) => apply(ev.clientY - top);
-      const up = () => { bar.removeEventListener('pointermove', move); bar.removeEventListener('pointerup', up); save(); };
-      bar.addEventListener('pointermove', move);
-      bar.addEventListener('pointerup', up);
-    });
-    bar.addEventListener('keydown', (e) => {
-      if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
-      e.preventDefault();
-      apply(q('.view').getBoundingClientRect().height + (e.key === 'ArrowDown' ? 24 : -24));
-      save();
-    });
-    bar.addEventListener('dblclick', () => { P.style.removeProperty('--view-h'); try { localStorage.removeItem(KEY); } catch { /* なし */ } try { scene.resize && scene.resize(); } catch { /* なし */ } });
-  })();
+  // 境目を引いて欄の大きさを変える（左の欄｜右側・3D／エディタ・エディタ｜出力。900 px 以上だけ。直し A-4 を広げた。直し係 7）
+  const layout = setupLayout(P, { t, getCM: () => { try { return editor && editor.getCM && editor.getCM(); } catch { return null; } } });
+  offs.push(() => layout.destroy());
+  app.playLayout = () => layout;               // テストと調べ物のため
   q('.ptabs').addEventListener('click', (e) => { const b = e.target.closest('[data-tab]'); if (b) setTab(b.dataset.tab, true); });
   q('.ptabs').addEventListener('keydown', (e) => {
     if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
@@ -1480,6 +1458,7 @@ export async function mount(root, app, id) {
       audio.stopDrive();
       app.playEditor = null;
       app.playScene = null;
+      app.playLayout = null;
       if (timeline) { try { timeline.destroy(); } catch { /* なし */ } }
       if (graphs) { try { graphs.destroy(); } catch { /* なし */ } }
       try { scene.dispose(); } catch { /* なし */ }

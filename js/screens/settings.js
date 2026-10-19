@@ -6,6 +6,7 @@
  * SPEC: 3.9・10.1・7.9（読み込みは中身を確かめ、違いを見せてから置きかえる。元に戻せる）
  */
 
+import { resetSavedLayout } from './play_layout.js';
 import { esc } from '../ui/strings.js';
 import { icon } from '../ui/icons.js';
 import { confirmDialog } from '../ui/dialog.js';
@@ -78,6 +79,10 @@ export function mount(root, app, param) {
           ${check('ov_sensors', t('settings.ov_sensors'), st.overlays.sensors)}
           ${check('ov_gnss', t('settings.ov_gnss'), st.overlays.gnss)}
         </fieldset>
+        <fieldset class="layout"><legend>${esc(t('settings.layout'))}</legend>
+          <p class="note">${esc(t('settings.layout_note'))}</p>
+          <button type="button" class="btn" data-a="layout_reset">${icon('reset')}<span>${esc(t('settings.layout_reset'))}</span></button>
+        </fieldset>
         <fieldset class="data"><legend>${esc(t('settings.data'))}</legend>
           <p class="note">${esc(lastText)}</p>
           <p class="note">${esc(t('settings.usage', { kb: Math.ceil(u.bytes / 1024), max: Math.round(u.quota / 1024) }))}</p>
@@ -139,6 +144,7 @@ export function mount(root, app, param) {
     if (!b) return;
     const a = b.dataset.a;
     if (a === 'export') { app.exportRecord(); render(); }
+    else if (a === 'layout_reset') { resetSavedLayout(); app.toast(t('settings.layout_done')); }
     else if (a === 'undo') { if (store.undoImport()) { app.applySettings(store.settings()); app.refreshHeader(); app.toast(t('settings.undo_done')); render(); } }
     else if (a === 'delete') {
       if (!(await confirmDialog(t('button.delete_all'), t('settings.delete_confirm1'), { ok: t('button.delete_all'), danger: true }))) return;

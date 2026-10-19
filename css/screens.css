@@ -296,7 +296,7 @@
 
 /* 900〜1279 px（3.11: 左 360 px、出力はエディタの下に重ねてタブ） */
 @media (max-width: 1279px) {
-  .play { --view-h: 42%; grid-template-columns: 360px minmax(0, 1fr); grid-template-rows: var(--view-h) var(--timeline-h) auto minmax(0, 1fr);
+  .play { --view-h: 42%; --aside-w: 360px; grid-template-columns: var(--aside-w) minmax(0, 1fr); grid-template-rows: var(--view-h) var(--timeline-h) auto minmax(0, 1fr);
     grid-template-areas: "mission view" "mission tl" "mission tabs" "mission pane"; }
   .play > .ptabs { display: flex; }
   .ptabs [data-tab="mission"], .ptabs [data-tab="view"] { display: none; }
@@ -509,10 +509,35 @@
 @media (min-width: 900px) and (min-height: 821px) { .editor [data-a="palette"] { display: none; } }
 @media (max-width: 899px) { .editor [data-a="palette"] { display: none; } }
 .editor [data-a="palette"][aria-pressed="true"] { background: #4a565d; }
-.vsplit { position: absolute; left: 0; right: 0; bottom: -5px; height: 10px; z-index: 6; cursor: row-resize; touch-action: none; }
-.vsplit::after { content: ""; position: absolute; left: 50%; top: 3px; width: 44px; height: 4px; margin-left: -22px; border-radius: 2px; background: rgba(35, 49, 58, .35); }
-.vsplit:hover::after, .vsplit:focus-visible::after { background: rgba(35, 49, 58, .7); }
-@media (max-width: 899px) { .vsplit { display: none; } }
+/* 境目（直し係 7: 全部の境目を引ける。900 px 以上だけ。ふだんは欄のふちの細い線だけで、乗せた時につかめる見た目） */
+.vsplit, .asplit, .csplit, .unfold { display: none; }
+@media (min-width: 900px) {
+  .play { position: relative; }
+  .vsplit, .asplit { display: block; }
+  .vsplit, .asplit, .csplit { position: absolute; z-index: 7; touch-action: none; background: transparent; outline: none; }
+  .vsplit { grid-area: view; left: 0; right: 0; bottom: -5px; height: 10px; cursor: row-resize; }
+  .asplit { grid-area: mission; top: 0; bottom: 0; right: -7px; width: 10px; cursor: col-resize; }
+  .vsplit::after, .asplit::after, .csplit::after { content: ""; position: absolute; border-radius: 2px; background: var(--sub); opacity: 0; transition: opacity .12s; }
+  .vsplit::after { left: 0; right: 0; top: 3px; height: 4px; }
+  .asplit::after, .csplit::after { top: 0; bottom: 0; left: 3px; width: 4px; }
+  .vsplit:hover::after, .asplit:hover::after, .csplit:hover::after { opacity: .45; }
+  .vsplit.dragging::after, .asplit.dragging::after, .csplit.dragging::after { opacity: .7; }
+  .vsplit:focus-visible::after, .asplit:focus-visible::after, .csplit:focus-visible::after { opacity: .7; background: var(--focus-ring); }
+  .play.resizing { user-select: none; -webkit-user-select: none; }
+  .play.resizing .scene-host, .play.resizing .editor-host { pointer-events: none; }
+  /* たたんだ欄は細い帯（押すと戻る） */
+  .unfold { align-items: center; justify-content: center; padding: 10px 0; border: 0; background: var(--aside-bg); color: var(--sub); font: inherit; font-size: 13px; cursor: pointer; min-width: 0; min-height: 0; }
+  .unfold span { writing-mode: vertical-rl; letter-spacing: .1em; }
+  .unfold:hover { background: var(--card); color: var(--ink); }
+  .unfold:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -3px; }
+  .play.aside-folded > .mission { display: none; }
+  .play.aside-folded > .unfold-aside { display: flex; grid-area: mission; border-right: 1px solid var(--line); }
+}
+@media (min-width: 1280px) {
+  .csplit { display: block; grid-area: console; top: 0; bottom: 0; left: -3px; width: 10px; cursor: col-resize; }
+  .play.console-folded > .console { display: none; }
+  .play.console-folded > .unfold-console { display: flex; grid-area: console; border-left: 1px solid var(--line); background: var(--console-bg); }
+}
 
 /* A-5 クリアの札をたたむ */
 .cc-fold { border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 8px; width: 34px; height: 34px; font-size: 16px; line-height: 1; padding: 0; }
@@ -672,4 +697,11 @@
   .hint { gap: 6px; }
   .hint button { font-size: 13px; padding: 8px 6px; gap: 4px; letter-spacing: -.01em; }
   .hint button svg { width: 15px; height: 15px; flex: none; }
+}
+
+/* 直し係 7: 左の欄を細く引いた時、ヒントの 2 つのボタンが重ならないよう縦に並べる */
+.mission { container-type: inline-size; }
+@container (max-width: 330px) {
+  .hint { flex-direction: column; }
+  .hint button { white-space: normal; }
 }
